@@ -1,0 +1,41 @@
+/** PARA LA PAGINA HISTORIAL **/
+.tablaMantenimiento tr th{
+    background-color: #9a99e4;
+}
+.pagMantenimiento .table-bordered th, .pagMantenimiento .table-bordered tr{
+    text-align: center;
+    vertical-align: middle;
+}
+.pagMantenimiento tr th{
+    background-color: #9a99e4;
+    text-align: center;
+}
+
+/***** PARA HISTORIAL DE MANTENIEMTO ****/
+.tablaHistorial tr th{
+    background-color: #9a99e4;
+}
+.pagHistorial .table-bordered th, .pagHistorial .table-bordered tr{
+    text-align: center;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+}
+
+/***** PARA DETALLES DE HISTORIAL DE MANTENIEMTO DE LA CLINICA ****/
+.detallesMantenimiento .card-header {
+    background-color: #f3d3cd;
+    border-bottom: 1px solid #333;
+}
+
+.detallesMantenimiento .card-body p {
+    margin-bottom: 0.5rem;
+}
+
+.detallesMantenimiento .card { /*para los fondos  de carjetas*/
+    margin-bottom: 1.5rem;
+    border: solid red 2px;
+}
+
+.text-center {
+    text-align: center;
+}

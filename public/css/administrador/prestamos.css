@@ -1,0 +1,41 @@
+/***************** PARA LA PAGIANA PRESTAMOS **********************/
+
+.pagPrestAdmin table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #56f094; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagPrestAdmin .table td,
+.pagPrestAdmin .table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagPrestAdmin table tbody tr:hover {
+    border: 2px solid #1233c5; /* Resaltar borde de la fila */
+}
+
+/***************** PARA LA PAGIANA DETALLES PRESTAMOS **********************/
+.pagDetallesprestamo .card-header{
+    background-color: #a8eec4;
+}
+.pagDetallesprestamo .card-body{
+    background-color: #e6ebe8;
+}
+.pagDetallesprestamo  table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #56f094; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagDetallesprestamo .table td,
+.pagDetallesprestamo .table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+
+}

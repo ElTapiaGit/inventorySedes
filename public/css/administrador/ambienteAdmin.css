@@ -1,0 +1,143 @@
+/* Estilos específicos para lapagina de ambienteAdmin*/
+
+.pagAmbienteAdmin table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #f0ed55; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAmbienteAdmin .table-bordered td,
+.pagAmbienteAdmin .table-bordered th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAmbienteAdmin table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/******** para los model *****/
+/* para el modal*/
+.pagTipoAmbiente .modal-body label{
+    font-weight: bold;
+}
+.pagTipoAmbiente .modal-body input{
+    background-color: #e3e4e4;
+}
+
+.pagTipoAmbiente .modal-header{
+    background-color: #f06868;  
+}
+
+.pagTipoAmbiente .modal-body{
+    background-color: azure;
+}
+
+/***************** PARA LA PAGIANA CONTENIDO AMBIENTES **********************/
+.pagContAdmin {
+    padding: 10px;
+}
+.titulo{
+    font-size: 40px;
+    margin-top: 10px;
+}
+.pagContAdmin table thead th{ 
+    background-color: #e7bb77; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagContAdmin table td,
+.pagContAdmin table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+/*para resaltar las filas cuando pase el cursor*/
+.pagContAdmin table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/***************** PARA LA PAGIANA CONTENIDO AMBIENTES SOLO EQUIPOS **********************/
+.pagAmbEquip {
+    padding: 10px;
+}
+.titulo{
+    font-size: 40px;
+    margin-top: 10px;
+}
+.pagAmbEquip table thead th{ 
+    background-color: #bbaeae; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAmbEquip table td,
+.pagAmbEquip table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+/*para resaltar las filas cuando pase el cursor*/
+.pagAmbEquip table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/***************** PARA LA PAGIANA CONTENIDO AMBIENTES SOLO MOBILIARIO **********************/
+.pagAmbMovi {
+    padding: 10px;
+}
+.titulo{
+    font-size: 40px;
+    margin-top: 10px;
+}
+.pagAmbMovi table thead th{ 
+    background-color: #7f9bc8; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAmbMovi table td,
+.pagAmbMovi table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+/*para resaltar las filas cuando pase el cursor*/
+.pagAmbMovi table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/***************** PARA LA PAGIANA CONTENIDO AMBIENTES SOLO MATERIALES **********************/
+.pagMateAdmin {
+    padding: 10px;
+}
+
+.pagMateAdmin table thead th{ 
+    background-color: #e0bda1; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagMateAdmin table td,
+.pagMateAdmin table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+/*para resaltar las filas cuando pase el cursor*/
+.pagMateAdmin table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}

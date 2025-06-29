@@ -1,0 +1,18 @@
+.personaliacces {
+    max-width: 300px; 
+}
+
+.tablaAcces tr th{
+    background-color: #8a7be1;
+}
+.pagacces .table-bordered th, .pagacces .table-bordered tr{
+    text-align: center;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+}
+
+
+/************ PARA PAGINA DETALLES ACCESORIO **********/
+.pagAccesorio .table th{
+    background-color: aliceblue;
+}

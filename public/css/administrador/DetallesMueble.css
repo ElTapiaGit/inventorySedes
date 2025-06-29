@@ -1,0 +1,26 @@
+
+/********* PAGINA DETALLES MOBILIARIO, MATERIALES Y EQUIPOS**************/
+/*texto justificado todas las paginas de detalles*/
+p {
+    text-align: justify;
+    text-justify: inter-word; /* Asegura que las palabras se distribuyan correctamente */
+    line-height: 1.5; /* Ajusta el espaciado entre líneas según tu preferencia */
+}
+
+.mueble-info {
+    flex: 1;
+}
+
+.mueble-foto img {
+    max-width: 100%;
+    height: auto;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-body .mueble-foto {
+    margin-top: auto;
+}

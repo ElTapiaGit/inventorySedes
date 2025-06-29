@@ -1,0 +1,57 @@
+
+/******* para la pagina personal ********/
+.pagPersonal table thead th{ 
+    background-color: #eaea87; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagPersonal .table td,
+.pagPersonal .table th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagPersonal table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/*************** estilos para el modal de agregar nuevo personal *******************/
+.pagPersonal .modal-body label{
+    font-weight: bold;
+}
+.pagPersonal .modal-body input{
+    background-color: #e3e4e4;
+}
+
+.pagPersonal  .modal-header{
+    background-color: #eeee4e; 
+}
+
+.pagPersonal .modal-body{
+    background-color: azure;
+}
+
+/*************** PARA PAGINA PERSONAL INHABILITADOS *******************/
+
+.pagAbiliarPers table thead th{ 
+    background-color: #eaa887; 
+}
+/*para centrar y poner bordes en la tabla*/
+.pagAbiliarPers .table td,
+.pagAbiliarPers .table th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+/*para centrar y poner bordes en la tabla*/
+.pagAbiliarPers table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}

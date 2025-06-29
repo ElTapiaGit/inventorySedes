@@ -1,0 +1,145 @@
+/* 
+    * los estilos manejados son especiales para cada pagina dentro de todo el sistema 
+*/
+body {
+    display: flex;
+    /* Declaración del degradado */
+    background: linear-gradient(to bottom , #0E1555, #0E1555 25%, #22285d8e 50%, #28328B 75%);
+    justify-content: center;
+    align-items: center;
+    color: black;
+    /* Configuración para ocupar toda la altura de la ventana */
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 1000px;
+    background: linear-gradient(to bottom, #2278e2, #BAD3EF);
+    padding: 30px;
+    border-radius: 30px;
+    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.696);
+    box-sizing: border-box; /* Permitir que los elementos se envuelvan en dispositivos más pequeños */
+    /* Añadir position relative para que SweetAlert no afecte */
+}
+
+.left-section {
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    align-items: center;
+/* Mínimo ancho en pantallas pequeñas */
+}
+
+.logo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: flex;
+    margin: 0 auto;
+}
+
+.left-section h2{
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    margin: 10px;
+    font-size: 1.5em;
+    text-align: center; /* Centrar texto en pantallas pequeñas */
+}
+
+.right-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1; /* Flexibilidad para tomar el 50% en pantallas más grandes */
+    max-width: 400px; /* Mínimo ancho en pantallas pequeñas */
+}
+
+#loginForm{
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%; /* Asegura que el formulario ocupe todo el ancho del contenedor */
+}
+
+.input-container{
+    position: relative;
+    margin-bottom: 30px;
+    width: 100%; /* Asegura que los inputs ocupen todo el ancho del contenedor */
+}
+
+.input-label{
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    pointer-events: none;
+    transition: top 0.3s ease, left 0.3s ease;
+    
+}
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #333;
+}
+/* */
+input {
+    padding: 10px;
+    width: 100%;
+    height: 50px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 18px;
+    padding-right: 40px; /* Espacio adicional para el ícono */
+}
+
+.btn-ingresar{
+    display: flex;
+    justify-content: right;
+    align-content: center;
+}
+button {
+    width: 100%;
+    max-width: 150px; /* Limitar ancho máximo */
+    height: 50px;
+    padding: 10px;
+    font-size: 20px;
+    background-color: #0000ff;
+    color: white;
+    border: none;
+    border-radius: 30px; 
+    cursor: pointer;
+    justify-content:left;
+    align-items: left;
+}
+
+button:hover {
+    background-color: #14149a;
+}
+
+@media screen and (max-width: 600px) {
+    .container {
+        flex-direction: column;
+    }
+    input, button {
+        font-size: 16px; /* Reducir tamaño de fuente para pantallas más pequeñas */
+    }
+    .logo {
+        width: 120px; /* Reducir tamaño de logo para móviles */
+        height: 120px; /* Reducir tamaño de logo para móviles */
+    }
+    .left-section{
+        padding-bottom: 20px;
+    }
+}
+

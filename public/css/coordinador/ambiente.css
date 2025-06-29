@@ -1,0 +1,76 @@
+/* Estilos específicos para lapagina de ambiente del edificio central */
+.ambiente-page {
+    padding: 10px;
+}
+.titulo{
+    /* font-size: 3vw; Tamaño de texto ajustado al ancho de la pantalla */
+    font-size: 40px;
+    margin-top: 10px;
+}
+.btnambiente{
+    padding-bottom: 10px;
+}
+.ambiente-page .table-bordered {
+    width: 100%;
+    border-collapse: collapse;
+}
+.ambiente-page .table-bordered td,
+.ambiente-page .table-bordered th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+
+/*para resaltar las filas cuando pase el cursor*/
+table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+}
+.ambiente-page .table-bordered tbody tr {
+    background-color: #ececec; /* Color de fondo para filas del tbody */
+}
+
+.ambiente-page .table thead th{
+    background-color: #0AEEC5; 
+}
+.ambiente-page .table-responsive {
+    overflow-x: auto;
+}
+
+
+/*************************************************************************/
+/***** Estilos específicos para lapagina de ambiente de la clinica*******/
+.ambiente-clinica {
+    padding: 10px;
+}
+.titulo{
+    /* font-size: 3vw; Tamaño de texto ajustado al ancho de la pantalla */
+    font-size: 40px;
+    margin-top: 10px;
+}
+.btnambiente{
+    padding-bottom: 10px;
+}
+.ambiente-clinica .table-bordered {
+    width: 100%;
+    border-collapse: collapse;
+}
+.ambiente-clinica .table-bordered td,
+.ambiente-clinica .table-bordered th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+.ambiente-clinica .table-bordered tbody tr {
+    background-color: #ececec; /* Color de fondo para filas del tbody */
+}
+
+.ambiente-clinica .table thead th{
+    background-color: #f78383; 
+}
+.ambiente-clinica .table-responsive {
+    overflow-x: auto;
+}

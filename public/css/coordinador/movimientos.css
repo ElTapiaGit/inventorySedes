@@ -1,0 +1,46 @@
+/**** PARA LA PAGINA MOVIMIENTOS ***/
+.tablaMantenimiento tr th{
+    background-color: #f4d874;
+}
+.pagMantenimiento .table-bordered th, .pagMantenimiento .table-bordered tr{
+    text-align: center;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+}
+/*estilo para las celdas del registro que no finalizo el uso de ambiente*/
+.tbody .highlight-row .highlight-cell{
+    background-color: #aff0a1;
+}
+
+
+/***************** PARA LA PAGINA DETALLES MOVIMIENTO****************************************/
+/* Estilos para las tarjetas */
+.pagdetalles .card, .pagdetalleMovimiets .card {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto; /* Margen automático a izquierda y derecha */
+}
+/* Estilos para los encabezados */
+.pagdetalles h3 h4 {
+    color: #333;
+    text-align: center;
+}
+.data-section {
+    margin-bottom: 20px;
+}
+.data-section h4 {
+    color: #007bff;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.data-section p {
+    margin-left: 20px;
+}
+.nofinaliza h4{
+    color: red;
+}
+

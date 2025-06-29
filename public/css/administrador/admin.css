@@ -1,0 +1,146 @@
+
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Global Styles */
+body{
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-size: cover;
+}
+
+/*para el dasboar*/
+.wrapper{/*contenedor de la estructura de la pagina*/
+    display: flex;
+    height: 100%;
+}
+
+/*seccion para el menu de navegacion*/
+#sidebar{
+    width: 250px;
+    height: 100%;
+    transition: all 0.35s ease-in-out;
+    box-shadow: 0 0 35px 0 rgba(49, 57, 66, 0.5);
+    z-index: 1111;
+    background-image: linear-gradient(to bottom, #0E0D39, #1E1C7B, #27249F);
+    position: fixed;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+}
+/*para esconder el menu de navegacion*/
+#sidebar.hidden {
+    transform: translateX(-100%);
+}
+
+.sidebar-logo{
+    padding: 1.15rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.sidebar-logo img{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+}
+.sidebar-logo a{
+    text-decoration: none;
+    color: #e9ecef;
+    font-size: 1.25rem;
+    font-weight: 600px;
+}
+
+/*para las opciones del  menu*/
+.sidebar-nav{
+    padding: 0;
+}
+
+.sidebar-item {
+    padding-top: 20px;
+}
+.sidebar-link{
+    align-items: center;
+    padding: 10px 35px;
+    text-decoration: none;
+    color: #e9ecef;
+    display: block;
+    font-size: 120%;
+}
+.sidebar-link:hover {
+    background-color: #B9F4E6;
+    color: black;
+    border-radius: 30px;
+}
+
+/*para la estructura del contenido de la pagnas*/
+.main{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    transition: margin-left 0.3s ease, width 0.3s ease;
+}
+/*para ajustar la cabecera cuando se oculte el dasboar*/
+.main.expanded {
+    margin-left: 0;
+    width: 100%;
+}
+
+/*para la cabecera*/
+.navbar{
+    width: 100%;
+    background-image: linear-gradient(to bottom, #1B4B82, #2462AB, #3185E8);
+}
+.namaAdmin{ /*para el estilo del nombre de usuario*/
+    color: #fff;
+    margin-right: auto;
+}
+/*estilos para el boton de ocultar de la cabecera*/
+#toggleSidebar{
+    margin-left: 10px;
+    margin-right: 10px;
+    border-color: #a4a4c9;
+    color: #fff;
+}
+#toggleSidebar:hover{
+    background-color: #c6c5ec;
+}
+
+/*para las opciones de cabecera*/
+.nav-item{
+    border-radius: 5px;
+    margin-right: 10px;
+}
+.nav-link.white-text {
+    color: white !important;
+}
+.nav-item:hover{
+    background-color: #1B4B82;
+}
+
+/*para el contenido de la paginia*/
+.contentini{
+    flex: 1;
+    max-width: 100vw;
+    width: 100%;
+    background-size: cover;
+    background-image: url(../../img/admin/fondo_Admin.png);
+    background-size: cover;
+    background-position: center;
+}
+.content{
+    flex: 1;
+    max-width: 100vw;
+    width: 100%;
+    background-size: cover;
+    background-color: #d9e0ec;
+}

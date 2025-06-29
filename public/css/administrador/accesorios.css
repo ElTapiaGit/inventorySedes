@@ -1,0 +1,63 @@
+.pagAccesAdmin table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #df605c; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAccesAdmin .table td,
+.pagAccesAdmin .table th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAccesAdmin table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/**************** PAGINA PARA ACCESORIOS CONEQUIPOS************************/
+.pagAccesEquip table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #5cb8df; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAccesEquip .table td,
+.pagAccesEquip .table th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAccesEquip table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/**************** PAGINA PARA ACCESORIOS  UNICOS************************/
+.pagAccesUnico table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #63afd0; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAccesUnico .table td,
+.pagAccesUnico .table th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAccesUnico table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/**************** PAGINA PARA DETALLES DE ACCESORIOS ************************/
+.pagAccesorio .card-header{
+    background-color: #edbdaa;
+}

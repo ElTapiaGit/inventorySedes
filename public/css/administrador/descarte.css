@@ -1,0 +1,19 @@
+.pagDescarte table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #bd9f94; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagDescarte .table-bordered td,
+.pagDescarte .table-bordered th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagDescarte table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}

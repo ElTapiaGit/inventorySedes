@@ -1,0 +1,46 @@
+/***************** PARA LA PAGIANA MANTENIMIENTOS **********************/
+
+.pagMantAdmin table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #ec9441; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagMantAdmin .table td,
+.pagMantAdmin .table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagMantAdmin table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+}
+
+/***************** PARA LA PAGIANA HISTORIAL MANTENIMIENTOS **********************/
+
+.pagHistoAdmin table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #b5aeae; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagHistoAdmin .table td,
+.pagHistoAdmin .table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagHistoAdmin table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+}
+
+/***************** PARA LA PAGIANA DETALLES MANTENIMIENTOS **********************/
+.pagDetallMante .card-header{
+    background-color: #ca9766;
+}

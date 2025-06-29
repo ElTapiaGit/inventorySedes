@@ -1,0 +1,48 @@
+/***************** PARA LA PAGIANA MANTENIMIENTOS **********************/
+.pagMovAdmin table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #56d1f0; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagMovAdmin .table td,
+.pagMovAdmin .table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+/*para centrar y poner bordes en la tabla*/
+.pagMovAdmin table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/** PARA LA PAGINA DETALLES MOVIMIENTO DeL Edificio Central ***/
+/* Estilos para las tarjetas */
+.pagdetalles .card, .pagdetalleMovimiets .card {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto; /* Margen automático a izquierda y derecha */
+}
+/* Estilos para los encabezados */
+.pagdetalles h3, h4 {
+    color: #333;
+    text-align: center;
+}
+
+.data-section h4 {
+    color: #007bff;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.data-section p {
+    margin-left: 20px;
+}
+.nofinaliza h4{
+    color: red;
+}

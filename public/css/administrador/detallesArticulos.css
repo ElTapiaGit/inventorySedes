@@ -1,0 +1,16 @@
+/***** PAGINA DETALLES EQUIPOS *****/
+.detallesEquipo .card-header{
+    background-color: #8eb4d5;
+}
+
+.detallesEquipo table thead th{ 
+    background-color: #e7cbbe; 
+}
+/*para centrar y poner bordes en la tabla*/
+.detallesEquipo table td,
+.detallesEquipo table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+}

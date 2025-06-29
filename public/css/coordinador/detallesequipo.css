@@ -1,0 +1,13 @@
+
+.headerComp tr th{
+    background-color: #d9d4aa; 
+} 
+.table-bordered th, .table-bordered tr{
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+}
+.headerAcces tr th{
+    background-color: #78a0c1; 
+} 

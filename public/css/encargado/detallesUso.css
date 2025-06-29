@@ -1,0 +1,23 @@
+/***************** PARA LA PAGIANA USO DE AMBIENTES **********************/
+.content{
+    flex: 1;
+    max-width: 100vw;
+    width: 100%;
+    background-size: cover;
+    background: #becbcfae;
+}
+
+/* Estilos para las tarjetas */
+.pagdetalles .card, .pagdetalleMovimiets .card {
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto; /* Margen automático a izquierda y derecha */
+}
+/* Estilos para los encabezados */
+.pagdetalles h3, h4 {
+    color: #333;
+    text-align: center;
+}

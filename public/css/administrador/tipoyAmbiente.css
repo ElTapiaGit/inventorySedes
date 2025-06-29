@@ -1,0 +1,82 @@
+
+/***************** PARA LA PAGIANA CONTENIDO TIPO AMBIENTES **********************/
+
+.pagTipoAmbiente table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #f06868; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagTipoAmbiente .table td,
+.pagTipoAmbiente .table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+    border-left: 1px solid black; 
+    border-right: 1px solid black;
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagTipoAmbiente table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+.pagTipoAmbiente .card-body, .pagTipoAmbiente .card{
+    background: linear-gradient(to bottom right, #72a2e3, #ffffff);
+    border-radius: 15px ;
+}
+
+/* para el modal*/
+.pagTipoAmbiente .modal-body label{
+    font-weight: bold;
+}
+.pagTipoAmbiente .modal-body input{
+    background-color: #e3e4e4;
+}
+
+.pagTipoAmbiente .modal-header{
+    background-color: #f06868;  
+}
+
+.pagTipoAmbiente .modal-body{
+    background-color: azure;
+}
+
+
+/***************** PARA LA PAGIANA CONTENIDO AMBIENTES NUEVOS **********************/
+
+.pagAmbcreaet table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #dd956b; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAmbcreaet table td,
+.pagAmbcreaet table th {
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagAmbcreaet table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+/* para el modal*/
+.pagAmbcreaet .modal-body label{
+    font-weight: bold;
+}
+.pagAmbcreaet .modal-body input{
+    background-color: #e3e4e4;
+}
+
+.pagAmbcreaet .modal-header{
+    background-color: #68f07c;  
+}
+
+.pagAmbcreaet .modal-body{
+    background-color: azure;
+}

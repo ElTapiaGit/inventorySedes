@@ -1,0 +1,63 @@
+/**************PARA PAGINA DE SEDES  ******/
+.pagSede table thead th{ 
+    background-color: #e7bb77; 
+}
+/*para centrar y poner bordes en la tabla*/
+.pagSede table td,
+.pagSede table th {
+    text-align: center;
+    vertical-align: middle;/* Centrar el contenido verticalmente */
+}
+
+/*************** estilos para el modal de agregar nuevo personal *******************/
+.pagSede .modal-body label{
+    font-weight: bold;
+}
+.pagSedel .modal-body input{
+    background-color: #e3e4e4;
+}
+
+.pagSede  .modal-header{
+    background-color: #7fa6dc; 
+}
+
+.pagSede .modal-body{
+    background-color: azure;
+}
+
+/******** PAGINA PISOS *****/
+.pagPisos .form-select{
+    width: 100px;
+}
+.pagPisos .table{
+    width: 80%;
+    align-content: center;
+    margin: auto;
+}
+.pagPisos .table thead th{ /*para cabecera de tabla de ambientes*/
+    background-color: #f0bc55; 
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagPisos .table td,
+.pagPisos .table th {
+    text-align: center;
+    vertical-align: middle;
+    border-left: 1px solid black; 
+    border-right: 1px solid black; 
+    padding: 8px; /* Espaciado interno de las celdas */
+}
+
+/*para centrar y poner bordes en la tabla*/
+.pagPisos table tbody tr:hover {
+    border: 2px solid #007bff; /* Resaltar borde de la fila */
+    border-top: 2px solid #007bff;
+}
+
+.pagPisos  .modal-header{
+    background-color: #f0bc55; 
+}
+
+.pagPisos .modal-body{
+    background-color: azure;
+}

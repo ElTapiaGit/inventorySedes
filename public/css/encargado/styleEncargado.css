@@ -1,0 +1,20 @@
+/* para pagina principal de encaragdo */
+header{
+    background-image: linear-gradient(to bottom, #464673, #5d95dd);
+    margin: 0;
+}
+.nav-item{
+    padding: 0 0 0 10px;
+}
+.nav-item :hover{
+    border: solid #f1f7f6 1px;
+    background-color: #bed0f1;
+    border-radius: 5px;
+}
+.nav-item .nav-link{
+    color: #fff;
+}
+
+.main-content{
+    padding: 20px;
+}

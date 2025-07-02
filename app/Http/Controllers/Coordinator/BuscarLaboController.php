@@ -26,7 +26,7 @@ class BuscarLaboController extends Controller
                 ->join('edificio', 'piso.Edificio_id_edificio', '=', 'edificio.id_edificio')
                 ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
                 ->where('tipo_ambiente.nombre_amb', 'Laboratorio Odontologia')
-                ->where('sede.id_sede', 1)//campo de la sede debe de ser id=1
+                ->where('sede.id_sede', 101)//campo de la sede debe de ser id=1
                 ->where('edificio.nombre_edi', 'Edificio Central')
                 ->select('ambiente.id_ambiente', 'ambiente.nombre')
                 ->get();
@@ -34,13 +34,16 @@ class BuscarLaboController extends Controller
 
             return view('coordinator.laboratorios', compact('edificios', 'laboratorios'));
         }catch (\Exception $e) {
-            return redirect()->route('coordinator.inicio')->with('errordata', 'Error al obtener los para los laboratorios del edificio central: ');
+            return redirect()->route('coordinator.inicio')->with('errordata', 'Ocurrió un error al cargar los laboratorios.');
         }
     }
 
     //metodo para filtrar los ambientes que son laboratorios de odontoligia
     public function buscar(Request $request)
     {
+        $request->validate([
+            'Laboratorio' => 'required|string|max:45',
+        ]);
         try{
             $nombre = $request->input('Laboratorio');//lo que se optenga al escribir en el input
 
@@ -51,7 +54,7 @@ class BuscarLaboController extends Controller
             ->join('edificio', 'piso.Edificio_id_edificio', '=', 'edificio.id_edificio')
             ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
             ->where('tipo_ambiente.nombre_amb', 'Laboratorio Odontologia')
-            ->where('sede.id_sede', 1)
+            ->where('sede.id_sede', 101)
             ->where('ambiente.nombre', $nombre)
             ->select('ambiente.id_ambiente')
             ->first();
@@ -60,15 +63,12 @@ class BuscarLaboController extends Controller
                 return redirect()->route('laboratorios.index')->with('errorbuscar', 'El Laboratorio que busca no se encontrado en la Base de Datos.');
             }
 
-            if ($laboratorios) {
-                // Encriptar el ID del piso
-                $encryptedId = Crypt::encrypt($laboratorios->id_ambiente);
-                return redirect()->route('ambiente.show', ['id' => $encryptedId]);
-            }
-
-            return redirect()->back()->with('error', 'Laboratorio no encontrado.');
+            // Encriptar el ID del ambiente
+            $encryptedId = Crypt::encrypt($laboratorios->id_ambiente);
+            return redirect()->route('ambiente.show', ['id' => $encryptedId]);
+            
         }catch (\Exception $e) {
-            return redirect()->route('coordinator.inicio')->with('errordata', 'Error al obtener los para los datos de los ambientes laboratorios odontologicos: ');
+            return redirect()->route('coordinator.inicio')->with('errordata', 'Ocurrió un error al cargar los laboratorios. Inténtelo más tarde.');
         }
     }
     
@@ -89,69 +89,40 @@ class BuscarLaboController extends Controller
         }
     }
 
+    /**
+     * Método privado reutilizable para búsquedas de códigos en distintas tablas.
+     */
+    private function buscarElemento($tabla, $campoCodigo, $codigo, $rutaRedireccion, $encriptar = true)
+    {
+        try {
+            $elemento = DB::table($tabla)->where($campoCodigo, $codigo)->first();
+
+            if ($elemento) {
+                $param = $encriptar ? Crypt::encrypt($codigo) : $codigo;
+                return redirect()->route($rutaRedireccion, ['token' => $param]);
+            }
+
+            return redirect()->back()->with('errorbuscar', 'El código ingresado no es válido o no existe en la base de datos.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la búsqueda. Verifique los campos o intente más tarde.');
+        }
+    }
+
     /////////////////////////////////////////////////////////
     //////////// PARA PAGINA DE BUSQUEDAS RAPIDAS DE CLINICA ////////
     public function buscarEquipo(Request $request)
     {
-        $codigo = $request->input('codigo');
-
-        try {
-            // Verificar si el código existe en la tabla equipo
-            $equipo = DB::table('equipo')->where('cod_equipo', $codigo)->first();
-
-            if ($equipo) {
-                // Encriptar el código y redirigir a la página de detalles
-                $encryptedCodigo = Crypt::encrypt($codigo);
-                return redirect()->route('clinica.equipo.detalles', ['token' => $encryptedCodigo]);
-            }
-
-            // Si no se encuentra el código, redirigir de vuelta con un mensaje de error
-            return redirect()->back()->with('errorbuscar', 'El código ingresado es inválido o no existe en la base de datos.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la búsqueda: ' );//para saber el error agregar al final: . $e->getMessage()
-        }
+        return $this->buscarElemento('equipo', 'cod_equipo', $request->input('codigo'), 'clinica.equipo.detalles');
     }
 
     public function buscarMobiliario(Request $request)
     {
-        $codigo = $request->input('codigo');
-
-        try {
-            // Verificar si el código existe en la tabla equipo
-            $equipo = DB::table('mobiliario')->where('cod_mueble', $codigo)->first();
-
-            if ($equipo) {
-                // Encriptar el código y redirigir a la página de detalles
-                $encryptedCodigo = Crypt::encrypt($codigo);
-                return redirect()->route('clinica.mobiliario.detalles', ['token' => $encryptedCodigo]);
-            }
-
-            // Si no se encuentra el código, redirigir de vuelta con un mensaje de error
-            return redirect()->back()->with('errorbuscar', 'El código ingresado es inválido o no existe en la base de datos.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la búsqueda: VERIFICAR CONFIGURACION DE CAMPOS EN LA BD' );//. $e->getMessage()
-        }
+        return $this->buscarElemento('mobiliario', 'cod_mueble', $request->input('codigo'), 'clinica.mobiliario.detalles');
     }
 
     public function buscarMaterial(Request $request)
     {
-        $codigo = $request->input('codigo');
-
-        try {
-            // Verificar si el código existe en la tabla equipo
-            $equipo = DB::table('material')->where('cod_mate', $codigo)->first();
-
-            if ($equipo) {
-                // Encriptar el código y redirigir a la página de detalles
-                $encryptedCodigo = Crypt::encrypt($codigo);
-                return redirect()->route('clinica.material.detalles', ['token' => $encryptedCodigo]);
-            }
-
-            // Si no se encuentra el código, redirigir de vuelta con un mensaje de error
-            return redirect()->back()->with('errorbuscar', 'El código ingresado es inválido o no existe en la base de datos.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la búsqueda: VERIFICAR CONFIGURACION DE CAMPOS EN LA BD ' );//. $e->getMessage()
-        }
+        return $this->buscarElemento('material', 'cod_mate', $request->input('codigo'), 'clinica.material.detalles');
     }
 
     public function buscarAccesorio(Request $request)
@@ -171,7 +142,7 @@ class BuscarLaboController extends Controller
             // Si no se encuentra el código, redirigir de vuelta con un mensaje de error
             return redirect()->back()->with('errorbuscar', 'El código ingresado es inválido o no existe en la base de datos.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la búsqueda: VERIFICAR CAMPOS EN LA BD' );//. $e->getMessage()
+            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la búsqueda: ' . $e->getMessage());
         }
     }
 }

@@ -23,7 +23,7 @@ use Exception;
 class MovimientoAmbienteController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
         try{
             $currentDate = now()->format('d-m-Y'); // Fecha en formato DD-MM-YY
@@ -39,57 +39,47 @@ class MovimientoAmbienteController extends Controller
             $edificio = Edificio::where('id_edificio', $edificio_id)->first();
 
             // Inicializar ambientes
-            $ambientes = collect(); // Colección vacía para almacenar ambientes  khtdfkhgdghghfghfdhghkdfghdfghdflgdlghkdlkht
+            $ambientes = collect(); // Colección vacía para almacenar ambientes
 
             // Obtener los parámetros de búsqueda
-            $usuarioNombre = request('usuario_nombre');
-            $fechaUso = request('fecha_uso');
+            //$usuarioNombre = request('usuario_nombre');
+            $usuarioNombre = $request->input('usuario_nombre');
+            //$fechaUso = request('fecha_uso');
+            $fechaUso = $request->input('fecha_uso');
 
-            if ($edificio) {
-                // Obtener los usos de ambiente del edificio del personal
-                $query = UsoAmbiente::with('finalUsos', 'ambiente', 'usuario', 'personalInicio')
-                ->whereHas('ambiente', function($query) use ($edificio_id) {
-                    $query->whereHas('piso', function($query) use ($edificio_id) {
-                        $query->where('EDIFICIO_id_edificio', $edificio_id);
-                    });
-                });
-                // Aplicar filtros
-                if ($usuarioNombre) {
-                    $query->whereHas('usuario', function($query) use ($usuarioNombre) {
-                        $query->whereRaw("CONCAT(nombre, ' ', apellidos) LIKE ?", ['%' . $usuarioNombre . '%']);
-                    });
-                }
-                if ($fechaUso) {
-                    $query->whereDate('fch_uso', $fechaUso);
-                }
-                $usos = $query->orderBy('fch_uso', 'desc') // Ordenar por la fecha de uso en orden descendente
-                ->orderBy('hora_uso', 'desc') // Ordenar por la hora de uso en orden descendente
-                ->paginate(10);
-
-                if ($edificio->nombre_edi === 'Clinica Odontologia' || $edificio->nombre_edi === 'Clinica Odontologica') {
-                    // Obtener todos los ambientes del edificio "Clínica Odontológica"
-                    $ambientes = Ambiente::whereHas('piso', function ($query) use ($edificio_id) {
-                        $query->where('EDIFICIO_id_edificio', $edificio_id);
-                    })->get();
-                }
-                else {
-                    // Obtener el tipo de ambiente "laboratorio"
-                    $tipoLaboratorio = TipoAmbiente::where('nombre_amb', 'like', 'laboratorio%')->pluck('id_tipoambiente');
-                    if (!$tipoLaboratorio) {
-                        return redirect()->route('encargado.inicio')->withErrors('No hay Laboratorios registrados.');
-                    }
-
-                    // Obtener ambientes del edificio del tipo "laboratorio" en el edificio
-                    $ambientes = Ambiente::whereIn('TIPO_AMBIENTE_id_ambiente', $tipoLaboratorio)
-                    ->whereHas('piso', function ($query) use ($edificio_id) {
-                        $query->where('EDIFICIO_id_edificio', $edificio_id);
-                    })->get();
-
-                }
-
-            } else {
+            if (!$edificio) {
                 return redirect()->route('encargado.inicio')->withErrors('El edificio del personal no se ha encontrado.');
             }
+
+            // Filtro de registros de uso del ambiente
+            $query = UsoAmbiente::with('finalUsos', 'ambiente', 'usuario', 'personalInicio')
+                ->whereHas('ambiente.piso', function ($query) use ($edificio_id) {
+                    $query->where('EDIFICIO_id_edificio', $edificio_id);
+                });
+
+            if ($usuarioNombre) {
+                $query->whereHas('usuario', function ($q) use ($usuarioNombre) {
+                    $q->whereRaw("CONCAT(nombre, ' ', apellidos) LIKE ?", ["%{$usuarioNombre}%"]);
+                });
+            }
+
+            if ($fechaUso) {
+                $query->whereDate('fch_uso', $fechaUso);
+            }
+
+            $usos = $query->orderBy('fch_uso', 'desc')
+                          ->orderBy('hora_uso', 'desc')
+                          ->paginate(10);
+
+            // Determinar si es clínica odontológica
+            $esClinica = in_array($edificio->nombre_edi, ['Clinica Odontologia', 'Clinica Odontologica']);
+            $ambientes = $this->obtenerAmbientes($edificio_id, $esClinica);
+
+            // Validar si se encontraron ambientes
+            if ($ambientes->isEmpty()) {
+                return redirect()->route('encargado.inicio')->withErrors('No hay ambientes registrados para este edificio.');
+            }
+
             // Obtener usuario para el campo de selección
             $usuarios = Usuario::all();
             $tiposUsuario = TipoUsuario::all();
@@ -97,13 +87,31 @@ class MovimientoAmbienteController extends Controller
             return view('encargados.movimientoAmbiente', compact('currentDate', 'currentTime', 'usos', 'ambientes', 'usuarios', 'tiposUsuario'));
         } catch (QueryException $e) {
             // Manejo de excepciones para errores en la consulta SQL
-            return redirect()->route('encargado.inicio')->withErrors('Error en la consulta de datos. Por favor, intente nuevamente.'. $e->getMessage());
+            return redirect()->route('encargado.inicio')->withErrors('Error en la consulta de datos. ');
 
         } catch (Exception $e) {
             // Manejo de cualquier otra excepción general
-            return redirect()->route('encargado.inicio')->withErrors('Ocurrió un error inesperado. Por favor, intente nuevamente.'. $e->getMessage());
+            return redirect()->route('encargado.inicio')->withErrors('Ocurrió un error inesperado. Por favor, intente nuevamente.');
         }
     }
+
+    /**
+     * Obtener ambientes dependiendo si es clínica odontológica o no.
+     */
+    private function obtenerAmbientes($edificio_id, $esClinica) {
+        if ($esClinica) {
+            return Ambiente::whereHas('piso', function ($query) use ($edificio_id) {
+                $query->where('EDIFICIO_id_edificio', $edificio_id);
+            })->get();
+        }
+
+        $tipoLaboratorio = TipoAmbiente::where('nombre_amb', 'like', 'laboratorio%')->pluck('id_tipoambiente');
+        return Ambiente::whereIn('TIPO_AMBIENTE_id_ambiente', $tipoLaboratorio)
+            ->whereHas('piso', function ($query) use ($edificio_id) {
+                $query->where('EDIFICIO_id_edificio', $edificio_id);
+            })->get();
+    }
+
 
     public function registrarUso(Request $request)
     {

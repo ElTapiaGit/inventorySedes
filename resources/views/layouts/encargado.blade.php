@@ -14,6 +14,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
@@ -55,13 +56,13 @@
                     </li>
                     <!-- Otras opciones de menú -->
                     <li class="nav-item">
-                        <a class="nav-link" href="{{route('movimiento.ambiente.index')}}">Uso Laboratorios</a>
+                        <a class="nav-link" href="{{route('movimiento.ambiente.index') }}">Uso Laboratorios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('encargado.usuarios')}}">Usuarios</a>
+                        <a class="nav-link" href="{{ route('encargado.usuarios') }}">Usuarios</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="">Préstamos</a>
+                        <a class="nav-link" href="{{ route('encargado.prestamo') }}">Prestamos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="">Mantenimiento</a>

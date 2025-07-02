@@ -11,7 +11,7 @@
         </div>
         <form   class="form-container" action="{{ route('laboratorios.buscar') }}" method="POST">
             @csrf
-            <input list="laboratorios" name="Laboratorio" id="Laboratorio" class="form-control" placeholder="Escriba su búsqueda" style="width: 300px;">
+            <input list="laboratorios" name="Laboratorio" id="Laboratorio" class="form-control" required placeholder="Escriba su búsqueda" style="width: 300px;">
             <datalist id="laboratorios">
                 @foreach($laboratorios as $laboratorio)
                     <option value="{{ $laboratorio->nombre }}" ></option>

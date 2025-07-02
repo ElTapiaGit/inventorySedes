@@ -63,6 +63,7 @@ use App\Http\Controllers\Encargado\MobiliarioController;
 use App\Http\Controllers\Encargado\AccesorioRController;
 use App\Http\Controllers\Encargado\MovimientoAmbienteController;
 use App\Http\Controllers\Encargado\UsuariosEncargController;
+use App\Http\Controllers\Encargado\PrestamopController;
 
 //para el inicio de sesion
 use App\Http\Controllers\AuthController;
@@ -332,7 +333,7 @@ Route::prefix('encargado')->middleware(['auth', 'role:Encargado'])->group(functi
     Route::get('/registro/equipo', [EquipoRController::class, 'create'])->name('equipo.create');
     Route::post('/foto/store', [EquipoRController::class, 'store'])->name('foto.store');
     Route::post('/equipo/store', [EquipoRController::class, 'storeEquipo'])->name('equipo.store');
-        //registrar componentes y accesorios
+    //registrar componentes y accesorios
     Route::post('/componente/store', [EquipoRController::class, 'storeComponente'])->name('componente.store');
     Route::post('/registro/foto/accesorio', [EquipoRController::class, 'storeFotoAccesorio'])->name('foto.accesorio');
     Route::post('/accesorio/equipo/store', [EquipoRController::class, 'storeAccesorioEquipo'])->name('equipo.accesorios.store');
@@ -371,5 +372,15 @@ Route::prefix('encargado')->middleware(['auth', 'role:Encargado'])->group(functi
 
     // Eliminar un usuario
     Route::delete('/usuarios/{id}', [UsuariosEncargController::class, 'eliminarUsuario'])->name('encargado.eliminarUsuario');
+
+    // Prestamo 
+    Route::get('/prestamos', [PrestamopController::class, 'index'])->name('encargado.prestamo');
+    // Registro de nuevo préstamo
+    Route::post('/prestamos', [PrestamopController::class, 'store'])->name('encargado.prestamo.store');
+    // Mostrar página para registrar detalles de préstamo
+    Route::get('/prestamos/detalle/{id}', [PrestamopController::class, 'detalle'])->name('encargado.prestamo.detalle');
+    // Guardar detalles de préstamo
+    Route::post('/prestamos/detalles/{id}', [PrestamopController::class, 'detalleStore'])->name('encargado.prestamo.detalle.store');
+
 });
 

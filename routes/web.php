@@ -64,6 +64,8 @@ use App\Http\Controllers\Encargado\AccesorioRController;
 use App\Http\Controllers\Encargado\MovimientoAmbienteController;
 use App\Http\Controllers\Encargado\UsuariosEncargController;
 use App\Http\Controllers\Encargado\PrestamopController;
+use App\Http\Controllers\Encargado\DetallePrestamoController;
+use App\Http\Controllers\Encargado\MantenimientopController;
 
 //para el inicio de sesion
 use App\Http\Controllers\AuthController;
@@ -373,14 +375,20 @@ Route::prefix('encargado')->middleware(['auth', 'role:Encargado'])->group(functi
     // Eliminar un usuario
     Route::delete('/usuarios/{id}', [UsuariosEncargController::class, 'eliminarUsuario'])->name('encargado.eliminarUsuario');
 
-    // Prestamo 
+    // Préstamos
     Route::get('/prestamos', [PrestamopController::class, 'index'])->name('encargado.prestamo');
     // Registro de nuevo préstamo
     Route::post('/prestamos', [PrestamopController::class, 'store'])->name('encargado.prestamo.store');
-    // Mostrar página para registrar detalles de préstamo
-    Route::get('/prestamos/detalle/{id}', [PrestamopController::class, 'detalle'])->name('encargado.prestamo.detalle');
-    // Guardar detalles de préstamo
-    Route::post('/prestamos/detalles/{id}', [PrestamopController::class, 'detalleStore'])->name('encargado.prestamo.detalle.store');
+    //pagina detalles
+    Route::get('/prestamos/{id}', [PrestamopController::class, 'show'])->name('encargado.prestamo.show');
+    //finalizar prestamo
+    Route::post('/prestamos/devolucion/{id}', [PrestamopController::class, 'registrarDevolucion'])->name('encargado.prestamo.devolucion');
+
+    // Mantenimiento
+    Route::get('/mantenimientos', [MantenimientopController::class, 'index'])->name('encargado.mantenimiento');
+    Route::post('/mantenimientos', [MantenimientopController::class, 'store'])->name('encargado.mantenimiento.store');
+    Route::get('/mantenimientos/{id}', [MantenimientopController::class, 'show'])->name('encargado.mantenimiento.show');
+    Route::post('/mantenimientos/finalizar/{id}', [MantenimientopController::class, 'finalizar'])->name('encargado.mantenimiento.finalizar');
 
 });
 

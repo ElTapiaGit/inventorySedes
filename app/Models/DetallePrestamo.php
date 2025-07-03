@@ -49,4 +49,50 @@ class DetallePrestamo extends Model
         return $this->belongsTo(Accesorio::class, 'cod_articulo', 'cod_accesorio');
     }
 
+    //definir un accesor para identificar automáticamente el tipo de artículo
+    public function getNombreArticuloAttribute()
+    {
+        $codigo = $this->cod_articulo;
+
+        $equipo = \App\Models\Equipo::where('Cod_equipo', $codigo)->with('ambiente')->first();
+        if ($equipo) {
+            return $equipo->nombre_equi . ' (Equipo)';
+        }
+
+        $material = \App\Models\Material::where('cod_mate', $codigo)->with('ambiente')->first();
+        if ($material) {
+            return $material->descripcion_mate . ' (Material)';
+        }
+
+        $mueble = \App\Models\Mobiliario::where('cod_mueble', $codigo)->with('ambiente')->first();
+        if ($mueble) {
+            return $mueble->descripticion_mueb . ' (Mobiliario)';
+        }
+
+        return 'Artículo no identificado';
+    }
+
+    public function getNombreAmbienteAttribute()
+    {
+        $codigo = $this->cod_articulo;
+
+        $equipo = \App\Models\Equipo::where('Cod_equipo', $codigo)->with('ambiente')->first();
+        if ($equipo && $equipo->ambiente) {
+            return $equipo->ambiente->nombre;
+        }
+
+        $material = \App\Models\Material::where('cod_mate', $codigo)->with('ambiente')->first();
+        if ($material && $material->ambiente) {
+            return $material->ambiente->nombre;
+        }
+
+        $mueble = \App\Models\Mobiliario::where('cod_mueble', $codigo)->with('ambiente')->first();
+        if ($mueble && $mueble->ambiente) {
+            return $mueble->ambiente->nombre;
+        }
+
+        return '—';
+    }
+
+
 }

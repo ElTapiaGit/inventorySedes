@@ -90,6 +90,7 @@
                     </tr>
                 @endforeach
             </tbody>
+            <!--manejo de mensajes-->
             <script>
                 function confirmDelete(id) {
                     Swal.fire({
@@ -126,15 +127,15 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" id="nombre" name="nombre" class="form-control" required>
+                        <input type="text" id="nombre" maxlength="45" name="nombre" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label for="apellidos" class="form-label">Apellidos</label>
-                        <input type="text" id="apellidos" name="apellidos" class="form-control" required>
+                        <input type="text" id="apellidos" maxlength="45" name="apellidos" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label for="celular" class="form-label">Celular</label>
-                        <input type="text" id="celular" name="celular" class="form-control" required>
+                        <input type="text" id="celular" maxlength="15" name="celular" class="form-control" required>
                     </div>
                     <div class="mb-3">
                         <label for="tipo_usuario" class="form-label">Tipo de Usuario</label>
@@ -192,15 +193,15 @@
                     @csrf
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                        <input type="text" class="form-control" maxlength="45" id="nombre" name="nombre" required>
                     </div>
                     <div class="mb-3">
                         <label for="apellidos" class="form-label">Apellidos</label>
-                        <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+                        <input type="text" class="form-control" maxlength="45" id="apellidos" name="apellidos" required>
                     </div>
                     <div class="mb-3">
                         <label for="celular" class="form-label">Celular</label>
-                        <input type="text" class="form-control" id="celular" name="celular" required>
+                        <input type="text" class="form-control" maxlength="15" id="celular" name="celular" required>
                     </div>
                     <div class="mb-3">
                         <label for="tipo_usuario" class="form-label">Tipo de Usuario</label>
@@ -235,7 +236,7 @@
                     @csrf
                     <div class="mb-3">
                         <label for="tipo" class="form-label">Tipo de Usuario</label>
-                        <input type="text" class="form-control" id="tipo" name="tipo" required>
+                        <input type="text" class="form-control" maxlength="50" id="tipo" name="tipo" required>
                     </div>
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">Registrar</button>

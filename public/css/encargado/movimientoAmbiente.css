@@ -10,7 +10,6 @@ body {
     max-width: 800px;
     margin: 50px auto;
     padding: 20px;
-
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
@@ -51,7 +50,7 @@ h1 {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
+    margin: auto;
     border: 1px solid;
     max-width: 500px;
 }

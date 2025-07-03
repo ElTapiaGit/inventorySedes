@@ -55,17 +55,17 @@
                         </ul>
                     </li>
                     <!-- Otras opciones de menú -->
-                    <li class="nav-item">
+                    <li class="nav-item {{ Request::is('encargado/ambientes*') ? 'active' : '' }}">
                         <a class="nav-link" href="{{route('movimiento.ambiente.index') }}">Uso Laboratorios</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item {{ Request::is('encargado/usuarios*') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('encargado.usuarios') }}">Usuarios</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item {{ Request::is('encargado/prestamos*') ? 'active' : '' }}">
                         <a class="nav-link" href="{{ route('encargado.prestamo') }}">Prestamos</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="">Mantenimiento</a>
+                    <li class="nav-item {{ Request::is('encargado/mantenimientos*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('encargado.mantenimiento') }}">Mantenimiento</a>
                     </li>
 
                     <li class="nav-item">

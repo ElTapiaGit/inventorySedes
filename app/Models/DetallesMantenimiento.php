@@ -25,4 +25,9 @@ class DetallesMantenimiento extends Model
     {
         return $this->belongsTo(Mantenimiento::class, 'INICIO_MANTENIMIENTO_id_mantenimiento_ini');
     }
+
+    public function equipo()
+    {
+        return $this->belongsTo(Equipo::class, 'cod_articulo', 'Cod_equipo');
+    }
 }

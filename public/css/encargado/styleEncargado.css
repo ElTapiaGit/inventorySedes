@@ -7,7 +7,7 @@ header{
     padding: 0 0 0 10px;
 }
 .nav-item :hover{
-    border: solid #f1f7f6 1px;
+    outline: solid #f1f7f6 1px;
     background-color: #bed0f1;
     border-radius: 5px;
 }
@@ -17,4 +17,10 @@ header{
 
 .main-content{
     padding: 20px;
+}
+/* Para resaltar el item activo del menú lateral */
+.nav-item.active .nav-link {
+    background-color: #bed0f1; /* Mismo que el hover */
+    color: black;
+    border-radius: 5px;
 }

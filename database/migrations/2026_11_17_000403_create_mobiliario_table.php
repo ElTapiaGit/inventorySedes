@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer('FOTO_id_foto');
 
             // indexs
-            $table->unique('cod_mueble', 'cod_mueble_UNIQUE');
+            //$table->unique('cod_mueble', 'cod_mueble_UNIQUE');
             $table->index('AMBIENTE_id_ambiente', 'fk_MOBILIARIO_AMBIENTE1_idx');
             $table->index('TIPO_MOBILIARIO_id_tipo_mueb', 'fk_MOBILIARIO_TIPO_MOBILIARIO1_idx');
             $table->index('FOTO_id_foto', 'fk_MOBILIARIO_FOTO1_idx');

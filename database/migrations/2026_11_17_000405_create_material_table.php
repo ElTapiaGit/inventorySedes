@@ -28,7 +28,7 @@ return new class extends Migration
             $table->integer('FOTO_id_foto');
 
             //indexs
-            $table->unique('cod_mate', 'cod_mate_UNIQUE');
+            //$table->unique('cod_mate', 'cod_mate_UNIQUE');
             $table->index('AMBIENTE_id_ambiente', 'fk_MATERIAL_AMBIENTE1_idx');
             $table->index('FOTO_id_foto', 'fk_MATERIAL_FOTO1_idx');
 

@@ -170,3 +170,18 @@ Sigue estos pasos para instalar y ejecutar el proyecto localmente:
 * 📁 **Controladores**: [app/Http/Controllers/](file:///c:/Users/Jhon/Desktop/proyectos/backup%20proyecto%20inventario/oficial%20para%20desplegar/inventarioULAT/app/Http/Controllers/) — Toda la lógica de negocio dividida en las subcarpetas `Administrador/`, `Coordinator/`, `Encargado/` y `Reportes/`.
 * 📁 **Vistas**: [resources/views/](file:///c:/Users/Jhon/Desktop/proyectos/backup%20proyecto%20inventario/oficial%20para%20desplegar/inventarioULAT/resources/views/) — Contiene las plantillas de Blade divididas por roles para mantener la independencia visual y de flujo.
 * 📁 **Archivos Estáticos**: `public/css/` y `public/js/` — Hojas de estilos y archivos de scripts específicos para el diseño visual de cada panel.
+
+---
+
+## 📄 Licencia y Derechos de Autor
+
+Copyright (c) 2024-2026 **Jhon Eligio Tapia Vargas**. Todos los derechos reservados.
+
+Este proyecto está bajo una **Licencia de Uso Estrictamente No Comercial y Académico**.
+
+* Se permite la copia, estudio y ejecución del código **única y exclusivamente con fines de aprendizaje, investigación académica o revisión de portafolio técnico**.
+* **Prohibición Comercial y SaaS**: Queda terminantemente prohibida su venta, sublicenciamiento o despliegue en producción para ofrecerlo como servicio remunerado o comercial a terceros.
+* **Propiedad de Marcas**: El nombre, isotipos y logotipos de la **Universidad Latinoamericana (ULAT)** son propiedad exclusiva de la institución y no están cubiertos por esta licencia.
+
+Para consultar los términos legales completos, revisa el archivo [LICENSE](file:///c:/Users/Jhon/Desktop/proyectos/backup%20proyecto%20inventario/oficial%20para%20desplegar/inventarioULAT/LICENSE).
+

@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer('FOTO_id_foto');
 
             // indexs
-            $table->unique('cod_accesorio', 'cod_accesorio_UNIQUE');
+            //$table->unique('cod_accesorio', 'cod_accesorio_UNIQUE');
             $table->index('FOTO_id_foto', 'fk_ACCESORIO_FOTO1_idx');
             $table->index('nombre_acce', 'nombre_acce');
 

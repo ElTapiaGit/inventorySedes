@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use App\Models\Login;
@@ -13,76 +12,132 @@ use App\Models\Personal;
 
 class AuthController extends Controller
 {
-    // Mostrar la página de inicio de sesión
+    // Mostrar la pagina de inicio de sesion
     public function showLoginForm()
     {
         return view('auth.login');
     }
 
-
     public function login(Request $request)
     {
-        $this->ensureIsNotRateLimited($request); //limitar los intentos antes de validar
+        $key = Str::lower($request->input('username')) . '|' . $request->ip();
 
-        // Validar los datos del formulario
+        // Control de tasa de intentos fallidos (Rate Limiter: maximo 3 intentos)
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            $minutes = ceil($seconds / 60);
+            $mensajeBloqueo = "Demasiados intentos de acceso. Por favor espere {$minutes} minuto(s) antes de intentar nuevamente.";
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $mensajeBloqueo,
+                    'retry_after' => $seconds,
+                ], 429);
+            }
+
+            return redirect()->back()->withErrors(['login' => $mensajeBloqueo]);
+        }
+
+        // Validar campos de entrada
         $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $key= Str::lower($request->input('username')) . '|' . $request->ip(); //para contar los intentos
+        // Buscar registro eliminando espacios accidentales, pero respetando mayúsculas/minúsculas (utf8_bin)
+        $usernameLimpio = trim((string) $request->input('username'));
+        $login = Login::where('nombre', $usernameLimpio)->first();
 
-        // Intentar autenticar al usuario (nombre)
-        $login = Login::where('nombre', $request->username)->first();
-
-        if ($login && Hash::check($request->password, $login->contrasena)) {//verifica la contraseña
-
+        // Validar existencia de usuario y coincidencia de clave con hash
+        if ($login && Hash::check((string) $request->input('password'), $login->contrasena)) {
             $personal = $login->personal;
 
+            // Verificar estado activo del personal y definicion de rol
             if ($personal && $personal->estado == 1 && $personal->tipoPersonal) {
-
                 Auth::login($personal);
-                $request->session()->regenerate(); // Evitar session fixation
+                $request->session()->regenerate();
 
-                RateLimiter::clear($key); // ✅ Éxito: limpiar el contador
+                // Limpiar contador de intentos ante autenticacion exitosa
+                RateLimiter::clear($key);
 
-                // Redirigir según el tipo de personal
-                switch ($personal->tipoPersonal->descripcion_per ?? null) {
-                    case 'Administrador':
-                        return redirect()->route('admin.index');
-                    case 'Coordinador Odontologia':
-                        return redirect()->route('coordinator.inicio');
-                    case 'Encargado':
-                        return redirect()->route('encargado.inicio');
-                    default:
-                        return redirect()->back()->withErrors(['login' => 'Tipo de personal no reconocido.']);
+                // Determinar ruta segun el rol del usuario
+                $redirectUrl = match ($personal->tipoPersonal->descripcion_per ?? null) {
+                    'Administrador' => route('admin.index'),
+                    'Coordinador Odontologia' => route('coordinator.inicio'),
+                    'Encargado' => route('encargado.inicio'),
+                    default => null,
+                };
+
+                if (!$redirectUrl) {
+                    if ($request->expectsJson() || $request->ajax()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Tipo de personal no reconocido o sin permisos asignados.',
+                        ], 403);
+                    }
+                    return redirect()->back()->withErrors(['login' => 'Tipo de personal no reconocido o sin permisos asignados.']);
                 }
+
+                if ($request->expectsJson() || $request->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Autenticacion exitosa. Redirigiendo...',
+                        'redirect' => $redirectUrl,
+                    ]);
+                }
+
+                return redirect()->intended($redirectUrl);
             }
 
-            return redirect()->back()->withErrors(['login' => 'El usuario ha sido inhabilitado o es inválido.']);
+            $mensajeInhabilitado = 'El usuario ha sido inhabilitado o no cuenta con acceso activo al sistema.';
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $mensajeInhabilitado,
+                ], 403);
+            }
 
+            return redirect()->back()->withErrors(['login' => $mensajeInhabilitado]);
         }
 
-        RateLimiter::hit($key); // bloque por intentos fallidos sin por 5 minutos
+        // Registrar intento fallido (bloqueo durante 300 segundos tras alcanzar el limite)
+        RateLimiter::hit($key, 300);
 
-        return redirect()->back()->with(['login' => 'Credenciales incorrectas.']);
+        // Validar si el intento recien registrado alcanzo el limite de bloqueos
+        if (RateLimiter::tooManyAttempts($key, 3)) {
+            $seconds = RateLimiter::availableIn($key);
+            $minutes = ceil($seconds / 60);
+            $mensajeBloqueo = "Ha superado el limite de intentos permitidos. Por favor espere {$minutes} minuto(s) antes de intentar nuevamente.";
 
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $mensajeBloqueo,
+                    'retry_after' => $seconds,
+                ], 429);
+            }
+
+            return redirect()->back()->withErrors(['login' => $mensajeBloqueo]);
+        }
+
+        $intentosRestantes = RateLimiter::remaining($key, 3);
+        $mensajeError = 'Credenciales incorrectas.';
+        if ($intentosRestantes > 0) {
+            $mensajeError .= " Intentos restantes: {$intentosRestantes}.";
+        }
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => $mensajeError,
+            ], 401);
+        }
+
+        return redirect()->back()->withErrors(['login' => $mensajeError]);
     }
 
-protected function ensureIsNotRateLimited(Request $request)
-{
-    $key = Str::lower($request->input('username')) . '|' . $request->ip();
-
-    if (! RateLimiter::tooManyAttempts($key, 3)) {
-        return;
-    }
-
-    return back()->withErrors([
-        'login' => 'Demasiados intentos. Por favor espera e intenta nuevamente más tarde.'
-    ]);
-}
-
-    // Cerrar sesión
+    // Cerrar sesion
     public function logout(Request $request)
     {
         Auth::logout();

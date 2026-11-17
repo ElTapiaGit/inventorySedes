@@ -1,145 +1,287 @@
-/* 
-    * los estilos manejados son especiales para cada pagina dentro de todo el sistema 
-*/
+/* ==========================================================================
+   ESTILOS DE AUTENTICACION - UI/UX MODERNO (GLASSMORPHISM & MATERIAL FLOATING LABELS)
+   ========================================================================== */
+
+/* 1. Fondo General: Gradiente profundo, elegante y continuo (Slate / Indigo) */
 body {
     display: flex;
-    /* Declaración del degradado */
-    background: linear-gradient(to bottom , #0E1555, #0E1555 25%, #22285d8e 50%, #28328B 75%);
     justify-content: center;
     align-items: center;
-    color: black;
-    /* Configuración para ocupar toda la altura de la ventana */
     min-height: 100vh;
     margin: 0;
-    font-family: Arial, sans-serif;
+    padding: 20px;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background: radial-gradient(circle at 15% 20%, #1e1b4b 0%, #0f172a 45%, #020617 100%) fixed;
+    color: #f8fafc;
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
 
-
-.container {
+/* 2. Tarjeta de Login: Glassmorphism refinado, aislando conflictos con Bootstrap */
+body .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    max-width: 1000px;
-    background: linear-gradient(to bottom, #2278e2, #BAD3EF);
-    padding: 30px;
-    border-radius: 30px;
-    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.696);
-    box-sizing: border-box; /* Permitir que los elementos se envuelvan en dispositivos más pequeños */
-    /* Añadir position relative para que SweetAlert no afecte */
+    max-width: 960px;
+    background: rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(14px) !important;
+    -webkit-backdrop-filter: blur(14px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 24px !important;
+    padding: 45px 50px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    box-sizing: border-box !important;
+    color: #f8fafc !important;
+    margin: auto !important;
 }
 
+/* Seccion Izquierda: Branding e Identidad */
 .left-section {
     display: flex;
     flex-direction: column;
-    justify-content:center;
+    justify-content: center;
     align-items: center;
-/* Mínimo ancho en pantallas pequeñas */
+    flex: 1;
+    padding-right: 45px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: center;
+    box-sizing: border-box;
 }
 
 .logo {
-    width: 200px;
-    height: 200px;
+    width: 170px;
+    height: 170px;
     border-radius: 50%;
     object-fit: cover;
-    display: flex;
-    margin: 0 auto;
+    display: block;
+    margin: 0 auto 20px auto;
+    border: 2px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+    background: rgba(255, 255, 255, 0.03);
 }
 
-.left-section h2{
-    font-family:Georgia, 'Times New Roman', Times, serif;
-    margin: 10px;
-    font-size: 1.5em;
-    text-align: center; /* Centrar texto en pantallas pequeñas */
+.left-section h2 {
+    font-family: inherit !important;
+    color: #f8fafc !important;
+    margin: 4px 0 !important;
+    font-size: 1.35em !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.6px !important;
+    line-height: 1.3 !important;
 }
 
+.left-section h2:nth-of-type(2) {
+    color: #94a3b8 !important;
+    font-size: 1.05em !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.4px !important;
+}
+
+/* Seccion Derecha: Formulario de Acceso */
 .right-section {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex: 1; /* Flexibilidad para tomar el 50% en pantallas más grandes */
-    max-width: 400px; /* Mínimo ancho en pantallas pequeñas */
-}
-
-#loginForm{
-    font-size: 20px;
-    font-family: Arial, Helvetica, sans-serif;
-    width: 100%; /* Asegura que el formulario ocupe todo el ancho del contenedor */
-}
-
-.input-container{
-    position: relative;
-    margin-bottom: 30px;
-    width: 100%; /* Asegura que los inputs ocupen todo el ancho del contenedor */
-}
-
-.input-label{
-    position: absolute;
-    top: 15px;
-    left: 10px;
-    pointer-events: none;
-    transition: top 0.3s ease, left 0.3s ease;
-    
-}
-.toggle-password {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translateY(-50%);
-    cursor: pointer;
-    font-size: 18px;
-    color: #333;
-}
-/* */
-input {
-    padding: 10px;
-    width: 100%;
-    height: 50px;
+    flex: 1;
+    max-width: 400px;
+    padding-left: 20px;
     box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 18px;
-    padding-right: 40px; /* Espacio adicional para el ícono */
 }
 
-.btn-ingresar{
-    display: flex;
-    justify-content: right;
-    align-content: center;
-}
-button {
+#loginForm {
     width: 100%;
-    max-width: 150px; /* Limitar ancho máximo */
-    height: 50px;
-    padding: 10px;
-    font-size: 20px;
-    background-color: #0000ff;
-    color: white;
-    border: none;
-    border-radius: 30px; 
-    cursor: pointer;
-    justify-content:left;
-    align-items: left;
+    margin: 0;
+    padding: 0;
 }
 
-button:hover {
-    background-color: #14149a;
+/* 3. Labels Flotantes Tipo Material Design (Sin cajas solidas) */
+.input-container {
+    position: relative;
+    margin-bottom: 26px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-@media screen and (max-width: 600px) {
-    .container {
-        flex-direction: column;
+/* Aislamiento estricto de Inputs contra interferencias de Bootstrap */
+body .input-container input {
+    width: 100% !important;
+    height: 54px !important;
+    padding: 20px 44px 6px 16px !important;
+    background: rgba(15, 23, 42, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    border-radius: 12px !important;
+    color: #f8fafc !important;
+    font-size: 15px !important;
+    font-family: inherit !important;
+    line-height: normal !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease !important;
+}
+
+body .input-container input:focus {
+    border-color: #6366f1 !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25) !important;
+}
+
+body .input-container input:disabled {
+    background: rgba(15, 23, 42, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.06) !important;
+    color: #64748b !important;
+    cursor: not-allowed !important;
+}
+
+/* Label flotante sin caja solida con transform translateY y scale */
+body .input-container .input-label {
+    position: absolute !important;
+    top: 18px !important;
+    left: 16px !important;
+    font-size: 15px !important;
+    color: #94a3b8 !important;
+    pointer-events: none !important;
+    transform-origin: left top !important;
+    transform: translateY(0) scale(1) !important;
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    line-height: 1 !important;
+    z-index: 2 !important;
+    display: block !important;
+}
+
+/* Estado flotante activo por foco o valor presente */
+body .input-container.focused .input-label,
+body .input-container.has-value .input-label {
+    transform: translateY(-9px) scale(0.75) !important;
+    color: #818cf8 !important;
+    font-weight: 600 !important;
+}
+
+/* Boton de visibilidad de contraseña */
+.toggle-password {
+    position: absolute !important;
+    top: 50% !important;
+    right: 14px !important;
+    transform: translateY(-50%) !important;
+    cursor: pointer !important;
+    font-size: 16px !important;
+    color: #94a3b8 !important;
+    padding: 6px !important;
+    z-index: 3 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: color 0.2s ease !important;
+}
+
+.toggle-password:hover {
+    color: #f8fafc !important;
+}
+
+/* 4. Boton de Ingreso y Estados UX */
+.btn-ingresar {
+    display: flex !important;
+    justify-content: flex-end !important;
+    width: 100% !important;
+    margin-top: 8px !important;
+}
+
+button#loginButton {
+    min-width: 180px !important;
+    height: 50px !important;
+    padding: 0 24px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.4px !important;
+    font-family: inherit !important;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.35) !important;
+    cursor: pointer !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: all 0.25s ease !important;
+    outline: none !important;
+    margin: 0 !important;
+}
+
+button#loginButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4338ca 0%, #312e81 100%) !important;
+    box-shadow: 0 6px 22px rgba(79, 70, 229, 0.5) !important;
+    transform: translateY(-1px) !important;
+}
+
+button#loginButton:active:not(:disabled) {
+    transform: translateY(0) !important;
+}
+
+button#loginButton:disabled {
+    background: rgba(51, 65, 85, 0.5) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #94a3b8 !important;
+    box-shadow: none !important;
+    cursor: not-allowed !important;
+    opacity: 0.85 !important;
+    transform: none !important;
+}
+
+/* Mensajes de Alerta Fallback (Noscript) */
+.alert-error {
+    background: rgba(239, 68, 68, 0.15) !important;
+    color: #fca5a5 !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    padding: 12px 16px !important;
+    border-radius: 10px !important;
+    margin-bottom: 20px !important;
+    font-size: 14px !important;
+    text-align: center !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    backdrop-filter: blur(8px) !important;
+}
+
+/* 5. Adaptabilidad Responsiva */
+@media screen and (max-width: 768px) {
+    body .container {
+        flex-direction: column !important;
+        padding: 32px 24px !important;
+        margin: 10px !important;
     }
-    input, button {
-        font-size: 16px; /* Reducir tamaño de fuente para pantallas más pequeñas */
+
+    .left-section {
+        padding-right: 0 !important;
+        padding-bottom: 24px !important;
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        margin-bottom: 24px !important;
+        width: 100% !important;
     }
+
     .logo {
-        width: 120px; /* Reducir tamaño de logo para móviles */
-        height: 120px; /* Reducir tamaño de logo para móviles */
+        width: 120px !important;
+        height: 120px !important;
+        margin-bottom: 14px !important;
     }
-    .left-section{
-        padding-bottom: 20px;
+
+    .right-section {
+        max-width: 100% !important;
+        width: 100% !important;
+        padding-left: 0 !important;
+    }
+
+    button#loginButton {
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
-

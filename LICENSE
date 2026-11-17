@@ -1,0 +1,53 @@
+Copyright (c) 2024-2026 Jhon Eligio Tapia Vargas. Todos los derechos reservados / All rights reserved.
+
+================================================================================
+LICENCIA DE USO ESTRICTAMENTE NO COMERCIAL Y ACADÉMICO (ESPAÑOL)
+================================================================================
+
+Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados (el "Software"), para utilizar, copiar, compilar y estudiar el Software única y exclusivamente con fines de aprendizaje personal, investigación académica, evaluación técnica o revisión de portafolio profesional.
+
+Este permiso está expresamente condicionado al cumplimiento estricto de las siguientes RESTRICCIONES ABSOLUTAS:
+
+1. PROHIBICIÓN DE USO COMERCIAL O LUCRATIVO:
+   Queda terminantemente prohibido utilizar este Software, sus componentes, su lógica de negocio, arquitectura, modelos, migraciones o cualquier trabajo derivado directa o indirectamente para fines comerciales, mercantiles o de lucro.
+
+2. PROHIBICIÓN DE VENTA, DISTRIBUCIÓN Y SUBLICENCIAMIENTO:
+   No se permite vender, revender, arrendar, sublicenciar, monetizar, redistribuir con fines económicos ni empaquetar este Software como un producto propio o de terceros.
+
+3. PROHIBICIÓN DE DESPLIEGUE COMO SERVICIO (SaaS / Hosting para Terceros):
+   Queda expresamente prohibido desplegar, alojar o ejecutar este Software en servidores públicos o privados para ofrecerlo como un servicio remunerado o gratuito a terceros (incluyendo, de manera enunciativa pero no limitativa, ofrecer este sistema de gestión de inventario a otras clínicas, hospitales, universidades o instituciones).
+
+4. TRABAJOS DERIVADOS Y COPIAS (Copyleft y Atribución Obligatoria):
+   Cualquier copia, bifurcación (fork) o modificación del Software debe conservar íntegramente este archivo de licencia y mantener de forma visible e inalterada la atribución de autoría original a Jhon Eligio Tapia Vargas.
+
+5. EXCEPCIÓN DE MARCAS, LOGOTIPOS Y PROPIEDAD INSTITUCIONAL (TRADEMARK EXCEPTION):
+   El logotipo, nombre institucional, isotipos, insignias y cualquier activo visual o de marca perteneciente a la Universidad Latinoamericana (ULAT) incluidos en los directorios de imágenes o recursos del proyecto, son propiedad exclusiva de dicha institución educativa. Esta licencia NO concede ninguna autorización, licencia ni derecho de uso sobre dichos activos de marca a terceros.
+
+EXENCIÓN DE RESPONSABILIDAD Y GARANTÍA:
+EL SOFTWARE SE PROPORCIONA "TAL CUAL" ("AS IS"), SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO SIN LIMITARSE A GARANTÍAS DE COMERCIABILIDAD, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO EL AUTOR O TITULAR DEL COPYRIGHT SERÁ RESPONSABLE DE NINGUNA RECLAMACIÓN, DAÑO, PERJUICIO U OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO TIPO, QUE SURJA DE, O ESTÉ RELACIONADA CON EL SOFTWARE O EL USO U OTROS TRATOS EN EL SOFTWARE.
+
+================================================================================
+STRICTLY NON-COMMERCIAL AND ACADEMIC USE LICENSE (ENGLISH)
+================================================================================
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to use, copy, build, and study the Software solely and exclusively for personal learning, academic research, technical evaluation, or professional portfolio review.
+
+This permission is strictly subject to the following ABSOLUTE RESTRICTIONS:
+
+1. COMMERCIAL USE PROHIBITION:
+   It is strictly prohibited to use this Software, its source code, business logic, architecture, models, migrations, or any derivative works for any commercial, revenue-generating, or for-profit purpose.
+
+2. PROHIBITION OF SALE, DISTRIBUTION, AND SUBLICENSING:
+   You may not sell, resell, lease, sublicense, monetize, redistribute, or package this Software as a proprietary product of your own or any third party.
+
+3. PROHIBITION OF SOFTWARE AS A SERVICE (SaaS / Hosted Service):
+   Deploying, hosting, or executing this Software on public or private servers to offer it as a service (whether paid or unpaid) to third parties (including, but not limited to, providing this inventory system to other clinics, universities, or institutions) is expressly prohibited.
+
+4. DERIVATIVE WORKS AND ATTRIBUTION:
+   Any fork, modification, or copy of this Software must retain this license in its entirety and keep visible and intact the original copyright notice crediting Jhon Eligio Tapia Vargas.
+
+5. INSTITUTIONAL TRADEMARKS AND LOGOS EXCEPTION:
+   Logos, institutional names, trademarks, symbols, and visual branding assets belonging to Universidad Latinoamericana (ULAT) included in this repository are the exclusive property of said educational institution. This license does NOT grant any right or permission to use those institutional trademarks.
+
+DISCLAIMER OF WARRANTY AND LIMITATION OF LIABILITY:
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

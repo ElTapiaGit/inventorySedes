@@ -9,28 +9,32 @@ use App\Models\TipoUsuario;
 
 class UsuariosEncargController extends Controller
 {
-    // Método para mostrar la vista de usuarios
+    // Metodo para mostrar la vista de usuarios
     public function usuarios(Request $request)
     {
-        $tipoUsuarios = TipoUsuario::all();
-        $query = Usuario::query();
+        try {
+            $tipoUsuarios = TipoUsuario::all();
+            $query = Usuario::query();
 
-        // Filtrar por nombre
-        if ($request->has('nombre') && $request->nombre != '') {
-            $query->where('nombre', 'like', '%' . $request->nombre . '%');
+            // Filtrar por nombre
+            if ($request->has('nombre') && $request->nombre != '') {
+                $query->where('nombre', 'like', '%' . $request->nombre . '%');
+            }
+
+            // Filtrar por tipo de usuario
+            if ($request->has('tipo_usuario') && $request->tipo_usuario != '') {
+                $query->where('TIPO_USUARIO_id_tipo_usu', $request->tipo_usuario);
+            }
+
+            $usuarios = $query->get();
+
+            return view('encargados.registrarUsuarios', compact('usuarios', 'tipoUsuarios'));
+        } catch (\Exception $e) {
+            return redirect()->route('encargado.inicio')->with('error', 'Error al obtener la lista de usuarios.');
         }
-
-        // Filtrar por tipo de usuario
-        if ($request->has('tipo_usuario') && $request->tipo_usuario != '') {
-            $query->where('TIPO_USUARIO_id_tipo_usu', $request->tipo_usuario);
-        }
-
-        $usuarios = $query->get();
-
-        return view('encargados.registrarUsuarios', compact('usuarios', 'tipoUsuarios'));
     }
 
-    //metodo para registra usuario nuevos
+    // Metodo para registrar usuarios nuevos
     public function registrarUsuario(Request $request)
     {
         try {
@@ -49,7 +53,7 @@ class UsuariosEncargController extends Controller
                 ->exists();
 
             if ($usuarioExistente) {
-            return redirect()->route('encargado.usuarios')->with('info', 'El usuario ya está registrado.');
+                return redirect()->route('encargado.usuarios')->with('info', 'El usuario ya esta registrado.');
             }
 
             // Crear el usuario
@@ -60,15 +64,14 @@ class UsuariosEncargController extends Controller
                 'TIPO_USUARIO_id_tipo_usu' => $request->tipo_usuario,
             ]);
 
-            // Redirigir con mensaje de éxito
-            return redirect()->route('encargado.usuarios')->with('success', 'Usuario registrado con éxito.');
+            // Redirigir con mensaje de exito
+            return redirect()->route('encargado.usuarios')->with('success', 'Usuario registrado con exito.');
         } catch (\Exception $e) {
-            // Redirigir con mensaje de información en caso de error
-            return redirect()->route('encargado.usuarios')->with('info', 'No se pudo registrar el usuario. Por favor, inténtelo de nuevo.');
+            return redirect()->route('encargado.usuarios')->with('info', 'No se pudo registrar el usuario. Por favor, intentelo de nuevo.');
         }
     }
 
-    // Método para registrar un tipo de usuario
+    // Metodo para registrar un tipo de usuario
     public function registrarTipoUsuario(Request $request)
     {
         try {
@@ -81,7 +84,7 @@ class UsuariosEncargController extends Controller
             $tipoUsuarioExistente = TipoUsuario::where('tipo', $request->tipo)->exists();
 
             if ($tipoUsuarioExistente) {
-                return redirect()->route('encargado.usuarios')->with('info', 'El tipo de usuario ya está registrado.');
+                return redirect()->route('encargado.usuarios')->with('info', 'El tipo de usuario ya esta registrado.');
             }
 
             // Crear el tipo de usuario
@@ -89,15 +92,14 @@ class UsuariosEncargController extends Controller
                 'tipo' => $request->tipo,
             ]);
 
-            // Redirigir con mensaje de éxito
-            return redirect()->route('encargado.usuarios')->with('success', 'Tipo de usuario registrado con éxito.');
+            // Redirigir con mensaje de exito
+            return redirect()->route('encargado.usuarios')->with('success', 'Tipo de usuario registrado con exito.');
         } catch (\Exception $e) {
-            // Redirigir con mensaje de información en caso de error
-            return redirect()->route('encargado.usuarios')->with('info', 'No se pudo registrar el tipo de usuario. Por favor, inténtelo de nuevo.');
+            return redirect()->route('encargado.usuarios')->with('info', 'No se pudo registrar el tipo de usuario. Por favor, intentelo de nuevo.');
         }
     }
 
-    //editar usuario
+    // Editar usuario
     public function actualizarUsuario(Request $request, $id)
     {
         try {
@@ -106,12 +108,12 @@ class UsuariosEncargController extends Controller
                 'nombre' => 'required|string|max:255',
                 'apellidos' => 'required|string|max:255',
                 'celular' => 'required|string|max:20',
-                'tipo_usuario' => 'required|exists:tipo_usuarios,id_tipo_usu',
+                'tipo_usuario' => 'required|exists:tipo_usuario,id_tipo_usu',
             ]);
 
             $usuario = Usuario::findOrFail($id);
 
-            // Normalizar los datos para la comparación
+            // Normalizar los datos para la comparacion
             $nombre = strtolower(trim($request->nombre));
             $apellidos = strtolower(trim($request->apellidos));
             $celular = trim($request->celular);
@@ -124,7 +126,7 @@ class UsuariosEncargController extends Controller
                                 ->exists();
 
             if ($usuarioExistente) {
-                return redirect()->route('encargado.usuarios')->with('info', 'El usuario ya está registrado.');
+                return redirect()->route('encargado.usuarios')->with('info', 'El usuario ya esta registrado.');
             }
 
             // Actualizar el usuario
@@ -135,27 +137,24 @@ class UsuariosEncargController extends Controller
                 'TIPO_USUARIO_id_tipo_usu' => $request->tipo_usuario,
             ]);
 
-            // Redirigir con mensaje de éxito
-            return redirect()->route('encargado.usuarios')->with('success', 'Usuario actualizado con éxito.');
+            // Redirigir con mensaje de exito
+            return redirect()->route('encargado.usuarios')->with('success', 'Usuario actualizado con exito.');
         } catch (\Exception $e) {
-            // Redirigir con mensaje de información en caso de error
-            return redirect()->route('encargado.usuarios')->with('info', 'No se pudo actualizar el usuario. Por favor, inténtelo de nuevo.');
+            return redirect()->route('encargado.usuarios')->with('info', 'No se pudo actualizar el usuario. Por favor, intentelo de nuevo.');
         }
     }
 
-    //eliminar usuario
+    // Eliminar usuario
     public function eliminarUsuario($id)
     {
         try {
             $usuario = Usuario::findOrFail($id);
             $usuario->delete();
 
-            // Redirigir con mensaje de éxito
-            return redirect()->route('encargado.usuarios')->with('success', 'Usuario eliminado con éxito.');
+            // Redirigir con mensaje de exito
+            return redirect()->route('encargado.usuarios')->with('success', 'Usuario eliminado con exito.');
         } catch (\Exception $e) {
-            // Redirigir con mensaje de información en caso de error
-            return redirect()->route('encargado.usuarios')->with('info', 'No se pudo eliminar el usuario. Por favor, inténtelo de nuevo.');
+            return redirect()->route('encargado.usuarios')->with('info', 'No se pudo eliminar el usuario. Por favor, intentelo de nuevo.');
         }
     }
-
 }

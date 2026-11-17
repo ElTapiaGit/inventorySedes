@@ -13,32 +13,41 @@ use Illuminate\Support\Facades\Crypt;
 
 class AmbienteController extends Controller
 {
-    //para la pagina de solo ambientes y agregar ambientes
+    // Para la pagina de solo ambientes y agregar ambientes
     public function index(Request $request)
     {
-        try{
-            // Obtener la sede seleccionada, por defecto la sede central
-            $sedeSeleccionada = $request->input('sede') ? Crypt::decryptString($request->input('sede')) : 1;
+        try {
+            $sedes = Sede::all();
 
-            // Obtener el nombre de la sede seleccionada
-            $nombreSedeSeleccionada = Sede::find($sedeSeleccionada)->nombre;
+            // Obtener la sede seleccionada, por defecto la sede central o la primera disponible
+            $sedeIdParam = $request->input('sede') ? Crypt::decryptString($request->input('sede')) : null;
+            $sede = $sedeIdParam ? Sede::find($sedeIdParam) : (Sede::find(1) ?? $sedes->first());
+            $sedeSeleccionada = $sede?->id_sede;
+            $nombreSedeSeleccionada = $sede?->nombre ?? 'Sin Sede';
 
             // Obtener los edificios de la sede seleccionada
-            $edificios = Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get();
+            $edificios = $sedeSeleccionada ? Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get() : collect();
 
             // Desencriptar el edificio seleccionado (con un valor por defecto en caso de que no se seleccione ninguno)
-            $edificioSeleccionado = $request->input('edificio') ? Crypt::decryptString($request->input('edificio')) : $edificios->first()->id_edificio;
-            $nombreEdificioSeleccionada = Edificio::find($edificioSeleccionado)->nombre_edi;
+            $edificioSeleccionado = null;
+            if ($request->input('edificio')) {
+                $edificioSeleccionado = Crypt::decryptString($request->input('edificio'));
+            } elseif ($edificios->isNotEmpty()) {
+                $edificioSeleccionado = $edificios->first()?->id_edificio;
+            }
+
+            $edificio = $edificioSeleccionado ? Edificio::find($edificioSeleccionado) : null;
+            $nombreEdificioSeleccionada = $edificio?->nombre_edi ?? 'Sin Edificio';
 
             // Obtener los pisos del edificio seleccionado
-            $pisos = Piso::where('EDIFICIO_id_edificio', $edificioSeleccionado)->get();
+            $pisos = $edificioSeleccionado ? Piso::where('EDIFICIO_id_edificio', $edificioSeleccionado)->get() : collect();
 
             // Obtener los ambientes del edificio seleccionado
-            $ambientes = Ambiente::join('tipo_ambiente', 'ambiente.TIPO_AMBIENTE_id_ambiente', '=', 'tipo_ambiente.id_tipoambiente')
+            $ambientes = $edificioSeleccionado ? Ambiente::join('tipo_ambiente', 'ambiente.TIPO_AMBIENTE_id_ambiente', '=', 'tipo_ambiente.id_tipoambiente')
                 ->join('piso', 'ambiente.PISO_id_piso', '=', 'piso.id_piso')
                 ->where('piso.EDIFICIO_id_edificio', $edificioSeleccionado)
                 ->select('ambiente.*', 'tipo_ambiente.nombre_amb as tipo_ambiente', 'piso.numero_piso')
-                ->get();
+                ->get() : collect();
 
             // Verificar si no hay ambientes
             $noHayAmbientes = $ambientes->isEmpty();
@@ -47,7 +56,7 @@ class AmbienteController extends Controller
             $tiposAmbiente = TipoAmbiente::all();
 
             return view('administrator.ambientes', [
-                'sedes' => Sede::all(),
+                'sedes' => $sedes,
                 'edificios' => $edificios,
                 'pisos' => $pisos,
                 'tiposAmbiente' => $tiposAmbiente,
@@ -58,8 +67,8 @@ class AmbienteController extends Controller
                 'nombreEdificioSeleccionada' => $nombreEdificioSeleccionada,
                 'noHayAmbientes' => $noHayAmbientes
             ]);
-        }catch (\Exception $e) {
-            return redirect()->route('admin.index')->with('errordata', 'Error al obtener los dato para la pagina ambiente: ' );//. $e->getMessage()
+        } catch (\Exception $e) {
+            return redirect()->route('admin.index')->with('errordata', 'Error al obtener los datos para la pagina ambiente: ');
         }   
     }
 
@@ -69,8 +78,8 @@ class AmbienteController extends Controller
             $request->validate([
                 'nombre' => 'required|string|max:45',
                 'descripcion' => 'required|string',
-                'tipo_ambiente' => 'required|integer|exists:tipo_ambiente,id_tipoambiente',//para validar llaves foraneas no dejas espacios
-                'piso' => 'required|integer|exists:piso,id_piso',//para validar llaves foraneas no dejas espacios
+                'tipo_ambiente' => 'required|integer|exists:tipo_ambiente,id_tipoambiente',
+                'piso' => 'required|integer|exists:piso,id_piso',
             ]);
 
             // Crear un nuevo ambiente
@@ -81,13 +90,14 @@ class AmbienteController extends Controller
                 'PISO_id_piso' => $request->input('piso'),
             ]);
 
-            return redirect()->route('ambientes.index')->with('successregister', 'Ambiente agregados exitosamente en la BD.');
+            return redirect()->route('ambientes.index')->with('successregister', 'Ambiente agregado exitosamente en la BD.');
 
         } catch (\Exception $e) {
             return redirect()->route('ambientes.index')->with('errorregister', 'Error al agregar Ambiente a la BD: ');
         }   
     }
-    //para editar un registro
+
+    // Para editar un registro
     public function update(Request $request)
     {
         try {
@@ -117,7 +127,7 @@ class AmbienteController extends Controller
         }
     }
 
-    //para elimanar un registro
+    // Para eliminar un registro
     public function destroy($id)
     {
         try {
@@ -127,12 +137,11 @@ class AmbienteController extends Controller
             // Eliminar el ambiente
             $ambiente->delete();
 
-            // Retornar una respuesta indicando éxito
-            return redirect()->route('ambientes.index')->with('successdelete', 'Ambiente actualizado exitosamente.');
+            // Retornar una respuesta indicando exito
+            return redirect()->route('ambientes.index')->with('successdelete', 'Ambiente eliminado exitosamente.');
 
         } catch (\Exception $e) {
-            return redirect()->route('ambientes.index')->with('errordelete', 'No se puede eliminar.. Verifique que no halla registros que dependan del ambiente');
+            return redirect()->route('ambientes.index')->with('errordelete', 'No se puede eliminar.. Verifique que no haya registros que dependan del ambiente');
         }
     }
-
 }

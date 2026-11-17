@@ -16,32 +16,30 @@ use Illuminate\Support\Facades\Crypt;
 
 class PrestamosAdminController extends Controller
 {
-    //
     public function index(Request $request)
     {
-        try{
-           // Obtener todas las sedes
+        try {
+            // Obtener todas las sedes
             $sedes = Sede::all();
 
-            // Obtener la sede seleccionada, por defecto la sede central (id_sede = 1)
-            $sedeSeleccionada = $request->input('sede', 1);
-
-            // Obtener el nombre de la sede seleccionada
-            $nombreSedeSeleccionada = Sede::find($sedeSeleccionada)->nombre;
+            // Obtener la sede seleccionada, por defecto la sede central (id_sede = 1) o la primera disponible
+            $sedeIdParam = $request->input('sede');
+            $sede = $sedeIdParam ? Sede::find($sedeIdParam) : (Sede::find(1) ?? $sedes->first());
+            $sedeSeleccionada = $sede?->id_sede;
+            $nombreSedeSeleccionada = $sede?->nombre ?? 'Sin Sede';
 
             // Obtener los edificios de la sede seleccionada
-            $edificios = Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get();
+            $edificios = $sedeSeleccionada ? Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get() : collect();
 
-            // Si no hay edificios, mostrar mensaje y redirigir
-            if ($edificios->isEmpty()) {
-                return redirect()->route('prestamosAdmin.index')->with('info', 'La sede seleccionada no tiene edificios con préstamos.');
+            // Obtener el edificio seleccionado
+            $edificioSeleccionado = $request->input('edificio');
+            if (!$edificioSeleccionado && $edificios->isNotEmpty()) {
+                $edificioSeleccionado = $edificios->first()?->id_edificio;
             }
 
-            // Obtener el edificio seleccionado, por defecto el primer edificio de la sede
-            $edificioSeleccionado = $request->input('edificio', $edificios->first()->id_edificio);
-
             // Obtener el nombre del edificio seleccionado
-            $nombreEdificioSeleccionada = Edificio::find($edificioSeleccionado)->nombre_edi;
+            $edificio = $edificioSeleccionado ? Edificio::find($edificioSeleccionado) : null;
+            $nombreEdificioSeleccionada = $edificio?->nombre_edi ?? 'Sin Edificio';
 
             // Obtener los nombres de los solicitantes
             $nombresSolicitantes = Prestamo::select('nombre_solicitante')->distinct()->get();
@@ -49,14 +47,17 @@ class PrestamosAdminController extends Controller
             // Obtener los nombres completos de los encargados (personal)
             $encargado = Personal::all()->pluck('nombre_completo');
 
-            // Obtener las fechas de préstamo y de devolución
-            $prestamos = Prestamo::with(['personal', 'devolucion'])//para obtener la relaciones de la tabla
-                ->whereHas('personal', function ($query) use ($edificioSeleccionado) {
-                    $query->where('EDIFICIO_id_edificio', $edificioSeleccionado);
-                })
-                ->orderBy('prestamo.fch_prestamo', 'desc') // Ordenar por fecha de uso en orden descendente
-                ->paginate(10);
-
+            // Obtener las fechas de prestamo y de devolucion
+            if ($edificioSeleccionado) {
+                $prestamos = Prestamo::with(['personal', 'devolucion'])
+                    ->whereHas('personal', function ($query) use ($edificioSeleccionado) {
+                        $query->where('EDIFICIO_id_edificio', $edificioSeleccionado);
+                    })
+                    ->orderBy('prestamo.fch_prestamo', 'desc')
+                    ->paginate(10);
+            } else {
+                $prestamos = Prestamo::whereRaw('1 = 0')->paginate(10);
+            }
 
             return view('Administrator.prestamosAdmin', compact(
                 'prestamos',
@@ -69,44 +70,50 @@ class PrestamosAdminController extends Controller
                 'nombreEdificioSeleccionada',
                 'nombresSolicitantes'
             ));
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return redirect()->route('admin.index')->with('errordata', 'Error al obtener datos para la pagina prestamos o No hay datos de prestamos en la BD ');
         }
     }
 
     public function buscar(Request $request)
     {
-        try{
+        try {
             // Obtener todas las sedes
             $sedes = Sede::all();
 
-            // Obtener la sede central
-            $sedeSeleccionada = 1;
-
-            // Obtener el nombre de la sede seleccionada
-            $nombreSedeSeleccionada = Sede::find($sedeSeleccionada)->nombre;
+            // Obtener la sede central o primera disponible
+            $sede = Sede::find(1) ?? $sedes->first();
+            $sedeSeleccionada = $sede?->id_sede;
+            $nombreSedeSeleccionada = $sede?->nombre ?? 'Sin Sede';
 
             // Obtener los edificios de la sede seleccionada
-            $edificios = Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get();
+            $edificios = $sedeSeleccionada ? Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get() : collect();
 
-            // Obtener el edificio seleccionado, por defecto el primer edificio de la sede
-            $edificioSeleccionado = $request->input('edificio', $edificios->first()->id_edificio);
+            // Obtener el edificio seleccionado
+            $edificioSeleccionado = $request->input('edificio');
+            if (!$edificioSeleccionado && $edificios->isNotEmpty()) {
+                $edificioSeleccionado = $edificios->first()?->id_edificio;
+            }
 
             // Obtener el nombre del edificio seleccionado
-            $nombreEdificioSeleccionada = Edificio::find($edificioSeleccionado)->nombre_edi;
+            $edificio = $edificioSeleccionado ? Edificio::find($edificioSeleccionado) : null;
+            $nombreEdificioSeleccionada = $edificio?->nombre_edi ?? 'Sin Edificio';
 
-            // Construir la consulta de búsqueda
-            $query = Prestamo::with(['personal', 'devolucion'])
-                ->whereHas('personal', function ($query) use ($edificioSeleccionado) {
+            // Construir la consulta de busqueda
+            $query = Prestamo::with(['personal', 'devolucion']);
+            
+            if ($edificioSeleccionado) {
+                $query->whereHas('personal', function ($query) use ($edificioSeleccionado) {
                     $query->where('EDIFICIO_id_edificio', $edificioSeleccionado);
                 });
+            }
 
             // Filtrar por nombre de usuario
             if ($request->filled('usuario')) {
                 $query->where('nombre_solicitante', 'like', '%' . $request->input('usuario') . '%');
             }
 
-            // Filtrar por rango de fechas (año y mes)
+            // Filtrar por rango de fechas (ano y mes)
             if ($request->filled('fecha')) {
                 try {
                     $fecha = Carbon::createFromFormat('Y-m-d', $request->input('fecha'));
@@ -134,7 +141,7 @@ class PrestamosAdminController extends Controller
                 'edificios',
                 'edificioSeleccionado'
             ));
-        }catch (\Exception $e) {
+        } catch (\Exception $e) {
             return redirect()->route('admin.index')->with('errordata', 'Error al obtener datos para la pagina prestamos: ');
         }
     }

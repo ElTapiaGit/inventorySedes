@@ -5,15 +5,13 @@ namespace App\Http\Controllers\Coordinator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-///////////////////////////////////////////////////////////////////
-////////////////CONTROLADORES PARA LAS PAGINAS DE HISTORIAL DE MANTENIEMTO DEL EDIFICIO CENTRAL Y CLINICA
 
 class HistorialMantenimientoController extends Controller
 {
-    //Para las paginas del edificio central
+    // Para las paginas del edificio central
     public function show(Request $request)
     {
-        try{
+        try {
             $query = DB::table('detalles_mantenimiento')
                 ->join('inicio_mantenimiento', 'detalles_mantenimiento.INICIO_MANTENIMIENTO_id_mantenimiento_ini', '=', 'inicio_mantenimiento.id_mantenimiento_ini')
                 ->join('tecnico', 'inicio_mantenimiento.TECNICO_id_tecnico', '=', 'tecnico.id_tecnico')
@@ -28,18 +26,17 @@ class HistorialMantenimientoController extends Controller
                 ->join('piso', 'ambiente.PISO_id_piso', '=', 'piso.id_piso')
                 ->join('edificio', 'piso.Edificio_id_edificio', '=', 'edificio.id_edificio')
                 ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('edificio.nombre_edi', '=', 'Edificio Central')//definir el filtro del edificio, la misma debe estar en la tabla edificio
+                ->where('edificio.nombre_edi', '=', 'Edificio Central')
                 ->select(
                     'inicio_mantenimiento.id_mantenimiento_ini',
                     'detalles_mantenimiento.cod_articulo',
-                    //DB::raw() se utiliza para insertar fragmentos de SQL sin procesar dentro de las consultas Eloquent.
                     DB::raw("COALESCE(equipo.nombre_equi, mobiliario.descripticion_mueb, material.descripcion_mate) AS nombre_articulo"),
                     DB::raw("CONCAT(tecnico.nombre, ' ', tecnico.ap_paterno, ' ', tecnico.ap_materno) AS nombre_tecnico"),
                     'inicio_mantenimiento.fch_inicio',
                     'ambiente.nombre AS nombre_ambiente'
                 );
 
-            // Filtrar por código de articulo
+            // Filtrar por codigo de articulo
             if ($request->filled('cod_equipo')) {
                 $query->where('detalles_mantenimiento.cod_articulo', 'like', '%' . $request->cod_equipo . '%');
             }
@@ -55,11 +52,11 @@ class HistorialMantenimientoController extends Controller
 
             $mantenimientos = $query->paginate(10);
 
-            if($mantenimientos->isEmpty()){
-                return redirect()->route('historialmantenimientos.index')->with('errorbuscar', 'No hay resultas en historial de mantenimientos para la busqueda 2');
+            if ($mantenimientos->isEmpty() && ($request->filled('cod_equipo') || $request->filled('fch_inicio') || $request->filled('fch_fin'))) {
+                session()->flash('errorbuscar', 'No hay resultados en historial de mantenimientos para la busqueda realizada.');
             }
 
-            // Obtener los edificios para el menú desplegable
+            // Obtener los edificios para el menu desplegable
             $edificios = DB::table('edificio')
                 ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
                 ->where('sede.nombre', 'Sede Central')
@@ -67,14 +64,14 @@ class HistorialMantenimientoController extends Controller
                 ->get();
 
             return view('coordinator.historialMantenimiento', compact('mantenimientos', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('mantenimiento.index')->with('errordata', 'Error al obtener los datos para la pagina Historial mantenimiento: ');
+        } catch (\Exception $e) {
+            return redirect()->route('coordinator.inicio')->with('errordata', 'Error al obtener los datos para la pagina Historial mantenimiento: ');
         }
     }
 
-    public function mostrar($id)//detalles mantenimiento
+    public function mostrar($id) // Detalles mantenimiento
     {
-        try{
+        try {
             $id_desencriptado = decrypt($id); // Desencriptamos el ID recibido
 
             $mantenimiento = DB::table('inicio_mantenimiento')
@@ -143,15 +140,15 @@ class HistorialMantenimientoController extends Controller
                 ->get();
 
             return view('coordinator.detallesHistorialMante', compact('mantenimiento', 'articulo', 'personal', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('mantenimiento.index')->with('error', 'Error al obtener los datos para la pagina detalles mantenimiento: ');
+        } catch (\Exception $e) {
+            return redirect()->route('coordinator.inicio')->with('error', 'Error al obtener los datos para la pagina detalles mantenimiento: ');
         }
     }
 
-    //Para las paginas de la CLINICA ODONTOLOGICA
+    // Para las paginas de la CLINICA ODONTOLOGICA
     public function historial(Request $request)
     {
-        try{
+        try {
             $query = DB::table('detalles_mantenimiento')
                 ->join('inicio_mantenimiento', 'detalles_mantenimiento.INICIO_MANTENIMIENTO_id_mantenimiento_ini', '=', 'inicio_mantenimiento.id_mantenimiento_ini')
                 ->join('tecnico', 'inicio_mantenimiento.TECNICO_id_tecnico', '=', 'tecnico.id_tecnico')
@@ -166,7 +163,7 @@ class HistorialMantenimientoController extends Controller
                 ->join('piso', 'ambiente.PISO_id_piso', '=', 'piso.id_piso')
                 ->join('edificio', 'piso.Edificio_id_edificio', '=', 'edificio.id_edificio')
                 ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('edificio.nombre_edi', '=', 'Clinica Odontologia')//definir el filtro del edificio clinica odontologia
+                ->where('edificio.nombre_edi', '=', 'Clinica Odontologia')
                 ->select(
                     'inicio_mantenimiento.id_mantenimiento_ini',
                     'detalles_mantenimiento.cod_articulo',
@@ -176,11 +173,10 @@ class HistorialMantenimientoController extends Controller
                     'ambiente.nombre AS nombre_ambiente'
                 );
 
-            // Filtrar por código de equipo
+            // Filtrar por codigo de equipo
             if ($request->filled('cod_equipo')) {
                 $query->where('detalles_mantenimiento.cod_articulo', 'like', '%' . $request->cod_equipo . '%');
             }
-            
 
             // Filtrar por rango de fechas
             if ($request->filled('fch_inicio')) {
@@ -193,11 +189,11 @@ class HistorialMantenimientoController extends Controller
             
             $mantenimientos = $query->paginate(10);
 
-            if($mantenimientos->isEmpty()){
-                return redirect()->route('clinica.historialmantenimientos.index')->with('errorbuscar', 'No hay resultas en historial de mantenimientos para la busqueda en la Clinica');
+            if ($mantenimientos->isEmpty() && ($request->filled('cod_equipo') || $request->filled('fch_inicio') || $request->filled('fch_fin'))) {
+                session()->flash('errorbuscar', 'No hay resultados en historial de mantenimientos para la busqueda en la Clinica.');
             }
 
-            // Obtener los edificios para el menú desplegable
+            // Obtener los edificios para el menu desplegable
             $edificios = DB::table('edificio')
                 ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
                 ->where('sede.nombre', 'Sede Central')
@@ -205,14 +201,15 @@ class HistorialMantenimientoController extends Controller
                 ->get();
 
             return view('coordinator.clinicas.historialMantenimientos', compact('mantenimientos', 'edificios'));
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina historial de mantenimiento: ');
         }
     }
-    //metodo para mostrar los detalles de mantenimiento hechos
+
+    // Metodo para mostrar los detalles de mantenimiento hechos
     public function detallesHistorial($id)
     {
-        try{
+        try {
             $id_desencriptado = decrypt($id); // Desencriptamos el ID recibido
 
             $mantenimiento = DB::table('inicio_mantenimiento')
@@ -243,7 +240,7 @@ class HistorialMantenimientoController extends Controller
                 ->first();
 
             if (!$mantenimiento) {
-            return redirect()->route('clinica.historialmantenimientos.index')->withErrors(['error' => 'Mantenimiento no encontrado']);
+                return redirect()->route('clinica.historialmantenimientos.index')->withErrors(['error' => 'Mantenimiento no encontrado']);
             }
 
             $articulo = DB::table('equipo')
@@ -274,7 +271,7 @@ class HistorialMantenimientoController extends Controller
                 ->where('personal.id_personal', $mantenimiento->PERSONAL_id_personal)
                 ->first();
 
-            // Obtener los edificios para el menú desplegable
+            // Obtener los edificios para el menu desplegable
             $edificios = DB::table('edificio')
                 ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
                 ->where('sede.nombre', 'Sede Central')
@@ -282,7 +279,7 @@ class HistorialMantenimientoController extends Controller
                 ->get();
 
             return view('coordinator.clinicas.detallesHistorialMantenimiento', compact('mantenimiento', 'articulo', 'personal', 'edificios'));
-        }catch(\Exception $e) {
+        } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para los detalles de historial de mantenimiento: ');
         }
     }

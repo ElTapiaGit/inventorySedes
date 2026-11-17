@@ -8,11 +8,10 @@ use App\Models\Usuario;
 
 class UsuariosController extends Controller
 {
-    //
     public function index(Request $request)
     {
         try {
-            // Obtener los valores de búsqueda desde la solicitud
+            // Obtener los valores de busqueda desde la solicitud
             $tipo_usuario = $request->input('tipo_usuario');
             $nombre_usuario = $request->input('nombre_usuario');
             
@@ -37,9 +36,9 @@ class UsuariosController extends Controller
             // Ejecutar la consulta con las relaciones necesarias
             $usuarios = $query->with('tipoUsuario')->get();
 
-            // Si no hay resultados, redirigir con un mensaje de advertencia
-            if ($usuarios->isEmpty()) {
-                return redirect()->route('usuario.index')->with('warning', 'No se encontraron resultados.');
+            // Si se aplicaron filtros y no hay resultados, notificar mediante sesion sin redireccionar a la misma ruta
+            if ($usuarios->isEmpty() && ($tipo_usuario || $nombre_usuario)) {
+                session()->flash('warning', 'No se encontraron resultados.');
             }
             
             return view('administrator.usuario', ['usuarios' => $usuarios]);

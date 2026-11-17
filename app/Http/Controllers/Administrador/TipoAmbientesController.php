@@ -13,25 +13,25 @@ use App\Models\TipoUsuario;
 
 class TipoAmbientesController extends Controller
 {
-    //para la pagina principal
+    // Para la pagina principal
     public function index()
     {
-        try{
+        try {
             $sedes = Sede::all();
             $sedeSeleccionada = session('sedeSeleccionada', $sedes->first()?->id_sede);
-            $edificios = Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get();
-            $edificioSeleccionado = session('edificioSeleccionado', $edificios->first()->id_edificio);
+            $edificios = $sedeSeleccionada ? Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get() : collect();
+            $edificioSeleccionado = session('edificioSeleccionado', $edificios->first()?->id_edificio);
     
-            $tipoAmbientes = TipoAmbiente::all();//para obtener todo los tipos de ambientes
+            $tipoAmbientes = TipoAmbiente::all(); // Obtener todos los tipos de ambientes
     
             return view('administrator.tipoAmbientes', compact('sedes', 'sedeSeleccionada', 'edificios', 'edificioSeleccionado', 'tipoAmbientes'));
             
-        }catch (\Exception $e) {
-            return redirect()->route('tipoambiente.index')->with('error', 'Error al registrar el tipo de ambiente.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.index')->with('error', 'Error al obtener los tipos de ambientes.');
         }
     }
 
-    //para poder registrar nuevos tipos de ambientes
+    // Para poder registrar nuevos tipos de ambientes
     public function store(Request $request)
     {
         $request->validate([
@@ -45,8 +45,7 @@ class TipoAmbientesController extends Controller
             'tipo.regex' => 'No se permiten esos caracteres'
         ]);
         try {
-
-            // Verificar si el tipo ambinete ya existe
+            // Verificar si el tipo ambiente ya existe
             $ambienteExistente = TipoAmbiente::where('nombre_amb', $request->input('tipo'))->first();
 
             if ($ambienteExistente) {
@@ -63,7 +62,8 @@ class TipoAmbientesController extends Controller
             return redirect()->route('tipoambiente.index')->with('error', 'Error al registrar el tipo de ambiente.');
         }
     }
-    //para editar los datos de tipo de ambiente
+
+    // Para editar los datos de tipo de ambiente
     public function update(Request $request, $id)
     {
         try {
@@ -82,11 +82,11 @@ class TipoAmbientesController extends Controller
         }
     }
 
-    //para borrar el registro de la tabla tipo_ambiente
+    // Para borrar el registro de la tabla tipo_ambiente
     public function destroy($id)
     {
         try {
-            $realId = Crypt::decryptString($id); //desincriptar
+            $realId = Crypt::decryptString($id); // Desencriptar
             $tipoAmbiente = TipoAmbiente::findOrFail($realId);
             $tipoAmbiente->delete();
 

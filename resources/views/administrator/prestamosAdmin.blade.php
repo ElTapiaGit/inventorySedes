@@ -2,6 +2,10 @@
 
 @section('title', 'Prestamos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/prestamos.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagPrestAdmin">
     <div class="container-fluid">
@@ -79,50 +83,44 @@
             {{ $prestamos->links('pagination::bootstrap-5') }}
         </div>
     </div>
+</main>
+@endsection
 
-    <!--para cambiar fondo de celda si hay devolucion-->
+@push('scripts')
+    <!-- Script para cambiar fondo de celda si hay devolucion -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Selecciona todas las celdas en la columna "Fecha Devolución" (quinta columna)
             const celdasFechaDevolucion = document.querySelectorAll('table tbody tr td:nth-child(5)');
     
             celdasFechaDevolucion.forEach(celda => {
-                // Si el contenido de la celda es "Null" o vacío, cambia el color de fondo a rojo
                 if (celda.textContent.trim() === 'No devuelto' || celda.textContent.trim() === '') {
                     celda.style.backgroundColor = '#f45963';
-                    celda.style.color = 'white'; // Para asegurar que el texto sea visible sobre el fondo rojo
+                    celda.style.color = 'white';
                 }
             });
         });
     </script>
-</main>
-<!-- Mensajes de error para los edificios -->
-@if(session('ifo'))
-    <div class="alert alert-danger">
-        {{ session('info') }}
-    </div>
-@endif
 
+    @if(session('errorbuscar'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Sin Resultados',
+                text: '{{ session('errorbuscar') }}',
+            });
+        </script>
+    @endif
 
-@if(session('errorbuscar'))
-    <script>
-        Swal.fire({
-            icon: 'info',
-            title: 'Sin Resultados',
-            text: '{{ session('errorbuscar') }}',
-        });
-    </script>
-@endif
-
-<!-- Mensajes de error de conexion en BD -->
-@if(session('errordata'))
-    <script>
-        Swal.fire({
-            icon: 'info',
-            text: '{{ session('errordata') }}',
-        });
-    </script>
-@endif
+    <!-- Mensajes de error de conexion en BD -->
+    @if(session('errordata'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                text: '{{ session('errordata') }}',
+            });
+        </script>
+    @endif
+@endpush
 
 <!-- Menú desplegable de Sedes -->
 @section('sede-dropdown')
@@ -149,7 +147,7 @@
     </li>
 @endsection
 
-<!-- Menú desplegable de Edificiossdfewgwertgwert sadfvasdf-->
+<!-- Menú desplegable de Edificios -->
 @section('edificio-dropdown')
     <li class="nav-item dropdown px-4">
         <a class="nav-link dropdown-toggle white-text" href="#" id="edificioDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -172,6 +170,4 @@
             </li>
         </ul>
     </li>
-@endsection
-
 @endsection

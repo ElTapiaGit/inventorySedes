@@ -2,6 +2,10 @@
 
 @section('title', 'Detalles Mobiliario')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/DetallesMueble.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagMueble">
     <div class="container-fluid">
@@ -41,16 +45,17 @@
         </div>
     </div>
 </main>
-
-<!-- Mensajes de error al obtener los datos -->
-@if($errors->any())
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ $errors->first() }}',
-        });
-    </script>
-@endif
 @endsection
+
+@push('scripts')
+    <!-- Mensajes de error al obtener los datos -->
+    @if($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ $errors->first() }}',
+            });
+        </script>
+    @endif
+@endpush

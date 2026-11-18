@@ -8,19 +8,6 @@
 
     <!-- Enlazar el archivo CSS usando asset() -->
     <link rel="stylesheet" href="{{ asset('css/styleAdmin.css') }}"> <!--principal-->
-    <link rel="stylesheet" href="{{ asset('css/administrador/sedeAdmin.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/ambienteAdmin.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/tipoyAmbiente.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/DetallesMueble.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/personal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/usuario.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/mantenimiento.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/detallesArticulos.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/movimiento.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/descarte.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/prestamos.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/administrador/accesorios.css') }}">
-    
 
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -28,6 +15,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @stack('styles')
 </head>
 <body>
     <div class="wrapper"><!--envoltura-->
@@ -158,6 +147,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{asset('js/dashboarNone.js')}}"></script>
-    
+    @stack('scripts')
 </body>
 </html>

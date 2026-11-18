@@ -2,6 +2,10 @@
 
 @section('title', 'Ambientes')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/ambienteAdmin.css') }}">
+@endpush
+
     <!--contenido para el menu desplegable de la cabecera-->
     @section('sede-dropdown')
         <li class="nav-item dropdown px-1">
@@ -105,30 +109,6 @@
             
             <div class="row">
                 <div class="col-md-12">
-                    <!--Mensaje inf. cuando no hay ambientes-->
-                    @if ($noHayAmbientes)
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function () {
-                                Swal.fire({
-                                    icon: 'info',
-                                    title: 'Sin Ambientes',
-                                    text: 'No hay ambientes registrados para el edificio seleccionado.'
-                                });
-                            });
-                        </script>
-                    @endif
-                    <!-- Mensaje de no encontrado -->
-                    @if ($search && $noAmbientesEncontrados)
-                        <script>
-                            document.addEventListener('DOMContentLoaded', function () {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'No Encontrado',
-                                    text: 'No se encontraron ambientes con el nombre especificado.'
-                                });
-                            });
-                        </script>
-                    @endif
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead>
@@ -166,14 +146,43 @@
             </div>
         </div>
     </main>
-<!--mensaje de error de conexion de la BD-->
-@if(session('error'))
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: '{{ session('error') }}',
-    });
-</script>
-@endif
 @endsection
+
+@push('scripts')
+    <!-- Mensaje informativo cuando no hay ambientes -->
+    @if ($noHayAmbientes)
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sin Ambientes',
+                    text: 'No hay ambientes registrados para el edificio seleccionado.'
+                });
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de no encontrado -->
+    @if ($search && $noAmbientesEncontrados)
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Encontrado',
+                    text: 'No se encontraron ambientes con el nombre especificado.'
+                });
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error de conexion de la BD -->
+    @if(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
+@endpush

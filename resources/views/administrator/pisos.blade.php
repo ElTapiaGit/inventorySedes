@@ -2,6 +2,10 @@
 
 @section('title', 'Pisos de Edificios')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/sedeAdmin.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagPisos">  
     <div class="container-fluid">
@@ -95,49 +99,51 @@
                 </div>
             </div>
         </div>
+    </div>
+</main>
+@endsection
 
-        <!-- script para editar -->
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const editBtns = document.querySelectorAll('.edit-btn');
-            
-                editBtns.forEach(button => {
-                    button.addEventListener('click', function() {
-                        const id = this.getAttribute('data-id');
-                        const numeroPiso = this.getAttribute('data-numero');
-            
-                        // Configura el formulario del modal con los datos del piso
-                        document.getElementById('editPisoId').value = id;
-                        document.getElementById('editNumeroPiso').value = numeroPiso;
-            
-                        // Muestra el modal
-                        new bootstrap.Modal(document.getElementById('editPisoModal')).show();
-                    });
+@push('scripts')
+    <!-- Script para editar piso -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editBtns = document.querySelectorAll('.edit-btn');
+        
+            editBtns.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const numeroPiso = this.getAttribute('data-numero');
+        
+                    document.getElementById('editPisoId').value = id;
+                    document.getElementById('editNumeroPiso').value = numeroPiso;
+        
+                    new bootstrap.Modal(document.getElementById('editPisoModal')).show();
                 });
             });
-        </script>
-        <!-- script para eliminar piso -->
-        <script>
-            function confirmDelete(pisoId) {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¡No podrás deshacer esta acción!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Si se confirma, envía el formulario
-                        document.getElementById('delete-form-' + pisoId).submit();
-                    }
-                });
-            }
-        </script>
-    </div>
-    <!--mensaje de exito en editar-->    
+        });
+    </script>
+
+    <!-- Script para eliminar piso -->
+    <script>
+        function confirmDelete(pisoId) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "¡No podrás deshacer esta acción!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('delete-form-' + pisoId).submit();
+                }
+            });
+        }
+    </script>
+
+    <!-- Mensaje de exito en editar -->
     @if(session('successregister'))
         <script>
             Swal.fire({
@@ -148,7 +154,7 @@
         </script>
     @endif
 
-    <!--mensaje de error con la base de datos-->    
+    <!-- Mensaje de error con la base de datos -->
     @if(session('error'))
         <script>
             Swal.fire({
@@ -158,18 +164,16 @@
             });
         </script>
     @endif
-        
-</main>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @if(request('edificio_id') && $pisos->count() === 0)
-        Swal.fire({
-            icon: 'info',
-            title: 'Información',
-            text: 'No hay pisos disponibles para este edificio.'
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if(request('edificio_id') && $pisos->count() === 0)
+            Swal.fire({
+                icon: 'info',
+                title: 'Información',
+                text: 'No hay pisos disponibles para este edificio.'
+            });
+            @endif
         });
-        @endif
-    });
-</script>
-@endsection
+    </script>
+@endpush

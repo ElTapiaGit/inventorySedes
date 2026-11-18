@@ -2,6 +2,10 @@
 
 @section('title', 'Personal')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/personal.css') }}">
+@endpush
+
 @section('content')
     <main class="content p-3 pagPersonal">  
         <div class="container-fluid">
@@ -213,8 +217,10 @@
         </div>
         <!-- Fin Modal Asignar Acceso -->
     </main>
+@endsection
 
-    <!--script para verificar si desea inactivar personal-->
+@push('scripts')
+    <!-- Script para verificar si desea inactivar personal -->
     <script>
         function confirmInhabilitar(id, nombre) {
             Swal.fire({
@@ -230,11 +236,11 @@
                 if (result.isConfirmed) {
                     document.getElementById('delete-form-' + id).submit();
                 }
-            })
+            });
         }
     </script>
 
-    <!--para validar las contraseñas al asignar acceso -->
+    <!-- Script para validar contraseñas al asignar acceso -->
     <script>
         document.addEventListener('DOMContentLoaded', (event) => {
             const showPasswordToggle = document.getElementById('showPasswordToggle');
@@ -244,109 +250,121 @@
             const passwordConfirmationHelp = document.getElementById('passwordConfirmationHelp');
             const form = document.getElementById('asignarAccesoForm');
     
-            showPasswordToggle.addEventListener('click', function() {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                showPasswordToggle.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
-            });
+            if (showPasswordToggle && passwordInput) {
+                showPasswordToggle.addEventListener('click', function() {
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    showPasswordToggle.innerHTML = type === 'password' ? '<i class="bi bi-eye"></i>' : '<i class="bi bi-eye-slash"></i>';
+                });
+            }
     
             function validatePassword() {
                 let isValid = true;
-                if (passwordInput.value.length < 6) {
-                    passwordHelp.textContent = 'Por seguridad se necesita al menos 6 caracteres';
-                    passwordHelp.classList.add('text-danger');
-                    passwordHelp.classList.remove('text-success');
-                    isValid = false;
-                } else {
-                    passwordHelp.textContent = 'Contraseña válida';
-                    passwordHelp.classList.add('text-success');
-                    passwordHelp.classList.remove('text-danger');
+                if (passwordInput && passwordHelp) {
+                    if (passwordInput.value.length < 6) {
+                        passwordHelp.textContent = 'Por seguridad se necesita al menos 6 caracteres';
+                        passwordHelp.classList.add('text-danger');
+                        passwordHelp.classList.remove('text-success');
+                        isValid = false;
+                    } else {
+                        passwordHelp.textContent = 'Contraseña válida';
+                        passwordHelp.classList.add('text-success');
+                        passwordHelp.classList.remove('text-danger');
+                    }
                 }
                 return isValid;
             }
     
             function validatePasswordConfirmation() {
                 let isValid = true;
-                if (passwordConfirmationInput.value !== passwordInput.value) {
-                    passwordConfirmationHelp.textContent = 'Las contraseñas no coinciden';
-                    passwordConfirmationHelp.classList.add('text-danger');
-                    passwordConfirmationHelp.classList.remove('text-success');
-                    isValid = false;
-                } else {
-                    passwordConfirmationHelp.textContent = 'Las contraseñas coinciden';
-                    passwordConfirmationHelp.classList.add('text-success');
-                    passwordConfirmationHelp.classList.remove('text-danger');
+                if (passwordConfirmationInput && passwordInput && passwordConfirmationHelp) {
+                    if (passwordConfirmationInput.value !== passwordInput.value) {
+                        passwordConfirmationHelp.textContent = 'Las contraseñas no coinciden';
+                        passwordConfirmationHelp.classList.add('text-danger');
+                        passwordConfirmationHelp.classList.remove('text-success');
+                        isValid = false;
+                    } else {
+                        passwordConfirmationHelp.textContent = 'Las contraseñas coinciden';
+                        passwordConfirmationHelp.classList.add('text-success');
+                        passwordConfirmationHelp.classList.remove('text-danger');
+                    }
                 }
                 return isValid;
             }
     
-            passwordInput.addEventListener('input', validatePassword);
-            passwordConfirmationInput.addEventListener('input', validatePasswordConfirmation);
-    
-            form.addEventListener('submit', function(event) {
-                const isPasswordValid = validatePassword();
-                const isPasswordConfirmationValid = validatePasswordConfirmation();
-    
-                if (!isPasswordValid || !isPasswordConfirmationValid) {
-                    event.preventDefault();
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Por favor, corrige los errores en el formulario',
-                    });
-                }
-            });
+            if (passwordInput && passwordConfirmationInput && form) {
+                passwordInput.addEventListener('input', validatePassword);
+                passwordConfirmationInput.addEventListener('input', validatePasswordConfirmation);
+        
+                form.addEventListener('submit', function(event) {
+                    const isPasswordValid = validatePassword();
+                    const isPasswordConfirmationValid = validatePasswordConfirmation();
+        
+                    if (!isPasswordValid || !isPasswordConfirmationValid) {
+                        event.preventDefault();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Por favor, corrige los errores en el formulario',
+                        });
+                    }
+                });
+            }
         });
     </script>
 
-    <!--mensaje de registro exitoso-->
-@if(session('successregister'))
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Éxito',
-            text: '{{ session('successregister') }}',
-        });
-    </script>
-@endif
-<!--Menasje de error al registrar -->
-@if(session('errorregister'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ session('errorregister') }}',
-        });
-    </script>
-@endif
-<!--Menasje de error de BD -->
-@if(session('errordata'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ session('errordata') }}',
-        });
-    </script>
-@endif
-<!--mensaje de exitoso todo-->    
-@if(session('success'))
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Éxito',
-            text: '{{ session('success') }}',
-        });
-    </script>
-@endif
-<!--mensaje de error todo-->    
-@if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ session('error') }}',
-        });
-    </script>
-@endif
-@endsection
+    <!-- Mensaje de registro exitoso -->
+    @if(session('successregister'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '{{ session('successregister') }}',
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error al registrar -->
+    @if(session('errorregister'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('errorregister') }}',
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error de BD -->
+    @if(session('errordata'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('errordata') }}',
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de exitoso general -->    
+    @if(session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '{{ session('success') }}',
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error general -->    
+    @if(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
+@endpush

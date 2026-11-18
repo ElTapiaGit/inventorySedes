@@ -2,6 +2,10 @@
 
 @section('title', 'Detalles Uso Ambiente')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/movimiento.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagdetalles">
     <div class="container-fluid">

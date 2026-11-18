@@ -2,6 +2,10 @@
 
 @section('title', 'Movimientos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/movimiento.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagMovAdmin">
     <div class="container-fluid">
@@ -28,17 +32,6 @@
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                         <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" placeholder="Nombre usuario" >
-                        <!--mensaje de no encontrado usuario-->
-                        @if(session('error_usuario'))
-                        <script>
-                            Swal.fire({
-                                icon: 'info',
-                                title: 'Oops...',
-                                text: '{{ session('error_usuario') }}'
-                            });
-                        </script>
-                        @endif
-
                         <button class="btn btn-primary" type="submit">Buscar</button>
                     </div>
                 </div>
@@ -47,17 +40,6 @@
                     <div class="input-group mt-2">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
                         <input type="text" name="fecha_inicio" placeholder="Busacr fecha: dd-mm-aa" class="form-control">
-                        <!--mensaje de no encontrado fecha-->
-                        @if(session('error_fecha'))
-                            <script>
-                                Swal.fire({
-                                    icon: 'info',
-                                    title: 'Oops...',
-                                    text: '{{ session('error_fecha') }}'
-                                });
-                            </script>
-                        @endif
-
                         <button class="btn btn-primary" type="submit">Buscar</button>
                     </div>
                 </div>
@@ -109,17 +91,42 @@
         </div>
     </div>
 </main>
-<!--mensaje de error de todo-->
-@if(session('errordata'))
-<script>
-    Swal.fire({
-        icon: 'info',
-        title: 'Oops...',
-        text: '{{ session('errordata') }}'
-    });
-</script>
-@endif
 @endsection
+
+@push('scripts')
+    <!-- Mensaje cuando no encuentra usuario -->
+    @if(session('error_usuario'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Oops...',
+                text: '{{ session('error_usuario') }}'
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje cuando no encuentra fecha -->
+    @if(session('error_fecha'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Oops...',
+                text: '{{ session('error_fecha') }}'
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error general -->
+    @if(session('errordata'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Oops...',
+                text: '{{ session('errordata') }}'
+            });
+        </script>
+    @endif
+@endpush
 
 <!-- Menú desplegable de Sedes -->
 @section('sede-dropdown')

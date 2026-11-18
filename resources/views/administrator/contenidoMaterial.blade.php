@@ -2,6 +2,10 @@
 
 @section('title', 'Materiales Ambiente')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/ambienteAdmin.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagMateAdmin">
     <div class="container-fluid">
@@ -22,16 +26,11 @@
         <div class="mb-3">
             <h4>Materiales del Laboratorio:</h4>
         </div>
-        
+
         @if($materiales->isEmpty())
-        <script>
-            Swal.fire({
-                icon: 'info',
-                title: 'No existen materiales en el {{ $ambiente->nombre }}',
-                showConfirmButton: false,
-                timer: 3000
-            });
-        </script>
+            <div class="alert alert-info text-center">
+                No existen materiales en el {{ $ambiente->nombre }}
+            </div>
         @else
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -72,3 +71,16 @@
     </div>
 </main>
 @endsection
+
+@push('scripts')
+    @if($materiales->isEmpty())
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'No existen materiales en el {{ $ambiente->nombre }}',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        </script>
+    @endif
+@endpush

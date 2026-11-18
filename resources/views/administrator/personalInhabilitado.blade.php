@@ -3,6 +3,10 @@
 
 @section('title', 'Personal-Inhabilitados')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/personal.css') }}">
+@endpush
+
 @section('content')
 <main class="content p-3 pagAbiliarPers">
     <div class="container-fluid">
@@ -46,50 +50,51 @@
         </div>
     </div>
 </main>
-
-<!--script para saber si se abilita -->
-<script>
-    function confirmReactivar(id, nombreCompleto) {
-        Swal.fire({
-            title: '¿Estás seguro?',
-            text: "Estás a punto de reactivar a " + nombreCompleto,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Sí, reactivar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                fetch(`{{ url('/administrator/personal-inhabilitado/reactivar/') }}/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        Swal.fire(
-                            'Reactivado',
-                            'El personal ha sido reactivado exitosamente.',
-                            'success'
-                        ).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire(
-                            'Error',
-                            'Hubo un problema al reactivar el personal.',
-                            'error'
-                        );
-                    }
-                });
-            }
-        });
-    }
-
-    function mostrarInfo(id) {
-        // Aquí puedes agregar lógica para mostrar la información del personal.
-        alert('Información del personal ID: ' + id);
-    }
-</script>
 @endsection
+
+@push('scripts')
+    <!-- Script para reactivar personal -->
+    <script>
+        function confirmReactivar(id, nombreCompleto) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Estás a punto de reactivar a " + nombreCompleto,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Sí, reactivar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`{{ url('/administrator/personal-inhabilitado/reactivar/') }}/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    }).then(response => {
+                        if (response.ok) {
+                            Swal.fire(
+                                'Reactivado',
+                                'El personal ha sido reactivado exitosamente.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error',
+                                'Hubo un problema al reactivar el personal.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+
+        function mostrarInfo(id) {
+            alert('Información del personal ID: ' + id);
+        }
+    </script>
+@endpush

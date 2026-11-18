@@ -2,6 +2,10 @@
 
 @section('title', 'Lista de usuarios registrados')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/usuario.css') }}">
+@endpush
+
 @section('content')
     <main class="content p-3 pagUsuario">  
         <div class="container-fluid">
@@ -63,10 +67,13 @@
             </div>
         </div>
     </main>
-    <!--mensaje para cuando no encuentra la busqueda-->
+@endsection
+
+@push('scripts')
+    <!-- Mensaje para cuando no encuentra la busqueda -->
     @if(session('warning'))
         <script>
-                Swal.fire({
+            Swal.fire({
                 icon: 'warning',
                 title: 'Advertencia',
                 text: '{{ session('warning') }}'
@@ -76,7 +83,7 @@
         </script>
     @endif
 
-    <!--mensaje para cuando no se pueda mostrar la consulta en la tabla-->
+    <!-- Mensaje para cuando no se pueda mostrar la consulta en la tabla -->
     @if(session('error'))
         <script>
             Swal.fire({
@@ -86,4 +93,4 @@
             });
         </script>
     @endif
-@endsection
+@endpush

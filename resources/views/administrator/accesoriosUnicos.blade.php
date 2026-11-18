@@ -2,6 +2,10 @@
 
 @section('title', 'Accesorios Unicos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/accesorios.css') }}">
+@endpush
+
 @section('content')
 <div class="content p-3 pagAccesUnico">
     <h1 class="text-center">Accesorios Unicos</h1>
@@ -76,15 +80,17 @@
         {{ $accesorios->appends(request()->input())->links('pagination::bootstrap-5') }}
     </div>
 </div>
-
-<!--mensaje de error de conexion de la BD-->    
-@if(session('error'))
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: '{{ session('error') }}',
-    });
-</script>
-@endif
 @endsection
+
+@push('scripts')
+    <!-- Mensaje de error de conexion de la BD -->    
+    @if(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
+@endpush

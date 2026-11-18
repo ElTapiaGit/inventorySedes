@@ -2,6 +2,10 @@
 
 @section('title', 'Descartes')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/descarte.css') }}">
+@endpush
+
 @section('content')
 <div class="content p-3 pagDescarte">
     <div class="container-fluid">

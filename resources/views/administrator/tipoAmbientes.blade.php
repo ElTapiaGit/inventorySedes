@@ -2,6 +2,10 @@
 
 @section('title', 'tipo-Ambientes')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/tipoyAmbiente.css') }}">
+@endpush
+
 @section('content')
     <main class="content p-3 pagTipoAmbiente">  
         <div class="container-fluid">
@@ -81,26 +85,28 @@
             </div>
         </div>
     </main>
-    <!--script para eliminar y mostrar-->
+@endsection
+
+@push('scripts')
+    <!-- Script para modal de edicion y eliminacion de tipo ambiente -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Configurar modal de edición con los datos correctos
             var modalEditarTipoAmbiente = document.getElementById('editTipoAmbienteModal');
-            modalEditarTipoAmbiente.addEventListener('show.bs.modal', function(event) {
-                var button = event.relatedTarget;
-                var id = button.getAttribute('data-id');
-                var nombre = button.getAttribute('data-nombre');
+            if (modalEditarTipoAmbiente) {
+                modalEditarTipoAmbiente.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    var id = button.getAttribute('data-id');
+                    var nombre = button.getAttribute('data-nombre');
 
-                var inputTipo = document.getElementById('editTipo');
-                inputTipo.value = nombre;
+                    var inputTipo = document.getElementById('editTipo');
+                    inputTipo.value = nombre;
 
-                // Establecer la acción del formulario para la edición
-                var formEditarTipoAmbiente = document.getElementById('editTipoAmbienteForm');
-                formEditarTipoAmbiente.action = "{{ route('tipoambiente.update', '') }}/" + id;
-            });
+                    var formEditarTipoAmbiente = document.getElementById('editTipoAmbienteForm');
+                    formEditarTipoAmbiente.action = "{{ route('tipoambiente.update', '') }}/" + id;
+                });
+            }
         });
 
-        // Función para eliminar tipo ambiente
         window.eliminarTipoAmbiente = function(id) {
             Swal.fire({
                 title: '¿Estás seguro?',
@@ -121,10 +127,10 @@
                     form.submit();
                 }
             });
-        }
+        };
     </script>
 
-    <!--mensaje de registro exitoso-->
+    <!-- Mensaje de registro exitoso -->
     @if(session('successregister'))
         <script>
             Swal.fire({
@@ -135,7 +141,7 @@
         </script>
     @endif
 
-    <!--Menasje de error al registrar -->
+    <!-- Mensaje de error al registrar -->
     @if(session('errorregister'))
         <script>
             Swal.fire({
@@ -146,7 +152,7 @@
         </script>
     @endif
 
-    <!--mensaje de exitoso-->
+    <!-- Mensaje de exito general -->
     @if(session('success'))
         <script>
             Swal.fire({
@@ -157,7 +163,7 @@
         </script>
     @endif
 
-    <!--Menasje de error -->
+    <!-- Mensaje de error general -->
     @if(session('error'))
         <script>
             Swal.fire({
@@ -167,14 +173,16 @@
             });
         </script>
     @endif
+
+    <!-- Mensaje de validaciones con error -->
     @if ($errors->any())
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            html: '{!! implode('', $errors->all('<div>:message</div>')) !!}',
-        });
-    </script>
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                html: '{!! implode('', $errors->all('<div>:message</div>')) !!}',
+            });
+        </script>
     @endif
-@endsection
+@endpush
 

@@ -6,13 +6,15 @@
 @section('content')
     <main class="contentini p-3">  
         <div class="container-fluid">
-                <div class="mb-3">`
-                    <!--<h3>HOLA BIENVENIDO AL CONTENIDO DE LA PAGINA</h3>-->
-                </div>
+            <div class="mb-3">
+                <!-- Contenido principal -->
+            </div>
         </div>
     </main>
+@endsection
 
-    <!--mensaje de error de conexion de la BD-->    
+@push('scripts')
+    <!-- Mensaje de error de conexion de la BD -->    
     @if(session('errordata'))
         <script>
             Swal.fire({
@@ -22,6 +24,5 @@
             });
         </script>
     @endif
-    
-@endsection
+@endpush
 

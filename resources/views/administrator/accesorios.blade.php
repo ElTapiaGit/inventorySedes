@@ -2,6 +2,9 @@
 
 @section('title', 'Accesorios')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/accesorios.css') }}">
+@endpush
 
 @section('content')
 <main class="content p-3 pagAccesAdmin">
@@ -14,13 +17,9 @@
 
 
         @if($accesorios->isEmpty())
-            <script>
-                Swal.fire({
-                    icon: 'info',
-                    title: 'No hay novedad',
-                    text: "No hay Accesorios para reponer o cambiar",
-                });
-            </script>
+            <div class="alert alert-info text-center">
+                No hay Accesorios para reponer o cambiar
+            </div>
         @else
             <h2 class="titulo text-center">Lista de Accesorios para Reponer:</h2>
             <div class="table-responsive">
@@ -62,8 +61,17 @@
             </div>
         @endif
     </div>
-
-    <!--mensaje de error de conexion de la BD-->    
-    
 </main>
 @endsection
+
+@push('scripts')
+    @if($accesorios->isEmpty())
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'No hay novedad',
+                text: "No hay Accesorios para reponer o cambiar",
+            });
+        </script>
+    @endif
+@endpush

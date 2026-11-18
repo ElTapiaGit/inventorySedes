@@ -2,6 +2,10 @@
 
 @section('title', 'Accesorios Con Equipos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/accesorios.css') }}">
+@endpush
+
 @section('content')
 <main class="content p-3 pagAccesEquip">
     <h1 class="text-center">Accesorios con Equipos</h1>
@@ -82,6 +86,15 @@
             {{ $accesorios->links('pagination::bootstrap-5') }}
         </div>
     @else
+        <div class="alert alert-info text-center mt-4">
+            No se encontraron accesorios con equipos que coincidan con los criterios de búsqueda.
+        </div>
+    @endif
+</main>
+@endsection
+
+@push('scripts')
+    @if($accesorios->count() === 0)
         <script>
             Swal.fire({
                 icon: 'info',
@@ -92,5 +105,4 @@
             });
         </script>
     @endif
-</main>
-@endsection
+@endpush

@@ -2,6 +2,10 @@
 
 @section('title', 'Equipos del Ambiente')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/ambienteAdmin.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagAmbEquip">
     <div class="container-fluid">
@@ -22,28 +26,11 @@
         <div class="mb-3">
             <h4>Lista de Equipos:</h4>
         </div>
-        
-        @if(isset($error_message))
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: '{{ $error_message }}',
-                showConfirmButton: true
-            });
-        </script>
-        @endif
 
         @if($equipos->isEmpty())
-        <script>
-            Swal.fire({
-                icon: 'info',
-                title: 'No existen equipos en el {{ $ambiente->nombre }}',
-                showConfirmButton: false,
-                timer: 3000
-            });
-        </script>
-
+            <div class="alert alert-info text-center">
+                No existen equipos en el {{ $ambiente->nombre }}
+            </div>
         @else
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -85,17 +72,39 @@
         @endif
     </div>
 </main>
-
-
-<!-- mensajes de error al obtener los datos -->
-@if($errors->any())
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ $errors->first() }}',
-        });
-    </script>
-@endif
 @endsection
+
+@push('scripts')
+    @if(isset($error_message))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ $error_message }}',
+                showConfirmButton: true
+            });
+        </script>
+    @endif
+
+    @if($equipos->isEmpty())
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'No existen equipos en el {{ $ambiente->nombre }}',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        </script>
+    @endif
+
+    <!-- Mensajes de error al obtener los datos -->
+    @if($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ $errors->first() }}',
+            });
+        </script>
+    @endif
+@endpush

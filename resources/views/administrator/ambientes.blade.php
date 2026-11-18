@@ -3,6 +3,10 @@
 
 @section('title', 'Ambiente-2')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/tipoyAmbiente.css') }}">
+@endpush
+
 <!--contenido para el menu desplegable-->
 @section('sede-dropdown')
     <li class="nav-item dropdown px-1">
@@ -112,17 +116,6 @@
 
         <div class="row">
             <div class="col-md-12">
-                @if ($noHayAmbientes)
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            Swal.fire({
-                                icon: 'info',
-                                title: 'Sin Ambientes',
-                                text: 'No hay ambientes registrados para el edificio seleccionado.'
-                            });
-                        });
-                    </script>
-                @endif
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -213,105 +206,116 @@
                 </div>
             </div>
         </div>
+    </div>
+</main>
+@endsection
 
-        <!--script para abrir el modal editar-->
+@push('scripts')
+    <!-- Mensaje si no hay ambientes -->
+    @if ($noHayAmbientes)
         <script>
             document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.btn-editar').forEach(button => {
-                    button.addEventListener('click', function () {
-                        const id = this.getAttribute('data-id');
-                        const nombre = this.getAttribute('data-nombre');
-                        const descripcion = this.getAttribute('data-descripcion');
-                        const tipo = this.getAttribute('data-tipo');
-                        const piso = this.getAttribute('data-piso');
-                        
-                        // obtener los valores para el modal
-                        document.getElementById('editar_id').value = id;
-                        document.getElementById('editar_nombre').value = nombre;
-                        document.getElementById('editar_descripcion').value = descripcion;
-                        document.getElementById('editar_tipo_ambiente').value = tipo;
-                        document.getElementById('editar_piso').value = piso;
-                        
-                        // mostrar el modal
-                        new bootstrap.Modal(document.getElementById('editarAmbienteModal')).show();
-                    });
-
-                    // Script para mostrar el mensaje de éxito y actualizar la página
-                    @if(session('success'))
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Éxito',
-                            text: '{{ session('success') }}',
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        });
-                    @endif
-
-                    // Script para mostrar el mensaje de error
-                    @if(session('error'))
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: '{{ session('error') }}',
-                        });
-                    @endif
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Sin Ambientes',
+                    text: 'No hay ambientes registrados para el edificio seleccionado.'
                 });
             });
         </script>
-        
-        <!--script para eliminar registro-->
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('.eliminar-btn').forEach(button => {
-                    button.addEventListener('click', function (e) {
-                        e.preventDefault(); // Evitar que el formulario se envíe inmediatamente
-                        const form = this.closest('form');
-        
-                        Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: "Al eliminar no habra registros del ambiente.",
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Sí, eliminar',
-                            cancelButtonText: 'Cancelar'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                form.submit(); // Enviar el formulario si se confirma
-                            }
-                        });
-                    });
+    @endif
+
+    <!-- Script para abrir modal editar y alertas asociadas -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.btn-editar').forEach(button => {
+                button.addEventListener('click', function () {
+                    const id = this.getAttribute('data-id');
+                    const nombre = this.getAttribute('data-nombre');
+                    const descripcion = this.getAttribute('data-descripcion');
+                    const tipo = this.getAttribute('data-tipo');
+                    const piso = this.getAttribute('data-piso');
+                    
+                    document.getElementById('editar_id').value = id;
+                    document.getElementById('editar_nombre').value = nombre;
+                    document.getElementById('editar_descripcion').value = descripcion;
+                    document.getElementById('editar_tipo_ambiente').value = tipo;
+                    document.getElementById('editar_piso').value = piso;
+                    
+                    new bootstrap.Modal(document.getElementById('editarAmbienteModal')).show();
                 });
 
-                //mensaje de exito al eliminar registro
-                @if(session('successdelete'))
+                @if(session('success'))
                     Swal.fire({
                         icon: 'success',
-                        title: 'Éxito se elimino correctamente',
-                        text: '{{ session('successdelete') }}',
-                    }).then(() => {
-                        window.location.reload.reload(); // Recargar la página después de mostrar el mensaje
+                        title: 'Éxito',
+                        text: '{{ session('success') }}',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.reload();
+                        }
+                    });
+                @endif
+
+                @if(session('error'))
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '{{ session('error') }}',
                     });
                 @endif
             });
-        </script>
-    </div>
-</main>
-<!--mensaje de registro exitoso-->
-@if(session('successregister'))
-        <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Éxito',
-            text: '{{ session('successregister') }}',
         });
     </script>
-@endif
+    
+    <!-- Script para eliminar registro -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.eliminar-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const form = this.closest('form');
+    
+                    Swal.fire({
+                        title: '¿Estás seguro?',
+                        text: "Al eliminar no habra registros del ambiente.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Sí, eliminar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
 
-    <!--mensaje de error al editar el registro-->
+            @if(session('successdelete'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito se elimino correctamente',
+                    text: '{{ session('successdelete') }}',
+                }).then(() => {
+                    window.location.reload();
+                });
+            @endif
+        });
+    </script>
+
+    <!-- Mensaje de registro exitoso -->
+    @if(session('successregister'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '{{ session('successregister') }}',
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error al editar el registro -->
     @if(session('errorregister'))
         <script>
             Swal.fire({
@@ -321,14 +325,15 @@
             });
         </script>
     @endif
-<!--mensaje de error al editar el registro-->
-@if(session('errordelete'))
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: '{{ session('errordelete') }}',
-    });
-</script>
-@endif
-@endsection
+
+    <!-- Mensaje de error al eliminar el registro -->
+    @if(session('errordelete'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('errordelete') }}',
+            });
+        </script>
+    @endif
+@endpush

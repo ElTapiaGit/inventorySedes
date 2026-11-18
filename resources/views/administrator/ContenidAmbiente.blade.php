@@ -2,6 +2,10 @@
 
 @section('title', 'Contenido Ambiente')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/ambienteAdmin.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagContAdmin">
     <div class="container-fluid">
@@ -22,13 +26,9 @@
         </div>
 
         @if($equipos->isEmpty() && $materiales->isEmpty() && $mobiliarios->isEmpty())
-            <script>
-                Swal.fire({
-                    icon: 'info',
-                    title: 'El ambiente {{ $ambiente->nombre_completo_ambiente }} no tiene registros de equipos, materiales ni mobiliarios.',
-                    showConfirmButton: true,
-                });
-            </script>
+            <div class="alert alert-info text-center">
+                El ambiente {{ $ambiente->nombre_completo_ambiente }} no tiene registros de equipos, materiales ni mobiliarios.
+            </div>
         @else
             <div class="table-responsive">
                 <table class="table">
@@ -103,3 +103,17 @@
     </div>
 </main>
 @endsection
+
+@push('scripts')
+    @if($equipos->isEmpty() && $materiales->isEmpty() && $mobiliarios->isEmpty())
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'El ambiente {{ $ambiente->nombre_completo_ambiente }} no tiene registros de equipos, materiales ni mobiliarios.',
+                    showConfirmButton: true,
+                });
+            });
+        </script>
+    @endif
+@endpush

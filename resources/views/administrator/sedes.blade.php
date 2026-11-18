@@ -2,6 +2,10 @@
 
 @section('title', 'Sedes-Edificios')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/sedeAdmin.css') }}">
+@endpush
+
 @section('content')
     <main class="content px-3 pagSede">  
         <div class="container-fluid">
@@ -45,21 +49,6 @@
                     </div>
             </div>
 
-            <!-- Mensaje de regsitro y edicion exito -->
-            @if(session('success'))
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            icon: 'success',
-                            title: '¡Éxito!',
-                            text: '{{ session('success') }}',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    });
-                </script>
-            @endif
-
             <hr>
 
             <!-- Modal para editar sede -->
@@ -89,50 +78,6 @@
                     </div>
                 </div>
             </div>
-            <!--script para editar-->
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Configurar modal de edición con los datos correctos
-                    var modalEditarSede = document.getElementById('modalEditarSede');
-                    modalEditarSede.addEventListener('show.bs.modal', function(event) {
-                        var button = event.relatedTarget;
-                        var id = button.getAttribute('data-id');
-                        var nombre = button.getAttribute('data-nombre');
-                        
-                        var inputId = document.getElementById('editIdSede');
-                        var inputNombre = document.getElementById('editNombreSede');
-                        
-                        inputId.value = id;
-                        inputNombre.value = nombre;
-
-                        // Establecer la acción del formulario para la edición
-                        var formEditarSede = document.getElementById('formEditarSede');
-                        formEditarSede.action = "{{ url('administrator/sedes') }}/" + id;
-                    });
-            
-                    // Función para eliminar sede con SweetAlert2
-                    window.eliminarSede = function(id) {
-                        Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: 'No podrás revertir esto!',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Sí, eliminar!'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                var form = document.createElement('form');
-                                form.action = '{{ route('sedes.destroy', '') }}/' + id;
-                                form.method = 'POST';
-                                form.innerHTML = '@csrf @method("DELETE")';
-                                document.body.appendChild(form);
-                                form.submit();
-                            }
-                        });
-                    }
-                });
-            </script>
 
             <!--DATOS DEL EDIFICIO-->
             <div class="mb-3">
@@ -240,54 +185,6 @@
                     </div>
                 </div>
             </div>
-            <!--script para editar edificio-->
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Mostrar modal al hacer clic en el botón Editar
-                    var modalEditarEdificio = document.getElementById('modalEditarEdificio');
-                    modalEditarEdificio.addEventListener('show.bs.modal', function(event) {
-                        var button = event.relatedTarget;
-                        var id = button.getAttribute('data-id');
-                        var nombre = button.getAttribute('data-nombre');
-                        var direccion = button.getAttribute('data-direccion');
-
-                        var form = document.getElementById('formEditarEdificio');
-                        form.action = '{{ route('edificios.update', '') }}/' + id;
-
-                        document.getElementById('editIdEdificio').value = id;
-                        document.getElementById('editNombreEdificio').value = nombre;
-                        document.getElementById('editDireccion').value = direccion;
-                    });
-
-                    // Mostrar modal al hacer clic en el botón Agregar Edificio
-                    document.getElementById('btnAgregarEdificio').addEventListener('click', function() {
-                        var modal = new bootstrap.Modal(document.getElementById('modalAgregarEdificio'));
-                        modal.show();
-                    });
-            
-                    // Función para eliminar edificio con SweetAlert2
-                    window.eliminarEdificio = function(id) {
-                        Swal.fire({
-                            title: '¿Estás seguro?',
-                            text: 'No podrás revertir esto!',
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#3085d6',
-                            cancelButtonColor: '#d33',
-                            confirmButtonText: 'Sí, eliminar!'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                var form = document.createElement('form');
-                                form.action = '{{ route('edificios.destroy', '') }}/' + id;
-                                form.method = 'POST';
-                                form.innerHTML = '@csrf @method("DELETE")';
-                                document.body.appendChild(form);
-                                form.submit();
-                            }
-                        });
-                    }
-                });
-            </script>
 
             <!-- Modal para agregar pisos -->
             <div id="modalAgregarPiso" class="modal fade" tabindex="-1">
@@ -319,26 +216,143 @@
                     </div>
                 </div>
             </div>
-            <!--script para agregar pisos-->
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    // Mostrar modal al hacer clic en el botón
-                    document.getElementById('btnAgregarPiso').addEventListener('click', function() {
-                        var modal = new bootstrap.Modal(document.getElementById('modalAgregarPiso'));
-                        modal.show();
-                    });
-            
-                    // Agregar lógica para agregar otro piso
-                    document.getElementById('btnAgregarOtroPiso').addEventListener('click', function() {
-                        var pisosContainer = document.getElementById('pisosContainer');
-                        var pisoItem = document.querySelector('.piso-item').cloneNode(true);
-                        pisoItem.querySelector('input').value = ''; // Limpiar el valor del input
-                        pisosContainer.appendChild(pisoItem);
-                    });    
-                });
-            </script>
         </div>
     </main>
+@endsection
+
+@push('scripts')
+    <!-- Mensaje de registro y edicion exito -->
+    @if(session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            });
+        </script>
+    @endif
+
+    <!-- Scripts para edicion y eliminacion de sedes -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var modalEditarSede = document.getElementById('modalEditarSede');
+            if (modalEditarSede) {
+                modalEditarSede.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    var id = button.getAttribute('data-id');
+                    var nombre = button.getAttribute('data-nombre');
+                    
+                    var inputId = document.getElementById('editIdSede');
+                    var inputNombre = document.getElementById('editNombreSede');
+                    
+                    inputId.value = id;
+                    inputNombre.value = nombre;
+
+                    var formEditarSede = document.getElementById('formEditarSede');
+                    formEditarSede.action = "{{ url('administrator/sedes') }}/" + id;
+                });
+            }
+
+            window.eliminarSede = function(id) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'No podrás revertir esto!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var form = document.createElement('form');
+                        form.action = '{{ route('sedes.destroy', '') }}/' + id;
+                        form.method = 'POST';
+                        form.innerHTML = '@csrf @method("DELETE")';
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            };
+        });
+    </script>
+
+    <!-- Scripts para edicion y eliminacion de edificios -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var modalEditarEdificio = document.getElementById('modalEditarEdificio');
+            if (modalEditarEdificio) {
+                modalEditarEdificio.addEventListener('show.bs.modal', function(event) {
+                    var button = event.relatedTarget;
+                    var id = button.getAttribute('data-id');
+                    var nombre = button.getAttribute('data-nombre');
+                    var direccion = button.getAttribute('data-direccion');
+
+                    var form = document.getElementById('formEditarEdificio');
+                    form.action = '{{ route('edificios.update', '') }}/' + id;
+
+                    document.getElementById('editIdEdificio').value = id;
+                    document.getElementById('editNombreEdificio').value = nombre;
+                    document.getElementById('editDireccion').value = direccion;
+                });
+            }
+
+            var btnAgregarEdificio = document.getElementById('btnAgregarEdificio');
+            if (btnAgregarEdificio) {
+                btnAgregarEdificio.addEventListener('click', function() {
+                    var modal = new bootstrap.Modal(document.getElementById('modalAgregarEdificio'));
+                    modal.show();
+                });
+            }
+
+            window.eliminarEdificio = function(id) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'No podrás revertir esto!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, eliminar!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        var form = document.createElement('form');
+                        form.action = '{{ route('edificios.destroy', '') }}/' + id;
+                        form.method = 'POST';
+                        form.innerHTML = '@csrf @method("DELETE")';
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            };
+        });
+    </script>
+
+    <!-- Script para agregar pisos -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var btnAgregarPiso = document.getElementById('btnAgregarPiso');
+            if (btnAgregarPiso) {
+                btnAgregarPiso.addEventListener('click', function() {
+                    var modal = new bootstrap.Modal(document.getElementById('modalAgregarPiso'));
+                    modal.show();
+                });
+            }
+
+            var btnAgregarOtroPiso = document.getElementById('btnAgregarOtroPiso');
+            if (btnAgregarOtroPiso) {
+                btnAgregarOtroPiso.addEventListener('click', function() {
+                    var pisosContainer = document.getElementById('pisosContainer');
+                    var pisoItem = document.querySelector('.piso-item').cloneNode(true);
+                    pisoItem.querySelector('input').value = '';
+                    pisosContainer.appendChild(pisoItem);
+                });
+            }
+        });
+    </script>
 
     <!-- Mensaje de error de conexion en la BD -->
     @if(session('errordata'))
@@ -353,6 +367,6 @@
             });
         </script>
     @endif
-@endsection
+@endpush
 
 

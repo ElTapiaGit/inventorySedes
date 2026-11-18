@@ -2,6 +2,10 @@
 
 @section('title', 'Historial Mantenimientos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/mantenimiento.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagHistoAdmin">
     <div class="container-fluid">
@@ -32,16 +36,11 @@
         <div>
             <h4>Historial de Mantenimientos:</h4>
         </div>
-        <!--mensaje si hay resultado de busqueda -->
+
         @if($mantenimientos->isEmpty())
-            <script>
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Articulo No Registra en mantenimientos',
-                    text: 'No hay historial de mantenimientos registrados para el Articulo.',
-                    confirmButtonText: 'Entendido'
-                });
-            </script>
+            <div class="alert alert-info text-center">
+                No hay historial de mantenimientos registrados para el Articulo.
+            </div>
         @else
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
@@ -93,14 +92,29 @@
         @endif
     </div>
 </main>
-<!--mensaje de error todo-->    
-@if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ session('error') }}',
-        });
-    </script>
-@endif
 @endsection
+
+@push('scripts')
+    <!-- Mensaje si no hay resultado de busqueda -->
+    @if($mantenimientos->isEmpty())
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Articulo No Registra en mantenimientos',
+                text: 'No hay historial de mantenimientos registrados para el Articulo.',
+                confirmButtonText: 'Entendido'
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error general -->    
+    @if(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
+@endpush

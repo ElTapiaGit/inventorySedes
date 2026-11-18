@@ -2,6 +2,10 @@
 
 @section('title', 'Detalles Mantenimiento')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/mantenimiento.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagDetallMante">
     <div class="container-fluid">
@@ -90,15 +94,18 @@
         </div>
     </div>
 </main>
-<!--mensaje de error todo-->    
-@if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ session('error') }}',
-        });
-    </script>
-@endif
 @endsection
+
+@push('scripts')
+    <!-- Mensaje de error general -->    
+    @if(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
+@endpush
 

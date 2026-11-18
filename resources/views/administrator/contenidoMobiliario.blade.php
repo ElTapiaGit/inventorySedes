@@ -2,6 +2,10 @@
 
 @section('title', 'Mobiliarios Ambiente')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/administrador/ambienteAdmin.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagAmbMovi">
     <div class="container-fluid">
@@ -22,16 +26,11 @@
         <div class="mb-3">
             <h4>Lista de Mobiliarios:</h4>
         </div>
-        
+
         @if($mobiliarios->isEmpty())
-        <script>
-            Swal.fire({
-                icon: 'info',
-                title: 'No existen mobiliario en el laboratorio {{ $ambiente->nombre }}',
-                showConfirmButton: false,
-                timer: 3000
-            });
-        </script>
+            <div class="alert alert-info text-center">
+                No existen mobiliario en el laboratorio {{ $ambiente->nombre }}
+            </div>
         @else
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -74,3 +73,16 @@
     </div>
 </main>
 @endsection
+
+@push('scripts')
+    @if($mobiliarios->isEmpty())
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'No existen mobiliario en el laboratorio {{ $ambiente->nombre }}',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        </script>
+    @endif
+@endpush

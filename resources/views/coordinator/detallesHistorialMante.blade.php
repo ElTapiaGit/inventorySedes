@@ -2,6 +2,10 @@
 
 @section('title', 'Detalles de Mantenimiento')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/mantenimiento.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3">
     <div class="container-fluid">

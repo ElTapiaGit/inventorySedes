@@ -2,6 +2,10 @@
 
 @section('title', 'Detalles de Equipo')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/detallesequipo.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 detallesEquipo">
     <div class="container-fluid">

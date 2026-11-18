@@ -60,23 +60,28 @@
 </div>
 
 <!-- Script: Agregar/Eliminar artículos -->
+@push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('articulos-container');
+        const addBtn = document.getElementById('add-articulo');
 
-        document.getElementById('add-articulo').addEventListener('click', () => {
-            const row = container.querySelector('.articulo-row').cloneNode(true);
-            row.querySelector('input').value = '';
-            container.appendChild(row);
-        });
+        if (container && addBtn) {
+            addBtn.addEventListener('click', () => {
+                const row = container.querySelector('.articulo-row').cloneNode(true);
+                row.querySelector('input').value = '';
+                container.appendChild(row);
+            });
 
-        document.addEventListener('click', function (e) {
-            if (e.target.closest('.remove-articulo')) {
-                const rows = container.querySelectorAll('.articulo-row');
-                if (rows.length > 1) {
-                    e.target.closest('.articulo-row').remove();
+            document.addEventListener('click', function (e) {
+                if (e.target.closest('.remove-articulo')) {
+                    const rows = container.querySelectorAll('.articulo-row');
+                    if (rows.length > 1) {
+                        e.target.closest('.articulo-row').remove();
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 </script>
+@endpush

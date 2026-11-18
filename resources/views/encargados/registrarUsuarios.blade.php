@@ -90,25 +90,6 @@
                     </tr>
                 @endforeach
             </tbody>
-            <!--manejo de mensajes-->
-            <script>
-                function confirmDelete(id) {
-                    Swal.fire({
-                        title: '¿Estás seguro?',
-                        text: "No podrás revertir esta acción.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Sí, eliminar',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            document.getElementById('form-delete-' + id).submit();
-                        }
-                    })
-                }
-            </script>                
         </table>
     </div>
 </div>
@@ -154,28 +135,6 @@
         </div>
     </div>
 </div>
-<!-- Script para llenar el formulario de edición con los datos del usuario -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var editarUsuarioModal = document.getElementById('editarUsuarioModal');
-        editarUsuarioModal.addEventListener('show.bs.modal', function (event) {
-            var button = event.relatedTarget;
-            var id = button.getAttribute('data-id');
-            var nombre = button.getAttribute('data-nombre');
-            var apellidos = button.getAttribute('data-apellidos');
-            var celular = button.getAttribute('data-celular');
-            var tipo = button.getAttribute('data-tipo');
-
-            var form = document.getElementById('editarUsuarioForm');
-            form.action = '/usuarios/' + id;
-
-            form.querySelector('#nombre').value = nombre;
-            form.querySelector('#apellidos').value = apellidos;
-            form.querySelector('#celular').value = celular;
-            form.querySelector('#tipo_usuario').value = tipo;
-        });
-    });
-</script>
 
 <!-- Modal Registrar Usuario -->
 <div class="modal fade" id="modalRegistrarUsuario" tabindex="-1" aria-labelledby="modalRegistrarUsuarioLabel" aria-hidden="true">
@@ -246,10 +205,52 @@
         </div>
     </div>
 </div>
+@endsection
+
+@push('scripts')
+<script>
+    function confirmDelete(id) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "No podrás revertir esta acción.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('form-delete-' + id).submit();
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var editarUsuarioModal = document.getElementById('editarUsuarioModal');
+        if (editarUsuarioModal) {
+            editarUsuarioModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var id = button.getAttribute('data-id');
+                var nombre = button.getAttribute('data-nombre');
+                var apellidos = button.getAttribute('data-apellidos');
+                var celular = button.getAttribute('data-celular');
+                var tipo = button.getAttribute('data-tipo');
+
+                var form = document.getElementById('editarUsuarioForm');
+                form.action = '/usuarios/' + id;
+
+                form.querySelector('#nombre').value = nombre;
+                form.querySelector('#apellidos').value = apellidos;
+                form.querySelector('#celular').value = celular;
+                form.querySelector('#tipo_usuario').value = tipo;
+            });
+        }
+    });
+</script>
 
 @if(session('success'))
     <script>
-        //mensaje cuando el mobiliario ya existe
         Swal.fire({
             icon: 'success',
             title: 'Exito',
@@ -260,7 +261,6 @@
 
 @if(session('info'))
     <script>
-        //mensaje cuando el mobiliario ya existe
         Swal.fire({
             icon: 'info',
             title: 'Registro No Valido',
@@ -268,5 +268,4 @@
         });
     </script>
 @endif
-
-@endsection
+@endpush

@@ -2,6 +2,10 @@
 
 @section('title', 'Movimientos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/encargado/movimientoAmbiente.css') }}">
+@endpush
+
 @section('content')
 <div class="content mt-2">
 
@@ -204,26 +208,6 @@
             </div>
         </div>
     </div>
-    <!--script para autollenar los input-->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Escuchar clics en los botones de "Finalizar Uso"
-            const buttons = document.querySelectorAll('.finalizar-uso-btn');
-            buttons.forEach(button => {
-                button.addEventListener('click', function () {
-                    // Obtener el ID del uso de ambiente del atributo de datos
-                    const usoAmbienteId = this.getAttribute('data-uso-id');
-                    // Obtener el nombre del ambiente del atributo de datos
-                    const ambienteNombre = this.getAttribute('data-ambiente-nombre');
-
-                    // Establecer el valor del campo oculto en el modal
-                    document.getElementById('uso_ambiente_id').value = usoAmbienteId;
-                    document.getElementById('nombre_ambiente').value = ambienteNombre;
-                });
-            });
-        });
-    </script>
-
 
     <!-- Modal para registrar nuevo usuario -->
     <div class="modal fade" id="registrarUsuarioModal" tabindex="-1" aria-labelledby="registrarUsuarioModalLabel" aria-hidden="true">
@@ -270,6 +254,25 @@
             </div>
         </div>
     </div>
+</div>
+@endsection
+
+@push('scripts')
+    <!-- Script para autollenar inputs del modal finalizar uso -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const buttons = document.querySelectorAll('.finalizar-uso-btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const usoAmbienteId = this.getAttribute('data-uso-id');
+                    const ambienteNombre = this.getAttribute('data-ambiente-nombre');
+
+                    document.getElementById('uso_ambiente_id').value = usoAmbienteId;
+                    document.getElementById('nombre_ambiente').value = ambienteNombre;
+                });
+            });
+        });
+    </script>
 
     @if(session('success'))
         <script>
@@ -290,6 +293,4 @@
             });
         </script>
     @endif
-
-</div>
-@endsection
+@endpush

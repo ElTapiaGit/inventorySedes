@@ -61,22 +61,6 @@
                 <img id="photoPreview" src="" alt="Previsualización de la Foto" class="img-fluid border">
             </div>
         </div>
-        <script>
-            document.getElementById('foto').addEventListener('change', function(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const photoPreview = document.getElementById('photoPreview');
-                        const previewContainer = document.getElementById('previewContainer');
-                        
-                        photoPreview.src = e.target.result;
-                        previewContainer.classList.remove('d-none');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        </script>
     </div>
 
     <!-- Formulario para registrar un nuevo accesorio -->
@@ -154,128 +138,140 @@
                 <button type="submit" class="btn btn-primary">Registrar Accesorio</button>
             </form>
         </div>
-        <!--script para tomar el codigo y ponerlo a la ruta de la imagen-->
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                function actualizarRutaImagen() {
-                    var codigo = document.getElementById('cod_accesorio').value;
-
-                    if (codigo) {
-                        var rutaCompleta = "{{ asset('img/accesorios-img') }}/" + codigo + ".jpg";
-                        document.getElementById('fotoPreview').src = rutaCompleta;
-
-                        var selectFoto = document.getElementById('FOTO_id_foto');
-                        for (var i = 0; i < selectFoto.options.length; i++) {
-                            if (selectFoto.options[i].dataset.ruta === 'img/accesorios-img/' + codigo + '.jpg') {
-                                selectFoto.selectedIndex = i;
-                                break;
-                            } else {
-                                selectFoto.selectedIndex = -1;
-                            }
-                        }
-
-                        var idFotoText = document.getElementById('idFotoText');
-                        if (selectFoto.selectedIndex >= 0) {
-                            idFotoText.textContent = "ID de la Foto: " + selectFoto.value;
-                        } else {
-                            idFotoText.textContent = "ID de la Foto: No seleccionada";
-                        }
-                    } else {
-                        document.getElementById('fotoPreview').src = "";
-                        document.getElementById('FOTO_id_foto').selectedIndex = -1;
-                    }
-                }
-
-                function mostrarFotoSeleccionada() {
-                    var selectFoto = document.getElementById('FOTO_id_foto');
-                    var rutaFoto = selectFoto.options[selectFoto.selectedIndex].dataset.ruta;
-
-                    var rutaCompleta = "{{ asset('') }}" + rutaFoto;
-                    document.getElementById('fotoPreview').src = rutaCompleta;
-
-                    document.getElementById('idFotoText').textContent = "ID de la Foto: " + selectFoto.value;
-                }
-
-                document.getElementById('cod_accesorio').addEventListener('input', actualizarRutaImagen);
-                document.getElementById('FOTO_id_foto').addEventListener('change', mostrarFotoSeleccionada);
-            });
-        </script>
     </div>	
 </div>
+@endsection
 
-<script>
-    document.getElementById('showPhotoForm').addEventListener('click', function() {
-        document.getElementById('photoForm').classList.remove('d-none');
-        document.getElementById('accessoryForm').classList.add('d-none');
-    });
+@push('scripts')
+    <!-- Script para tomar el codigo y ponerlo a la ruta de la imagen -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function actualizarRutaImagen() {
+                var codigo = document.getElementById('cod_accesorio').value;
 
-    document.getElementById('showAccessoryForm').addEventListener('click', function() {
-        document.getElementById('photoForm').classList.add('d-none');
-        document.getElementById('accessoryForm').classList.remove('d-none');
-    });
+                if (codigo) {
+                    var rutaCompleta = "{{ asset('img/accesorios-img') }}/" + codigo + ".jpg";
+                    document.getElementById('fotoPreview').src = rutaCompleta;
 
-    document.getElementById('foto').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const photoPreview = document.getElementById('photoPreview');
-                const previewContainer = document.getElementById('previewContainer');
-                
-                photoPreview.src = e.target.result;
-                previewContainer.classList.remove('d-none');
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+                    var selectFoto = document.getElementById('FOTO_id_foto');
+                    for (var i = 0; i < selectFoto.options.length; i++) {
+                        if (selectFoto.options[i].dataset.ruta === 'img/accesorios-img/' + codigo + '.jpg') {
+                            selectFoto.selectedIndex = i;
+                            break;
+                        } else {
+                            selectFoto.selectedIndex = -1;
+                        }
+                    }
 
-    document.getElementById('formFoto').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        let formData = new FormData(this);
-        
-        fetch('{{ route('foto.accesorio') }}', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    var idFotoText = document.getElementById('idFotoText');
+                    if (selectFoto.selectedIndex >= 0) {
+                        idFotoText.textContent = "ID de la Foto: " + selectFoto.value;
+                    } else {
+                        idFotoText.textContent = "ID de la Foto: No seleccionada";
+                    }
+                } else {
+                    document.getElementById('fotoPreview').src = "";
+                    document.getElementById('FOTO_id_foto').selectedIndex = -1;
+                }
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Hide photo form and show accessory form
+
+            function mostrarFotoSeleccionada() {
+                var selectFoto = document.getElementById('FOTO_id_foto');
+                var rutaFoto = selectFoto.options[selectFoto.selectedIndex].dataset.ruta;
+
+                var rutaCompleta = "{{ asset('') }}" + rutaFoto;
+                document.getElementById('fotoPreview').src = rutaCompleta;
+
+                document.getElementById('idFotoText').textContent = "ID de la Foto: " + selectFoto.value;
+            }
+
+            const codAcc = document.getElementById('cod_accesorio');
+            const fotoId = document.getElementById('FOTO_id_foto');
+            if (codAcc) codAcc.addEventListener('input', actualizarRutaImagen);
+            if (fotoId) fotoId.addEventListener('change', mostrarFotoSeleccionada);
+        });
+
+        const showPhotoBtn = document.getElementById('showPhotoForm');
+        if (showPhotoBtn) {
+            showPhotoBtn.addEventListener('click', function() {
+                document.getElementById('photoForm').classList.remove('d-none');
+                document.getElementById('accessoryForm').classList.add('d-none');
+            });
+        }
+
+        const showAccBtn = document.getElementById('showAccessoryForm');
+        if (showAccBtn) {
+            showAccBtn.addEventListener('click', function() {
                 document.getElementById('photoForm').classList.add('d-none');
                 document.getElementById('accessoryForm').classList.remove('d-none');
-            } else {
-                // Handle error
-                console.error('Error:', data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    });
-</script>
+            });
+        }
 
-@if(session('aviso'))
-    <script>
-        //mensaje cuando la foto ya existe
-        Swal.fire({
-            icon: 'info',
-            text: '{{ session('aviso') }}',
-            showConfirmButton: false,
-            timer: 1500,
-        });
+        const fotoInput = document.getElementById('foto');
+        if (fotoInput) {
+            fotoInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const photoPreview = document.getElementById('photoPreview');
+                        const previewContainer = document.getElementById('previewContainer');
+                        
+                        photoPreview.src = e.target.result;
+                        previewContainer.classList.remove('d-none');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        const formFoto = document.getElementById('formFoto');
+        if (formFoto) {
+            formFoto.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                let formData = new FormData(this);
+                
+                fetch('{{ route('foto.accesorio') }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('photoForm').classList.add('d-none');
+                        document.getElementById('accessoryForm').classList.remove('d-none');
+                    } else {
+                        console.error('Error:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        }
     </script>
-@endif
-@if(session('success'))
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Éxito',
-            text: '{{ session('success') }}',
-        });
-    </script>
-@endif
-@endsection
+
+    @if(session('aviso'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                text: '{{ session('aviso') }}',
+                showConfirmButton: false,
+                timer: 1500,
+            });
+        </script>
+    @endif
+    @if(session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '{{ session('success') }}',
+            });
+        </script>
+    @endif
+@endpush

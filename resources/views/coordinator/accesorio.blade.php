@@ -2,6 +2,10 @@
 
 @section('title', 'Accesorios')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/accesorio.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagacces">
     <div class="container-fluid">
@@ -71,30 +75,33 @@
         <div class="d-flex justify-content-center mt-4">
             {{ $accesorios->links('pagination::bootstrap-5') }}
         </div>
-
-        <!--mensaje para cuando no se encuentra resultados de busqueda-->
-        @if (session('errorbuscar'))
-            <script>
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Busqueda NO Encontrada',
-                    text: '{{ session('errorbuscar') }}'
-                });
-            </script>
-        @endif
     </div>
 </main>
-<!--mensaje de error en la comunicacion a BD-->
-@if(session('error'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ session('error') }}',
-        });
-    </script>
-@endif
 @endsection
+
+@push('scripts')
+    <!-- Mensaje cuando no se encuentra resultados de busqueda -->
+    @if (session('errorbuscar'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Busqueda NO Encontrada',
+                text: '{{ session('errorbuscar') }}'
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error en la comunicacion a BD -->
+    @if(session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
+@endpush
 
 <!--Para mostrar el desplegable de edificios de la sede central-->
 @section('dropdown-items')

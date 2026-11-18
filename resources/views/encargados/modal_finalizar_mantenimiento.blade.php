@@ -35,26 +35,32 @@
 </div>
 
 <!-- Script: Configurar modal dinámicamente -->
+@push('scripts')
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('modalFinalizarMantenimiento');
+    if (modal) {
+      modal.addEventListener('show.bs.modal', event => {
+        const button = event.relatedTarget;
+        const mantenimientoId = button.getAttribute('data-id');
+        const actionUrl = button.getAttribute('data-url');
 
-    modal.addEventListener('show.bs.modal', event => {
-      const button = event.relatedTarget;
-      const mantenimientoId = button.getAttribute('data-id');
-      const actionUrl = button.getAttribute('data-url');
-
-      document.getElementById('mantenimientoFinalId').value = mantenimientoId;
-      document.getElementById('formFinalizarMantenimiento').action = actionUrl;
-    });
+        document.getElementById('mantenimientoFinalId').value = mantenimientoId;
+        document.getElementById('formFinalizarMantenimiento').action = actionUrl;
+      });
+    }
   });
 </script>
 
-@if ($errors->any() && session()->get('_old_input')['informe_final'] ?? false)
+@if ($errors->any() && (session()->get('_old_input')['informe_final'] ?? false))
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const modal = new bootstrap.Modal(document.getElementById('modalFinalizarMantenimiento'));
-        modal.show();
+        const modalEl = document.getElementById('modalFinalizarMantenimiento');
+        if (modalEl) {
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        }
     });
 </script>
 @endif
+@endpush

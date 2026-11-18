@@ -12,21 +12,18 @@
             </div>
         </div>
     </div>
+</div>
+@endsection
 
-
-
+@push('scripts')
     <!-- Mostrar mensajes de error -->
     @if($errors->any())
         <script>
-            // Crear un array para almacenar todos los mensajes de error
             var errorMessages = [];
-            
-            // Recorrer los mensajes de error y agregarlos al array
             @foreach($errors->all() as $error)
                 errorMessages.push('{{ $error }}');
             @endforeach
             
-            // Mostrar todos los mensajes de error en un solo alerta
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
@@ -35,5 +32,4 @@
             });
         </script>
     @endif
-</div>
-@endsection
+@endpush

@@ -2,6 +2,10 @@
 
 @section('title', 'Detalles de Movimientos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/movimientos.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagdetalles">
     <div class="container-fluid">

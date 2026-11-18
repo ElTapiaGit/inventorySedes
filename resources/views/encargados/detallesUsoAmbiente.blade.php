@@ -2,6 +2,10 @@
 
 @section('title', 'Movimientos-Detalles')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/encargado/detallesUso.css') }}">
+@endpush
+
 @section('content')
 <div class="content mt-2 pagdetalles">
     <div class="container-fluid">

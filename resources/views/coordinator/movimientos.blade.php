@@ -2,6 +2,10 @@
 
 @section('title', 'Movimientos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/movimientos.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagMantenimiento">
     <div class="container-fluid">
@@ -27,17 +31,6 @@
 
                         <button class="btn btn-primary" type="submit">Buscar</button>
                     </div>
-
-                    <!--Mensaje de no hay usuarios-->
-                    @if(session('error_usuario'))
-                        <script>
-                            Swal.fire({
-                                icon: 'info',
-                                title: 'Oops...',
-                                text: '{{ session('error_usuario') }}'
-                            });
-                        </script>
-                    @endif
                 </div>
 
                 <!--Buscar por fecha-->
@@ -47,16 +40,6 @@
                         <input type="text" class="form-control" id="fecha" name="fecha" placeholder="Fecha (dd/mm/yyyy)">
                         <button class="btn btn-primary" type="submit">Buscar</button>
                     </div>
-                    <!--Mensaje de no hay fecha-->
-                    @if(session('error_fecha'))
-                        <script>
-                            Swal.fire({
-                                icon: 'info',
-                                title: 'Oops...',
-                                text: '{{ session('error_fecha') }}'
-                            });
-                        </script>
-                    @endif
                 </div>
             </div>
         </form>
@@ -102,6 +85,30 @@
     </div>
 </main>
 @endsection
+
+@push('scripts')
+    <!-- Mensaje cuando no hay usuarios -->
+    @if(session('error_usuario'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Oops...',
+                text: '{{ session('error_usuario') }}'
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje cuando no hay fecha -->
+    @if(session('error_fecha'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Oops...',
+                text: '{{ session('error_fecha') }}'
+            });
+        </script>
+    @endif
+@endpush
 
 @section('dropdown-items')
     @foreach($edificios as $edificio)

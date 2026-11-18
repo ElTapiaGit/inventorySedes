@@ -2,6 +2,10 @@
 
 @section('title', 'Historial de Mantenimientos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/mantenimiento.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagHistorial">
     <div class="container-fluid">
@@ -36,17 +40,6 @@
                     </div>
                 </div>
             </form>
-
-        <!--mensaje de inf sin resultado de buscar-->
-        @if(session('errorbuscar'))
-            <script>
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Sin Resultados',
-                    text: '{{ session('errorbuscar') }}',
-                });
-            </script>
-        @endif
 
         <div>
             <h4>Historial de Mantenimientos:</h4>
@@ -89,6 +82,19 @@
     </div>
 </main>
 @endsection
+
+@push('scripts')
+    <!-- Mensaje sin resultado de busqueda -->
+    @if(session('errorbuscar'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Sin Resultados',
+                text: '{{ session('errorbuscar') }}',
+            });
+        </script>
+    @endif
+@endpush
 
 <!--Para mostrar el desplegable de edificios de la sede central-->
 @section('dropdown-items')

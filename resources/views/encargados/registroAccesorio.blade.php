@@ -28,22 +28,6 @@
                     <img id="photoPreview" src="" alt="Previsualización de la Foto" class="img-fluid border">
                 </div>
             </div>
-            <script>
-                document.getElementById('foto').addEventListener('change', function(event) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = function(e) {
-                            const photoPreview = document.getElementById('photoPreview');
-                            const previewContainer = document.getElementById('previewContainer');
-                            
-                            photoPreview.src = e.target.result;
-                            previewContainer.classList.remove('d-none');
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                });
-            </script>
         </div>
 
         <!-- Formulario para registrar el accesorio, inicialmente oculto -->
@@ -113,48 +97,63 @@
                         <!-- Imagen que se actualiza según la selección -->
                         <img id="fotoPreview" src="{{ asset(session('ruta_foto') ?? 'img/accesorios-img/default.jpg') }}" alt="Vista previa de la foto" style="max-width: 100%; height: auto;">
                     </div>
-                    <!-- Script para actualizar la vista previa de la foto -->
-                    <script>
-                        function mostrarFotoSeleccionada() {
-                            var rutaFoto = document.getElementById('FOTO_id_foto').value;
-                            document.getElementById('fotoPreview').src = '{{ asset('') }}' + rutaFoto;
-                        }
-                    </script>
 
                     <button type="submit" class="btn btn-success">Registrar Accesorio</button>
                 </form>
             </div>
-            <!--script para validar ubicacion-->
-            <script>
-                function validateUbicacion() {
-                    const ubicacionInput = document.getElementById('ubicacion');
-                    const errorDiv = document.getElementById('ubicacion-error');
-                    
-                    // Si el valor es mayor a 50 caracteres, muestra el mensaje de error
-                    if (ubicacionInput.value.length > 120) {
-                        errorDiv.style.display = 'block';
-                    } else {
-                        errorDiv.style.display = 'none';
-                    }
-                }
-            </script>
         </div>
 
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            @if(session('foto_id'))
-                document.getElementById('fotoForm').style.display = 'none';
-                document.getElementById('accesorioForm').style.display = 'block';
-            @endif
-        });
-    </script>
 </div>
+@endsection
+
+@push('scripts')
+<script>
+    const fotoInput = document.getElementById('foto');
+    if (fotoInput) {
+        fotoInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoPreview = document.getElementById('photoPreview');
+                    const previewContainer = document.getElementById('previewContainer');
+                    
+                    photoPreview.src = e.target.result;
+                    previewContainer.classList.remove('d-none');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    function mostrarFotoSeleccionada() {
+        var rutaFoto = document.getElementById('FOTO_id_foto').value;
+        document.getElementById('fotoPreview').src = '{{ asset('') }}' + rutaFoto;
+    }
+
+    function validateUbicacion() {
+        const ubicacionInput = document.getElementById('ubicacion');
+        const errorDiv = document.getElementById('ubicacion-error');
+        if (ubicacionInput && errorDiv) {
+            if (ubicacionInput.value.length > 120) {
+                errorDiv.style.display = 'block';
+            } else {
+                errorDiv.style.display = 'none';
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        @if(session('foto_id'))
+            document.getElementById('fotoForm').style.display = 'none';
+            document.getElementById('accesorioForm').style.display = 'block';
+        @endif
+    });
+</script>
 
 @if(session('aviso'))
     <script>
-        //mensaje cuando la foto ya existe
         Swal.fire({
             icon: 'info',
             text: '{{ session('aviso') }}',
@@ -163,9 +162,9 @@
         });
     </script>
 @endif
+
 @if(session('info'))
     <script>
-        //mensaje cuando el equipo ya existe
         Swal.fire({
             icon: 'info',
             title: 'Registro No Valido',
@@ -174,7 +173,6 @@
     </script>
 @endif
 
-<!-- SweetAlert for Success/Error Messages -->
 @if(session('success'))
     <script>
         Swal.fire({
@@ -194,6 +192,5 @@
         });
     </script>
 @endif
-
-@endsection
+@endpush
 

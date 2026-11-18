@@ -8,20 +8,15 @@
 
     <!-- Enlazar el archivo CSS usando asset() -->
     <link rel="stylesheet" href="{{ asset('css/stylecoordinator.css') }}"> <!--principal-->
-    <link rel="stylesheet" href="{{ asset('css/coordinador/laboratorios.css') }}"> <!--para laboratorios-->
-    <link rel="stylesheet" href="{{ asset('css/coordinador/ambiente.css') }}"> <!--para laboratorios-->
-    <link rel="stylesheet" href="{{ asset('css/coordinador/detallesequipo.css') }}"> <!--para detalles equipos-->
-    <link rel="stylesheet" href="{{ asset('css/coordinador/accesorio.css') }}"> <!--para detalles equipos-->
-    <link rel="stylesheet" href="{{ asset('css/coordinador/mantenimiento.css') }}"> 
-    <link rel="stylesheet" href="{{ asset('css/coordinador/movimientos.css') }}"> 
-    <link rel="stylesheet" href="{{ asset('css/coordinador/prestamos.css') }}"> 
-    
+
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/989bcc080d.js" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @stack('styles')
 </head>
 <body>
     <div class="wrapper"><!--envoltura-->
@@ -126,6 +121,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{asset('js/dashboarNone.js')}}"></script>
-    
+    @stack('scripts')
 </body>
 </html>

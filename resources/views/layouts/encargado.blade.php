@@ -7,8 +7,6 @@
     <title>@yield('title', 'Sistema de Gestión')</title>
 
     <link rel="stylesheet" href="{{ asset('css/encargado/styleEncargado.css') }}"> <!--principal-->
-    <link rel="stylesheet" href="{{ asset('css/encargado/movimientoAmbiente.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/encargado/detallesUso.css') }}">
 
     <!-- Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -17,6 +15,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    @stack('styles')
+
     <style>
         body{
             background: #bbcadc;
@@ -89,5 +89,6 @@
 
     <!-- Scripts de Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @stack('scripts')
 </body>
 </html>

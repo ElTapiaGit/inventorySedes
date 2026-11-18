@@ -2,6 +2,10 @@
 
 @section('title', 'Mantenimientos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/mantenimiento.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagMantenimiento">
     <div class="container-fluid">
@@ -14,16 +18,11 @@
         <div>
             <h4>Equipos Para Mantenimiento:</h4>
         </div>
-        <!--mensaje para cuando no hay equipos para mantenimiento-->
+
         @if($equipos->isEmpty())
-            <script>
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Sin equipos para mantenimiento',
-                    text: 'No hay equipos registrados para mantenimiento en el Edificio central.',
-                    confirmButtonText: 'Entendido'
-                });
-            </script>
+            <div class="alert alert-info text-center">
+                No hay equipos registrados para mantenimiento en el Edificio central.
+            </div>
         @else
             <div class="table-responsive">
                 <table class="table table-mantenimiento table-borded table-striped">
@@ -55,17 +54,32 @@
         @endif
     </div>
 </main>
-<!-- mensaje de error de comunicacion con la BD-->
-@if(session('errordata'))
-    <script>
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: '{{ session('error') }}',
-        });
-    </script>
-@endif
 @endsection
+
+@push('scripts')
+    <!-- Mensaje cuando no hay equipos para mantenimiento -->
+    @if($equipos->isEmpty())
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Sin equipos para mantenimiento',
+                text: 'No hay equipos registrados para mantenimiento en el Edificio central.',
+                confirmButtonText: 'Entendido'
+            });
+        </script>
+    @endif
+
+    <!-- Mensaje de error de comunicacion con la BD -->
+    @if(session('errordata'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('error') }}',
+            });
+        </script>
+    @endif
+@endpush
 
 <!--Para mostrar el desplegable de edificios de la sede central-->
 @section('dropdown-items')

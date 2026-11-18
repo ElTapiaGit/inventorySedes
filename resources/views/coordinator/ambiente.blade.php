@@ -2,6 +2,10 @@
 
 @section('title', 'Inventario del Laboratorio')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/ambiente.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 ambiente-page">
     <div class="container-fluid">

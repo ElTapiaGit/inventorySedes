@@ -137,28 +137,6 @@
     </div>
 </div>
 
-<!-- Script: Agregar/Eliminar artículos -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('articulos-prestamo-container');
-
-    document.getElementById('add-articulo-prestamo').addEventListener('click', () => {
-      const row = container.querySelector('.articulo-row').cloneNode(true);
-      row.querySelectorAll('input').forEach(input => input.value = '');
-      container.appendChild(row);
-    });
-
-    document.addEventListener('click', function (e) {
-      if (e.target.closest('.remove-articulo')) {
-        const rows = container.querySelectorAll('.articulo-row');
-        if (rows.length > 1) {
-          e.target.closest('.articulo-row').remove();
-        }
-      }
-    });
-  });
-</script>
-
 <!-- Modal: Registrar Devolución -->
 <div class="modal fade" id="modalRegistrarDevolucion" tabindex="-1" aria-labelledby="modalRegistrarDevolucionLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -200,61 +178,89 @@
         </div>
     </div>
 </div>
-
-<!-- Script: Configurar acción dinámica -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('modalRegistrarDevolucion');
-
-    modal.addEventListener('show.bs.modal', event => {
-      const button = event.relatedTarget;
-      const prestamoId = button.getAttribute('data-id');
-      const actionUrl = button.getAttribute('data-url');
-
-      document.getElementById('prestamoDevolucionId').value = prestamoId;
-      document.getElementById('formRegistrarDevolucion').action = actionUrl;
-    });
-  });
-</script>
-
-
-<!-- SweetAlert2 Éxito -->
-@if (session('success'))
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: '¡Éxito!',
-        text: '{{ session('success') }}',
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Aceptar'
-    });
-</script>
-@endif
-
-<!-- SweetAlert2 Error -->
-@if (session('error'))
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: '¡Error!',
-        text: '{{ session('error') }}',
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'Aceptar'
-    });
-</script>
-@endif
-
-<!-- SweetAlert2 Validaciones -->
-@if ($errors->any())
-<script>
-    Swal.fire({
-        icon: 'warning',
-        title: 'Errores de Validación',
-        html: `{!! implode('<br>', $errors->all()) !!}`,
-        confirmButtonColor: '#f0ad4e',
-        confirmButtonText: 'Revisar'
-    });
-</script>
-@endif
-
 @endsection
+
+@push('scripts')
+    <!-- Script: Agregar/Eliminar artículos -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('articulos-prestamo-container');
+
+        if (container) {
+          const addBtn = document.getElementById('add-articulo-prestamo');
+          if (addBtn) {
+            addBtn.addEventListener('click', () => {
+              const row = container.querySelector('.articulo-row').cloneNode(true);
+              row.querySelectorAll('input').forEach(input => input.value = '');
+              container.appendChild(row);
+            });
+          }
+
+          document.addEventListener('click', function (e) {
+            if (e.target.closest('.remove-articulo')) {
+              const rows = container.querySelectorAll('.articulo-row');
+              if (rows.length > 1) {
+                e.target.closest('.articulo-row').remove();
+              }
+            }
+          });
+        }
+      });
+    </script>
+
+    <!-- Script: Configurar acción dinámica -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('modalRegistrarDevolucion');
+        if (modal) {
+          modal.addEventListener('show.bs.modal', event => {
+            const button = event.relatedTarget;
+            const prestamoId = button.getAttribute('data-id');
+            const actionUrl = button.getAttribute('data-url');
+
+            document.getElementById('prestamoDevolucionId').value = prestamoId;
+            document.getElementById('formRegistrarDevolucion').action = actionUrl;
+          });
+        }
+      });
+    </script>
+
+    <!-- SweetAlert2 Éxito -->
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    @endif
+
+    <!-- SweetAlert2 Error -->
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    @endif
+
+    <!-- SweetAlert2 Validaciones -->
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Errores de Validación',
+                html: `{!! implode('<br>', $errors->all()) !!}`,
+                confirmButtonColor: '#f0ad4e',
+                confirmButtonText: 'Revisar'
+            });
+        </script>
+    @endif
+@endpush

@@ -11,30 +11,6 @@
         </button>
     </div>
 
-    @if(session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: '{{ session('success') }}',
-                timer: 3000,
-                showConfirmButton: false
-            });
-        </script>
-    @endif
-    <!-- SweetAlert2 Error -->
-    @if (session('error'))
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: '¡Error!',
-                text: '{{ session('error') }}',
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Aceptar'
-            });
-        </script>
-    @endif
-
     <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover text-center align-middle">
             <thead class="table-success">
@@ -93,3 +69,30 @@
 @include('encargados.modal_nuevo_mantenimiento')
 @include('encargados.modal_finalizar_mantenimiento')
 @endsection
+
+@push('scripts')
+    @if(session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '{{ session('success') }}',
+                timer: 3000,
+                showConfirmButton: false
+            });
+        </script>
+    @endif
+
+    <!-- SweetAlert2 Error -->
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    @endif
+@endpush

@@ -2,6 +2,10 @@
 
 @section('title', 'Prestamos')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/prestamos.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 pagPrestamo">
     <div class="container-fluid">
@@ -66,59 +70,58 @@
             {{ $prestamos->links('pagination::bootstrap-5') }}
         </div>
     </div>
-    <!--para cambiar fondo de celda si hay devolucion-->
+</main>
+@endsection
+
+@push('scripts')
+    <!-- Script para cambiar fondo de celda si hay devolucion -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Selecciona todas las celdas en la columna "Fecha Devolución" (quinta columna)
             const celdasFechaDevolucion = document.querySelectorAll('table tbody tr td:nth-child(5)');
     
             celdasFechaDevolucion.forEach(celda => {
-                // Si el contenido de la celda es "Null" o vacío, cambia el color de fondo a rojo
                 if (celda.textContent.trim() === 'No devuelto' || celda.textContent.trim() === '') {
                     celda.style.backgroundColor = '#f45963';
-                    celda.style.color = 'white'; // Para asegurar que el texto sea visible sobre el fondo rojo
+                    celda.style.color = 'white';
                 }
             });
         });
     </script>
-</main>
 
-<!--mensaje cuando no hay resultados en la busqueda-->
-@if(session('error_usuario'))
-    <script>
-        Swal.fire({
-            icon: 'info',
-            title: 'Oops...',
-            text: '{{ session('error_usuario') }}'
-        }).then(() => {
-            window.location.href = "{{ route('prestamos.index') }}";
-        });
-    </script>
-@endif
+    <!-- Mensajes cuando no hay resultados en la busqueda -->
+    @if(session('error_usuario'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Oops...',
+                text: '{{ session('error_usuario') }}'
+            }).then(() => {
+                window.location.href = "{{ route('prestamos.index') }}";
+            });
+        </script>
+    @endif
 
-@if(session('error_fecha'))
-    <script>
-        Swal.fire({
-            icon: 'info',
-            title: 'Oops...',
-            text: '{{ session('error_fecha') }}'
-        }).then(() => {
-            window.location.href = "{{ route('prestamos.index') }}";
-        });
-    </script>
-@endif
+    @if(session('error_fecha'))
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'Oops...',
+                text: '{{ session('error_fecha') }}'
+            });
+        </script>
+    @endif
 
-<!--mensaje de error de comunicacion a la BD-->
-@if(session('errordata'))
-<script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: '{{ session('errordata') }}',
-    });
-</script>
-@endif
-@endsection
+    <!-- Mensaje de error de comunicacion a la BD -->
+    @if(session('errordata'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '{{ session('errordata') }}',
+            });
+        </script>
+    @endif
+@endpush
 
 <!--Para mostrar el desplegable de edificios de la sede central-->
 @section('dropdown-items')

@@ -2,6 +2,10 @@
 
 @section('title', 'Mobiliario del Laboratorio')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/coordinador/ambiente.css') }}">
+@endpush
+
 @section('content')
 <main class="content px-3 ambiente-page">
     <div class="container-fluid">
@@ -18,14 +22,9 @@
         </div>
         
         @if($mobiliarios->isEmpty())
-        <script>
-            Swal.fire({
-                icon: 'info',
-                title: 'No existen mobiliario en el laboratorio {{ $ambiente->nombre }}',
-                showConfirmButton: false,
-                timer: 3000
-            });
-        </script>
+            <div class="alert alert-info text-center">
+                No existen mobiliario en el laboratorio {{ $ambiente->nombre }}
+            </div>
         @else
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
@@ -68,6 +67,19 @@
     </div>
 </main>
 @endsection
+
+@push('scripts')
+    @if($mobiliarios->isEmpty())
+        <script>
+            Swal.fire({
+                icon: 'info',
+                title: 'No existen mobiliario en el laboratorio {{ $ambiente->nombre }}',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        </script>
+    @endif
+@endpush
 
 <!--Para mostrar el desplegable de edificios de la sede central-->
 @section('dropdown-items')

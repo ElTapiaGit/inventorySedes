@@ -2,10 +2,6 @@
 
 @section('title', 'Movimientos')
 
-@push('styles')
-    <link rel="stylesheet" href="{{ asset('css/encargado/movimientoAmbiente.css') }}">
-@endpush
-
 @section('content')
 <div class="content mt-2">
 

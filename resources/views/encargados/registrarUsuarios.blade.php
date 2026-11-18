@@ -3,12 +3,19 @@
 @section('content')
 <div class="content mt-2">
 
-    <h1 class="text-center mb-4">Usuarios</h1>
-            
-    <div class="d-flex justify-content-center mb-4">
-        <!-- Botones de registro -->
-        <button class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#modalRegistrarUsuario">Registrar Usuario</button>
-        <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipoUsuario">Registrar Tipo Usuario</button>
+    <!-- Encabezado Estandarizado -->
+    <div class="encargado-page-header">
+        <h1>
+            <i class="bi bi-people text-primary"></i> Gestión de Usuarios
+        </h1>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalRegistrarUsuario">
+                <i class="bi bi-person-plus me-1"></i> Registrar Usuario
+            </button>
+            <button class="btn btn-outline-secondary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalRegistrarTipoUsuario">
+                <i class="bi bi-person-badge me-1"></i> Registrar Tipo Usuario
+            </button>
+        </div>
     </div>
 
     <!-- Filtros de búsqueda -->
@@ -45,9 +52,9 @@
     </form>
 
     <!-- Tabla de usuarios -->
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle shadow-sm rounded-3 overflow-hidden">
-            <thead class="table-primary text-center">
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover table-bordered table-encargado align-middle mb-0">
+            <thead class="table-encargado text-center">
                 <tr>
                     <th>Nros.</th>
                     <th>Nombre</th>

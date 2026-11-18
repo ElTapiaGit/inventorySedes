@@ -1,26 +1,277 @@
-/* para pagina principal de encaragdo */
-header{
-    background-image: linear-gradient(to bottom, #464673, #5d95dd);
+/**
+ * styleEncargado.css
+ * Hoja de estilos institucional para el panel de Encargado (ULAT)
+ */
+
+body, html {
+    font-family: 'Poppins', sans-serif;
+    background-color: #EEF3F8;
+    color: #1f2937;
     margin: 0;
-}
-.nav-item{
-    padding: 0 0 0 10px;
-}
-.nav-item :hover{
-    outline: solid #f1f7f6 1px;
-    background-color: #bed0f1;
-    border-radius: 5px;
-}
-.nav-item .nav-link{
-    color: #fff;
+    padding: 0;
 }
 
-.main-content{
-    padding: 20px;
+/* 1. Header y Navbar Superior */
+header.encargado-navbar {
+    background-image: linear-gradient(to right, #1B4B82, #2462AB, #2B8EAD);
+    box-shadow: 0 4px 12px rgba(14, 13, 57, 0.15);
+    border-bottom: 3px solid #F59E0B;
+    padding: 0.5rem 1rem;
 }
-/* Para resaltar el item activo del menú lateral */
-.nav-item.active .nav-link {
-    background-color: #bed0f1; /* Mismo que el hover */
-    color: black;
-    border-radius: 5px;
+
+.encargado-navbar .navbar-brand {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.encargado-navbar .brand-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.encargado-navbar .user-name {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.encargado-navbar .nav-item {
+    margin: 2px 3px;
+}
+
+.encargado-navbar .nav-link {
+    color: #ffffff;
+    padding: 8px 16px;
+    font-weight: 500;
+    font-size: 0.92rem;
+    border-radius: 30px;
+    transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+}
+
+.encargado-navbar .nav-link:hover {
+    background-color: #B9F4E6;
+    color: #0E0D39 !important;
+    outline: none;
+}
+
+.encargado-navbar .nav-item.active .nav-link {
+    background-color: #B9F4E6;
+    color: #0E0D39 !important;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Menú Desplegable */
+.encargado-navbar .dropdown-menu {
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(14, 13, 57, 0.12);
+    padding: 8px;
+    margin-top: 8px;
+}
+
+.encargado-navbar .dropdown-item {
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    color: #333333;
+    transition: background-color 0.15s ease;
+    display: flex;
+    align-items: center;
+}
+
+.encargado-navbar .dropdown-item:hover {
+    background-color: #EEF3F8;
+    color: #1B4B82;
+    font-weight: 500;
+}
+
+/* 2. Contenido Principal */
+.main-content {
+    padding: 24px 20px;
+    min-height: calc(100vh - 75px);
+}
+
+/* 3. Encabezados Estandarizados de Pagina */
+.encargado-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #E2E8F0;
+}
+
+.encargado-page-header h1,
+.encargado-page-header h2,
+.encargado-page-header h3,
+.encargado-page-header h4 {
+    color: #0E0D39;
+    font-weight: 700;
+    font-size: 1.6rem;
+    margin: 0;
+    letter-spacing: -0.3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 4. Tablas Estandarizadas (.table-encargado) */
+.table-encargado {
+    background-color: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(14, 13, 57, 0.06);
+    border: 1px solid #E2E8F0;
+}
+
+.table-encargado thead,
+thead.table-encargado {
+    background-color: #1B4B82 !important;
+    color: #ffffff !important;
+}
+
+.table-encargado thead th,
+thead.table-encargado th {
+    background-color: #1B4B82 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 14px 12px;
+    border-color: #2462AB;
+    vertical-align: middle;
+}
+
+.table-encargado tbody tr {
+    transition: background-color 0.15s ease-in-out;
+}
+
+.table-encargado tbody tr:hover {
+    background-color: #F8FAFC !important;
+}
+
+.table-encargado tbody td {
+    padding: 12px;
+    vertical-align: middle;
+    font-size: 0.92rem;
+    border-color: #F1F5F9;
+}
+
+/* 5. Dashboard KPIs y Accesos Rapidos */
+.dashboard-kpi-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 22px 20px;
+    box-shadow: 0 4px 16px rgba(14, 13, 57, 0.06);
+    border: 1px solid #E2E8F0;
+    border-top: 4px solid #1B4B82;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.dashboard-kpi-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(14, 13, 57, 0.12);
+    color: inherit;
+}
+
+.dashboard-kpi-card.kpi-ambientes { border-top-color: #2B8EAD; }
+.dashboard-kpi-card.kpi-prestamos { border-top-color: #F59E0B; }
+.dashboard-kpi-card.kpi-mantenimiento { border-top-color: #1B4B82; }
+.dashboard-kpi-card.kpi-usuarios { border-top-color: #198754; }
+
+.kpi-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.kpi-icon-ambientes { background-color: #E0F2FE; color: #2B8EAD; }
+.kpi-icon-prestamos { background-color: #FEF3C7; color: #D97706; }
+.kpi-icon-mantenimiento { background-color: #E0E7FF; color: #1B4B82; }
+.kpi-icon-usuarios { background-color: #DCFCE7; color: #16A34A; }
+
+.kpi-number {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #0E0D39;
+    line-height: 1.1;
+    margin: 10px 0 4px 0;
+}
+
+.kpi-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #64748B;
+    margin: 0;
+}
+
+.kpi-link-hint {
+    font-size: 0.82rem;
+    color: #1B4B82;
+    font-weight: 500;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Tarjetas de Accesos Rapidos */
+.quick-action-card {
+    background: #ffffff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 16px 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+    color: #0E0D39;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(14, 13, 57, 0.04);
+    height: 100%;
+}
+
+.quick-action-card:hover {
+    background-color: #F8FAFC;
+    border-color: #CBD5E1;
+    transform: translateY(-2px);
+    color: #1B4B82;
+    box-shadow: 0 6px 16px rgba(14, 13, 57, 0.08);
+}
+
+.quick-action-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    background-color: #EEF3F8;
+    color: #1B4B82;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.quick-action-card:hover .quick-action-icon {
+    background-color: #B9F4E6;
+    color: #0E0D39;
 }

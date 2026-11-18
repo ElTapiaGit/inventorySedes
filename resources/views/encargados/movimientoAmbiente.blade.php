@@ -5,13 +5,19 @@
 @section('content')
 <div class="content mt-2">
 
-    <h1 class="text-center mb-2 py-3 px-4 fw-bold">USO DE AMBIENTES</h1>
-
-    <!-- Botones de acción -->
-    <div class="d-flex justify-content-center mb-4 gap-3">
-        <button class="btn btn-primary px-4 shadow" data-bs-toggle="modal" data-bs-target="#registrarUsoModal"><i class="bi bi-plus-circle me-1"></i>Registrar Uso</button>
-
-        <button class="btn btn-success px-4 shadow" data-bs-toggle="modal" data-bs-target="#registrarUsuarioModal"><i class="bi bi-person-plus me-1"></i> Registrar Usuario</button>
+    <!-- Encabezado Estandarizado -->
+    <div class="encargado-page-header">
+        <h1>
+            <i class="bi bi-door-open text-primary"></i> Uso de Ambientes
+        </h1>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#registrarUsoModal">
+                <i class="bi bi-plus-circle me-1"></i> Registrar Uso
+            </button>
+            <button class="btn btn-success px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#registrarUsuarioModal">
+                <i class="bi bi-person-plus me-1"></i> Registrar Usuario
+            </button>
+        </div>
     </div>
 
     <!-- Formulario de búsqueda -->
@@ -48,9 +54,9 @@
     </form>
 
     <!-- Tabla de usos de ambientes -->
-    <div class="table-responsive shadow rounded">
-        <table class="table table-hover table-bordered align-middle mb-0">
-            <thead class="table-primary text-center">
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover table-bordered table-encargado align-middle mb-0">
+            <thead class="table-encargado text-center">
                 <tr>
                     <th scope="col">Nro.</th>
                     <th scope="col">Ambiente</th>

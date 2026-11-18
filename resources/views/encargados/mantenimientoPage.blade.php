@@ -3,17 +3,22 @@
 @section('title', 'Gestión de Mantenimientos')
 
 @section('content')
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-bolder">Mantenimientos Registrados</h4>
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoMantenimiento">
-            <i class="bi bi-plus-circle"></i> Nuevo Mantenimiento
-        </button>
+<div class="content mt-2">
+    <!-- Encabezado Estandarizado -->
+    <div class="encargado-page-header">
+        <h1>
+            <i class="bi bi-wrench-adjustable text-primary"></i> Gestión de Mantenimientos
+        </h1>
+        <div>
+            <button class="btn btn-primary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoMantenimiento">
+                <i class="bi bi-plus-circle me-1"></i> Nuevo Mantenimiento
+            </button>
+        </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover text-center align-middle">
-            <thead class="table-success">
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover table-bordered table-encargado text-center align-middle mb-0">
+            <thead class="table-encargado text-center">
                 <tr>
                     <th>#</th>
                     <th>Informe Inicial</th>

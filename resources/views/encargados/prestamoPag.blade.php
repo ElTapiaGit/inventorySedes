@@ -3,21 +3,24 @@
 @section('title', 'Gestion de Prestamos')
 
 @section('content')
-<div class="content mt-4">
+<div class="content mt-2">
 
-    <h1 class="text-center mb-4">Gestion de Préstamos</h1>
-
-    <!-- Botón de registrar préstamo -->
-    <div class="mb-3 text-end">
-        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevoPrestamo">
-            <i class="bi bi-plus-circle me-1"></i> Registrar Préstamo
-        </button>
+    <!-- Encabezado Estandarizado -->
+    <div class="encargado-page-header">
+        <h1>
+            <i class="bi bi-arrow-left-right text-primary"></i> Gestión de Préstamos
+        </h1>
+        <div>
+            <button class="btn btn-primary px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalNuevoPrestamo">
+                <i class="bi bi-plus-circle me-1"></i> Registrar Préstamo
+            </button>
+        </div>
     </div>
 
     <!-- Tabla de préstamos -->
-    <div class="table-responsive">
-        <table class="table table-striped table-hover table-bordered rounded shadow-sm">
-            <thead class="table-primary text-center">
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-hover table-bordered table-encargado align-middle mb-0">
+            <thead class="table-encargado text-center">
                 <tr>
                     <th>N°</th>
                     <th>Solicitante</th>

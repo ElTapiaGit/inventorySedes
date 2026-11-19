@@ -160,7 +160,7 @@
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item dropdown px-1">
                                 <a class="nav-link dropdown-toggle white-text" href="#" id="branchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{ $isClinicaContext ? 'Clinica Odontologia' : 'Edificio Principal' }}
+                                    {{ $edificioActivo ? $edificioActivo->nombre_edi : ($isClinicaContext ? 'Clinica Odontologia' : 'Edificio Principal') }}
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="branchDropdown" id="optio">
                                     @if(View::hasSection('dropdown-items'))
@@ -168,13 +168,12 @@
                                     @else
                                         @if(isset($edificios) && count($edificios) > 0)
                                             @foreach($edificios as $edificioItem)
-                                                @if($edificioItem->nombre_edi == 'Edificio Central')
-                                                    <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificioItem->nombre_edi }}</a></li>
-                                                @elseif($edificioItem->nombre_edi == 'Clinica Odontologia')
-                                                    <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificioItem->nombre_edi }}</a></li>
-                                                @else
-                                                    <li><a class="dropdown-item" href="#">{{ $edificioItem->nombre_edi }}</a></li>
-                                                @endif
+                                                <li>
+                                                    <a class="dropdown-item {{ (isset($edificioActivoId) && $edificioActivoId == $edificioItem->id_edificio) ? 'active' : '' }}" 
+                                                       href="{{ route('coordinator.edificio.seleccionar', ['id' => $edificioItem->id_edificio]) }}">
+                                                        <i class="bi bi-building pe-1"></i> {{ $edificioItem->nombre_edi }}
+                                                    </a>
+                                                </li>
                                             @endforeach
                                         @endif
                                     @endif

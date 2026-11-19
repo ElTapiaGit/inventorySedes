@@ -3,113 +3,114 @@
 namespace App\Http\Controllers\Coordinator;
 
 use App\Http\Controllers\Controller;
+use App\Services\CoordinatorScopeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 
 class BuscarLaboController extends Controller
 {
+    protected CoordinatorScopeService $scopeService;
+
+    public function __construct(CoordinatorScopeService $scopeService)
+    {
+        $this->scopeService = $scopeService;
+    }
+
     public function index()
     {
-        try{
-            // Consulta SQL para obtener los edificios de la sede central
-            $edificios = DB::table('edificio')
-            ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-            ->where('sede.nombre', 'Sede Central')//campo de la tabla sede debe estar con este nombre
-            ->select('edificio.id_edificio', 'edificio.nombre_edi')
-            ->get();
+        try {
+            $edificios = $this->scopeService->getEdificiosPermitidos();
+            $edificioActivoId = $this->scopeService->getEdificioActivoId();
+            $ambientesIds = $this->scopeService->getAmbientesPermitidosIds($edificioActivoId);
 
-            // Consulta SQL para obtener los laboratorios
             $laboratorios = DB::table('ambiente')
-                ->join('tipo_ambiente', 'ambiente.TIPO_AMBIENTE_id_ambiente', '=', 'tipo_ambiente.id_tipoambiente')
-                ->join('piso', 'ambiente.PISO_id_piso', '=', 'piso.id_piso')
-                ->join('edificio', 'piso.Edificio_id_edificio', '=', 'edificio.id_edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('tipo_ambiente.nombre_amb', 'Laboratorio Odontologia')
-                ->where('sede.id_sede', 101)//campo de la sede debe de ser id=1
-                ->where('edificio.nombre_edi', 'Edificio Central')
-                ->select('ambiente.id_ambiente', 'ambiente.nombre')
+                ->whereIn('id_ambiente', $ambientesIds)
+                ->select('id_ambiente', 'nombre')
+                ->orderBy('nombre')
                 ->get();
-                
 
             return view('coordinator.laboratorios', compact('edificios', 'laboratorios'));
-        }catch (\Exception $e) {
-            return redirect()->route('coordinator.inicio')->with('errordata', 'Ocurrió un error al cargar los laboratorios.');
+        } catch (\Exception $e) {
+            return redirect()->route('coordinator.inicio')->with('errordata', 'Ocurrio un error al cargar los laboratorios.');
         }
     }
 
-    //metodo para filtrar los ambientes que son laboratorios de odontoligia
     public function buscar(Request $request)
     {
         $request->validate([
             'Laboratorio' => 'required|string|max:45',
         ]);
-        try{
-            $nombre = $request->input('Laboratorio');//lo que se optenga al escribir en el input
 
-            // Consulta para obtener el ID del laboratorio
-            $laboratorios = DB::table('ambiente')
-            ->join('tipo_ambiente', 'ambiente.TIPO_AMBIENTE_id_ambiente', '=', 'tipo_ambiente.id_tipoambiente')
-            ->join('piso', 'ambiente.PISO_id_piso', '=', 'piso.id_piso')
-            ->join('edificio', 'piso.Edificio_id_edificio', '=', 'edificio.id_edificio')
-            ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-            ->where('tipo_ambiente.nombre_amb', 'Laboratorio Odontologia')
-            ->where('sede.id_sede', 101)
-            ->where('ambiente.nombre', $nombre)
-            ->select('ambiente.id_ambiente')
-            ->first();
-        
-            if (!$laboratorios) {
-                return redirect()->route('laboratorios.index')->with('errorbuscar', 'El Laboratorio que busca no se encontrado en la Base de Datos.');
+        try {
+            $nombre = $request->input('Laboratorio');
+            $edificioActivoId = $this->scopeService->getEdificioActivoId();
+            $ambientesIds = $this->scopeService->getAmbientesPermitidosIds($edificioActivoId);
+
+            $laboratorio = DB::table('ambiente')
+                ->whereIn('id_ambiente', $ambientesIds)
+                ->where('nombre', $nombre)
+                ->select('id_ambiente')
+                ->first();
+
+            if (!$laboratorio) {
+                return redirect()->route('laboratorios.index')->with('errorbuscar', 'El laboratorio que busca no fue encontrado en los ambientes asignados.');
             }
 
-            // Encriptar el ID del ambiente
-            $encryptedId = Crypt::encrypt($laboratorios->id_ambiente);
+            $encryptedId = Crypt::encrypt($laboratorio->id_ambiente);
             return redirect()->route('ambiente.show', ['id' => $encryptedId]);
-            
-        }catch (\Exception $e) {
-            return redirect()->route('coordinator.inicio')->with('errordata', 'Ocurrió un error al cargar los laboratorios. Inténtelo más tarde.');
+        } catch (\Exception $e) {
+            return redirect()->route('coordinator.inicio')->with('errordata', 'Ocurrio un error al buscar el laboratorio.');
         }
     }
-    
-    ///////////////////////////////////////////////////////////////////////
-    //metodo para las paginas de clinica odontologia
-    public function buscarRapido(){
-        try{
-            // Consulta SQL para obtener los edificios de la sede central
-            $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.id_sede', 1)
-                ->select('edificio.id_edificio', 'edificio.nombre_edi')
-                ->get();
 
+    public function buscarRapido()
+    {
+        try {
+            $edificios = $this->scopeService->getEdificiosPermitidos();
             return view('coordinator.clinicas.niveles', compact('edificios'));
-        }catch (\Exception $e) {
-            return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los para los datos de los ambientes laboratorios para la clinica: ');
+        } catch (\Exception $e) {
+            return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la busqueda rapida.');
         }
     }
 
     /**
-     * Método privado reutilizable para búsquedas de códigos en distintas tablas.
+     * Metodo privado reutilizable para busquedas seguras restringidas a ambientes permitidos.
      */
     private function buscarElemento($tabla, $campoCodigo, $codigo, $rutaRedireccion, $encriptar = true)
     {
         try {
-            $elemento = DB::table($tabla)->where($campoCodigo, $codigo)->first();
+            $ambientesPermitidosIds = $this->scopeService->getAmbientesPermitidosIds();
+
+            if ($tabla === 'accesorio') {
+                $elemento = DB::table('accesorio')
+                    ->leftJoin('equipo_has_accesorio', 'accesorio.cod_accesorio', '=', 'equipo_has_accesorio.ACCESORIO_cod_accesorio')
+                    ->leftJoin('equipo', 'equipo_has_accesorio.EQUIPO_cod_equipo', '=', 'equipo.cod_equipo')
+                    ->where('accesorio.' . $campoCodigo, $codigo)
+                    ->where(function ($q) use ($ambientesPermitidosIds) {
+                        $q->whereIn('equipo.AMBIENTE_id_ambiente', $ambientesPermitidosIds)
+                          ->orWhereNull('equipo.AMBIENTE_id_ambiente');
+                    })
+                    ->select('accesorio.cod_accesorio')
+                    ->first();
+            } else {
+                $elemento = DB::table($tabla)
+                    ->where($campoCodigo, $codigo)
+                    ->whereIn('AMBIENTE_id_ambiente', $ambientesPermitidosIds)
+                    ->first();
+            }
 
             if ($elemento) {
                 $param = $encriptar ? Crypt::encrypt($codigo) : $codigo;
                 return redirect()->route($rutaRedireccion, ['token' => $param]);
             }
 
-            return redirect()->back()->with('errorbuscar', 'El código ingresado no es válido o no existe en la base de datos.');
+            return redirect()->back()->with('errorbuscar', 'El codigo ingresado no es valido o no existe en los ambientes asignados.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la búsqueda. Verifique los campos o intente más tarde.');
+            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la busqueda. Verifique los campos o intente mas tarde.');
         }
     }
 
-    /////////////////////////////////////////////////////////
-    //////////// PARA PAGINA DE BUSQUEDAS RAPIDAS DE CLINICA ////////
     public function buscarEquipo(Request $request)
     {
         return $this->buscarElemento('equipo', 'cod_equipo', $request->input('codigo'), 'clinica.equipo.detalles');
@@ -128,21 +129,6 @@ class BuscarLaboController extends Controller
     public function buscarAccesorio(Request $request)
     {
         $codigo = $request->input('codigo');
-
-        try {
-            // Verificar si el código existe en la tabla equipo
-            $equipo = DB::table('accesorio')->where('cod_accesorio', $codigo)->first();
-
-            if ($equipo) {
-                // Encriptar el código y redirigir a la página de detalles
-                $encryptedCodigo = Crypt::encrypt($codigo);
-                return redirect()->route('clinica.accesorios.show', [$codigo]);
-            }
-
-            // Si no se encuentra el código, redirigir de vuelta con un mensaje de error
-            return redirect()->back()->with('errorbuscar', 'El código ingresado es inválido o no existe en la base de datos.');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('errorbuscar', 'Hubo un error al procesar la búsqueda: ' . $e->getMessage());
-        }
+        return $this->buscarElemento('accesorio', 'cod_accesorio', $codigo, 'clinica.accesorios.show', false);
     }
 }

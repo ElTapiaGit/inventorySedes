@@ -3,230 +3,238 @@
 namespace App\Http\Controllers\Coordinator;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Accesorio;
+use App\Services\CoordinatorScopeService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
-/////////////////////////////////////////////////////////////////////
-// CONTROLADOR PARA LOS ACCESORIOS TANTO DE LA CLINICA Y EDIFICIO////
 
 class AccesorioController extends Controller
 {
-    //METODO PARA LA PAGINA ACCESORIOS PARA EL EDIFICIO CENTRAL
+    protected CoordinatorScopeService $scopeService;
+
+    public function __construct(CoordinatorScopeService $scopeService)
+    {
+        $this->scopeService = $scopeService;
+    }
+
+    protected function getAccesoriosQuery(?int $edificioId = null)
+    {
+        $ambientesIds = $this->scopeService->getAmbientesPermitidosIds($edificioId);
+
+        return Accesorio::with(['foto', 'equipos'])
+            ->where(function ($q) use ($ambientesIds) {
+                $q->whereHas('equipos', function ($eq) use ($ambientesIds) {
+                    $eq->whereIn('AMBIENTE_id_ambiente', $ambientesIds);
+                })->orWhereDoesntHave('equipos');
+            });
+    }
+
     public function index()
     {
-        try{
-            // Obtener los accesorios con paginación de 10 en 10
-            $accesorios = Accesorio::paginate(10);
-            // Obtener los edificios de la sede central
-            $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.nombre', 'Sede Central')
-                ->select('edificio.nombre_edi')
-                ->get();
+        try {
+            $edificioActivoId = $this->scopeService->getEdificioActivoId();
+            $accesorios = $this->getAccesoriosQuery($edificioActivoId)->paginate(10);
+            $edificios = $this->scopeService->getEdificiosPermitidos();
 
             return view('coordinator.accesorio', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('coordinator.inicio')->with('errordata', 'Error al obtener los datos para la pagina accesorios: ');
+        } catch (\Exception $e) {
+            return redirect()->route('coordinator.inicio')->with('errordata', 'Error al obtener los datos para la pagina accesorios.');
         }
     }
-    
+
     public function accesoriosConEquipo()
     {
-        try{
-            $accesorios = DB::table('accesorio')
-            ->join('equipo_has_accesorio', 'accesorio.cod_accesorio', '=', 'equipo_has_accesorio.ACCESORIO_cod_accesorio')
-            ->select('accesorio.*')
-            ->paginate(10);
+        try {
+            $edificioActivoId = $this->scopeService->getEdificioActivoId();
+            $ambientesIds = $this->scopeService->getAmbientesPermitidosIds($edificioActivoId);
 
-            $edificios = DB::table('edificio')
-            ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-            ->where('sede.nombre', 'Sede Central')
-            ->select('edificio.nombre_edi')
-            ->get();
+            $accesorios = Accesorio::with(['foto', 'equipos'])
+                ->whereHas('equipos', function ($eq) use ($ambientesIds) {
+                    $eq->whereIn('AMBIENTE_id_ambiente', $ambientesIds);
+                })
+                ->paginate(10);
+
+            $edificios = $this->scopeService->getEdificiosPermitidos();
 
             return view('coordinator.accesorio', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('accesorios.index')->with('error', 'Error no se pueden obtener los datos para los accesorios con equipos: ');
+        } catch (\Exception $e) {
+            return redirect()->route('accesorios.index')->with('error', 'Error no se pueden obtener los datos para los accesorios con equipos.');
         }
     }
 
     public function accesoriosUnicos()
     {
-        try{
-            $accesorios = DB::table('accesorio')
-            ->leftJoin('equipo_has_accesorio', 'accesorio.cod_accesorio', '=', 'equipo_has_accesorio.ACCESORIO_cod_accesorio')
-            ->whereNull('equipo_has_accesorio.ACCESORIO_cod_accesorio')
-            ->select('accesorio.*')
-            ->paginate(10);
-        
-            $edificios = DB::table('edificio')
-            ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-            ->where('sede.nombre', 'Sede Central')
-            ->select('edificio.nombre_edi')
-            ->get();
+        try {
+            $accesorios = Accesorio::with(['foto', 'equipos'])
+                ->whereDoesntHave('equipos')
+                ->paginate(10);
+
+            $edificios = $this->scopeService->getEdificiosPermitidos();
 
             return view('coordinator.accesorio', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('accesorios.index')->with('error', 'Error no se pueden obtener los datos para los accesorios sin equipos: ');
+        } catch (\Exception $e) {
+            return redirect()->route('accesorios.index')->with('error', 'Error no se pueden obtener los datos para los accesorios sin equipos.');
         }
     }
 
     public function buscarPorCodigo(Request $request)
     {
-        try{
+        try {
             $codigo = $request->input('codigo');
-            $accesorios = DB::table('accesorio')
+            $edificioActivoId = $this->scopeService->getEdificioActivoId();
+
+            $accesorios = $this->getAccesoriosQuery($edificioActivoId)
                 ->where('cod_accesorio', 'LIKE', '%' . $codigo . '%')
                 ->paginate(10);
-            //para cuando no se encuntre la busqueda
+
             if ($accesorios->isEmpty()) {
-                return redirect()->route('accesorios.index')->with('errorbuscar', 'El código ingresado no está registrado en la Base de Datos.');
+                return redirect()->route('accesorios.index')->with('errorbuscar', 'El codigo ingresado no esta registrado en sus ambientes asignados.');
             }
 
-                $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.nombre', 'Sede Central')
-                ->select('edificio.nombre_edi')
-                ->get();
+            $edificios = $this->scopeService->getEdificiosPermitidos();
 
             return view('coordinator.accesorio', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('accesorios.index')->with('error', 'Error no se pueden obtener los datos para buscar por codigo de accesorio: ');
+        } catch (\Exception $e) {
+            return redirect()->route('accesorios.index')->with('error', 'Error al buscar por codigo de accesorio.');
         }
     }
 
     public function buscarPorNombre(Request $request)
     {
-        try{
+        try {
             $nombre = $request->input('nombre');
-            $accesorios = DB::table('accesorio')
+            $edificioActivoId = $this->scopeService->getEdificioActivoId();
+
+            $accesorios = $this->getAccesoriosQuery($edificioActivoId)
                 ->where('nombre_acce', 'LIKE', '%' . $nombre . '%')
                 ->paginate(10);
 
             if ($accesorios->isEmpty()) {
-                return redirect()->route('accesorios.index')->with('errorbuscar', 'El nombre a buscar no se encuentra en la Base de Datos.');
+                return redirect()->route('accesorios.index')->with('errorbuscar', 'El nombre a buscar no se encuentra en sus ambientes asignados.');
             }
 
-            $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.nombre', 'Sede Central')
-                ->select('edificio.nombre_edi')
-                ->get();
+            $edificios = $this->scopeService->getEdificiosPermitidos();
 
             return view('coordinator.accesorio', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('accesorios.index')->with('error', 'Error no se pueden obtener para buscar por nombre de accesorio: ');
+        } catch (\Exception $e) {
+            return redirect()->route('accesorios.index')->with('error', 'Error al buscar por nombre de accesorio.');
         }
     }
 
-    //funcion para mostrar los DETALLES DE ACCESORIO    
     public function show($cod_accesorio)
     {
-       try{
-            $accesorio = Accesorio::with('foto')->where('cod_accesorio', $cod_accesorio)->firstOrFail();
-            $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.nombre', 'Sede Central')
-                ->select('edificio.nombre_edi')
-                ->get();
-            
+        try {
+            $accesorio = Accesorio::with(['foto', 'equipos'])->where('cod_accesorio', $cod_accesorio)->firstOrFail();
+
+            // Blindaje IDOR: si el accesorio esta asignado a equipos, verificar que al menos uno pertenezca al coordinador
+            $ambientesPermitidos = $this->scopeService->getAmbientesPermitidosIds();
+            if ($accesorio->equipos->isNotEmpty()) {
+                $hasPermitido = $accesorio->equipos->contains(function ($eq) use ($ambientesPermitidos) {
+                    return in_array((int) $eq->AMBIENTE_id_ambiente, $ambientesPermitidos, true);
+                });
+                if (!$hasPermitido) {
+                    abort(403, 'Acceso denegado a este accesorio.');
+                }
+            }
+
+            $edificios = $this->scopeService->getEdificiosPermitidos();
+
             return view('coordinator.detallesAccesorio', compact('accesorio', 'edificios'));
-       }catch(\Exception $e) {
-            return redirect()->route('accesorios.index')->with('error', 'Error no se pueden obtener para mostrar los detalles del accesorio: ');
+        } catch (\Exception $e) {
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                throw $e;
+            }
+            return redirect()->route('accesorios.index')->with('error', 'Error al mostrar los detalles del accesorio.');
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////
-    //METODO PARA LA PAGINA ACCESORIOS PARA LA CLINICA ODONTOLOGIA
+    // Metodos para contexto Clinica
     public function obtenerAccesoriosClinica()
     {
-        try{
-            // Obtener los accesorios con paginación de 10 en 10
-            $accesorios = Accesorio::paginate(10);
-            // Obtener los edificios de la sede central
-            $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.nombre', 'Sede Central')
-                ->select('edificio.nombre_edi')
-                ->get();
+        try {
+            $edificiosPermitidos = $this->scopeService->getEdificiosPermitidos();
+            $edificioClinica = $edificiosPermitidos->first(fn($e) => str_contains(mb_strtolower($e->nombre_edi), 'clinica'));
+            $edificioId = $edificioClinica ? (int) $edificioClinica->id_edificio : $this->scopeService->getEdificioActivoId();
+
+            $accesorios = $this->getAccesoriosQuery($edificioId)->paginate(10);
+            $edificios = $edificiosPermitidos;
 
             return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina accesorios: ');
+        } catch (\Exception $e) {
+            return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina accesorios.');
         }
     }
-    
+
     public function accesoriosEquipo()
     {
-        try{
-            $accesorios = DB::table('accesorio')
-            ->join('equipo_has_accesorio', 'accesorio.cod_accesorio', '=', 'equipo_has_accesorio.ACCESORIO_cod_accesorio')
-            ->select('accesorio.*')
-            ->paginate(10);
+        try {
+            $edificiosPermitidos = $this->scopeService->getEdificiosPermitidos();
+            $edificioClinica = $edificiosPermitidos->first(fn($e) => str_contains(mb_strtolower($e->nombre_edi), 'clinica'));
+            $edificioId = $edificioClinica ? (int) $edificioClinica->id_edificio : $this->scopeService->getEdificioActivoId();
+            $ambientesIds = $this->scopeService->getAmbientesPermitidosIds($edificioId);
 
-            $edificios = DB::table('edificio')
-            ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-            ->where('sede.nombre', 'Sede Central')
-            ->select('edificio.nombre_edi')
-            ->get();
+            $accesorios = Accesorio::with(['foto', 'equipos'])
+                ->whereHas('equipos', function ($eq) use ($ambientesIds) {
+                    $eq->whereIn('AMBIENTE_id_ambiente', $ambientesIds);
+                })
+                ->paginate(10);
+
+            $edificios = $edificiosPermitidos;
 
             return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('clinica.accesorios.index')->with('error', 'Error no se pueden obtener los datos para los accesorios con equipos: ');
+        } catch (\Exception $e) {
+            return redirect()->route('clinica.accesorios.index')->with('error', 'Error al obtener los accesorios con equipos.');
         }
     }
 
     public function accesoriosUnicosClin()
     {
-        try{
-            $accesorios = DB::table('accesorio')
-            ->leftJoin('equipo_has_accesorio', 'accesorio.cod_accesorio', '=', 'equipo_has_accesorio.ACCESORIO_cod_accesorio')
-            ->whereNull('equipo_has_accesorio.ACCESORIO_cod_accesorio')
-            ->select('accesorio.*')
-            ->paginate(10);
-        
-            $edificios = DB::table('edificio')
-            ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-            ->where('sede.nombre', 'Sede Central')
-            ->select('edificio.nombre_edi')
-            ->get();
+        try {
+            $accesorios = Accesorio::with(['foto', 'equipos'])
+                ->whereDoesntHave('equipos')
+                ->paginate(10);
+
+            $edificios = $this->scopeService->getEdificiosPermitidos();
 
             return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('clinica.accesorios.index')->with('error', 'Error no se pueden obtener los datos para los accesorios unicos: ');
+        } catch (\Exception $e) {
+            return redirect()->route('clinica.accesorios.index')->with('error', 'Error al obtener los accesorios unicos.');
         }
     }
 
     public function buscarCodigoCli(Request $request)
     {
-        try{
+        try {
             $codigo = $request->input('codigo');
-            $accesorios = DB::table('accesorio')
+            $edificiosPermitidos = $this->scopeService->getEdificiosPermitidos();
+            $edificioClinica = $edificiosPermitidos->first(fn($e) => str_contains(mb_strtolower($e->nombre_edi), 'clinica'));
+            $edificioId = $edificioClinica ? (int) $edificioClinica->id_edificio : $this->scopeService->getEdificioActivoId();
+
+            $accesorios = $this->getAccesoriosQuery($edificioId)
                 ->where('cod_accesorio', 'LIKE', '%' . $codigo . '%')
                 ->paginate(10);
-            //para cuando no se encuntre la busqueda
+
             if ($accesorios->isEmpty()) {
-                return redirect()->route('clinica.accesorios.index')->with('errorbuscar', 'El código ingresado no está registrado en la base de datos.');
+                return redirect()->route('clinica.accesorios.index')->with('errorbuscar', 'El codigo ingresado no esta registrado en sus ambientes asignados.');
             }
 
-                $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.nombre', 'Sede Central')
-                ->select('edificio.nombre_edi')
-                ->get();
+            $edificios = $edificiosPermitidos;
 
             return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('clinica.accesorios.index')->with('error', 'Error no se pueden obtener los datos para buscar por cododigo accesorio: ');
+        } catch (\Exception $e) {
+            return redirect()->route('clinica.accesorios.index')->with('error', 'Error al buscar por codigo de accesorio.');
         }
     }
 
     public function buscarNombreCli(Request $request)
     {
-        try{
+        try {
             $nombre = $request->input('nombre');
-            $accesorios = DB::table('accesorio')
+            $edificiosPermitidos = $this->scopeService->getEdificiosPermitidos();
+            $edificioClinica = $edificiosPermitidos->first(fn($e) => str_contains(mb_strtolower($e->nombre_edi), 'clinica'));
+            $edificioId = $edificioClinica ? (int) $edificioClinica->id_edificio : $this->scopeService->getEdificioActivoId();
+
+            $accesorios = $this->getAccesoriosQuery($edificioId)
                 ->where('nombre_acce', 'LIKE', '%' . $nombre . '%')
                 ->paginate(10);
 
@@ -234,33 +242,16 @@ class AccesorioController extends Controller
                 return redirect()->route('clinica.accesorios.index')->with('errorbuscar', 'El nombre a buscar no se encuentra.');
             }
 
-            $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.nombre', 'Sede Central')
-                ->select('edificio.nombre_edi')
-                ->get();
+            $edificios = $edificiosPermitidos;
 
             return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('clinica.accesorios.index')->with('error', 'Error no se pueden obtener los datos para buscar por nombre de accesorio: ');
+        } catch (\Exception $e) {
+            return redirect()->route('clinica.accesorios.index')->with('error', 'Error al buscar por nombre de accesorio.');
         }
     }
 
-    //funcion para mostrar los detalles del accesorio
     public function mostrar($cod_accesorio)
     {
-       try{
-            $accesorio = Accesorio::with('foto')->where('cod_accesorio', $cod_accesorio)->firstOrFail();
-            $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.nombre', 'Sede Central')
-                ->select('edificio.nombre_edi')
-                ->get();
-            
-            return view('coordinator.clinicas.detallesAccesorios', compact('accesorio', 'edificios'));
-        }catch(\Exception $e) {
-            return redirect()->route('clinica.accesorios.index')->with('error', 'Error no se pueden obtener los datos para mostrar los detalles del accesorio: ');
-        }
+        return $this->show($cod_accesorio);
     }
-
 }

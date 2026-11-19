@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 /*CONTROLADORES DEL COORDINADOR*/ 
+use App\Http\Controllers\Coordinator\BaseController;
 use App\Http\Controllers\Coordinator\CoodinatorController;
 use App\Http\Controllers\Coordinator\BuscarLaboController;
 use App\Http\Controllers\Coordinator\DetallesLaboratorioController;
@@ -206,6 +207,7 @@ Route::prefix('administrator')->middleware(['auth', 'role:Administrador'])->grou
 
 Route::prefix('coordinator')->middleware(['auth', 'role:Coordinador*'])->group(function () {
     Route::get('/inicio', [CoodinatorController::class, 'inicio'])->name('coordinator.inicio');
+    Route::get('/seleccionar-edificio/{id}', [BaseController::class, 'seleccionarEdificio'])->name('coordinator.edificio.seleccionar');
 
     // Ruta para mostrar la página de laboratorios
     Route::get('/laboratorios', [BuscarLaboController::class, 'index'])->name('laboratorios.index');

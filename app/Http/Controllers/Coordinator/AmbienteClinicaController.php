@@ -3,44 +3,68 @@
 namespace App\Http\Controllers\Coordinator;
 
 use App\Http\Controllers\Controller;
+use App\Services\CoordinatorScopeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class AmbienteClinicaController extends Controller
 {
-    //Metodo para la pagina ambienteclinicas
+    protected CoordinatorScopeService $scopeService;
+
+    public function __construct(CoordinatorScopeService $scopeService)
+    {
+        $this->scopeService = $scopeService;
+    }
+
     public function show($id)
     {
-        try{
-            // Desencriptar el ID del piso
-            $id = Crypt::decrypt($id);
+        try {
+            try {
+                $idPiso = (int) Crypt::decrypt($id);
+            } catch (DecryptException $e) {
+                abort(404, 'Piso no encontrado');
+            }
 
-            //consulta para el nombre del piso
             $pisos = DB::table('piso')
-                ->where('id_piso', $id)
-                        ->first();
+                ->where('id_piso', $idPiso)
+                ->first();
 
-            // Consulta SQL para obtener los edificios de la sede central
-            $edificios = DB::table('edificio')
-                ->join('sede', 'edificio.SEDE_id_sede', '=', 'sede.id_sede')
-                ->where('sede.id_sede', 1)//campo de la sede siempre empezara con id=1
-                ->select('edificio.id_edificio', 'edificio.nombre_edi')
-                ->get(); 
+            if (!$pisos) {
+                abort(404, 'Piso no encontrado');
+            }
 
-            // Ejecuta la consulta para obtener los ambientes
+            // Blindaje IDOR: validar que el edificio del piso pertenezca al coordinador
+            $this->scopeService->validarAccesoEdificio((int) $pisos->EDIFICIO_id_edificio);
+
+            $edificios = $this->scopeService->getEdificiosPermitidos();
+            $ambientesPermitidosIds = $this->scopeService->getAmbientesPermitidosIds((int) $pisos->EDIFICIO_id_edificio);
+
+            // Obtener exclusivamente los ambientes autorizados del piso
             $ambientes = DB::table('tipo_ambiente')
                 ->join('ambiente', 'tipo_ambiente.id_tipoambiente', '=', 'ambiente.TIPO_AMBIENTE_id_ambiente')
                 ->join('piso', 'ambiente.PISO_id_piso', '=', 'piso.id_piso')
-                ->where('piso.id_piso', $id)
-                ->select('ambiente.id_ambiente', 'tipo_ambiente.nombre_amb as tipo_ambiente', 'ambiente.nombre as nombre_ambiente', 'ambiente.descripcion_amb as descripcion_ambiente')
+                ->where('piso.id_piso', $idPiso)
+                ->whereIn('ambiente.id_ambiente', $ambientesPermitidosIds)
+                ->select(
+                    'ambiente.id_ambiente',
+                    'tipo_ambiente.nombre_amb as tipo_ambiente',
+                    'ambiente.nombre as nombre_ambiente',
+                    'ambiente.descripcion_amb as descripcion_ambiente'
+                )
                 ->get();
 
-            // Pasa los datos a la vista
-            return view('coordinator.clinicas.ambienteClinica', ['ambientes' => $ambientes, 'edificios' => $edificios, 'pisos' =>$pisos]);
-            
-        }catch (\Exception $e) {
-            return redirect()->route('coordinator.inicio')->with('errordata', 'Error al Obtener los datos para la pagina Laboratorios: ');
+            return view('coordinator.clinicas.ambienteClinica', [
+                'ambientes' => $ambientes,
+                'edificios' => $edificios,
+                'pisos' => $pisos,
+            ]);
+        } catch (\Exception $e) {
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
+                throw $e;
+            }
+            return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina de ambientes.');
         }
     }
 }

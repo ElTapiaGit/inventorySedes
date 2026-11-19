@@ -23,6 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        \App\Http\Controllers\Coordinator\BaseController::registerViewComposer();
     }
 }

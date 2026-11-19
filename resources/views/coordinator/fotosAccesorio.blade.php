@@ -1,4 +1,6 @@
-@extends('layouts.pagClinica')
+@extends('layouts.coordinator')
+
+@section('menu-context', 'clinica')
 
 @section('title', 'Imagen Accesoirio-Equipo')
 

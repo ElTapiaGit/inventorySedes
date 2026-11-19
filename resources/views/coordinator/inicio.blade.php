@@ -1,5 +1,4 @@
-
-@extends('layouts.coodinacion')
+@extends('layouts.coordinator')
 
 @section('title', 'Inicio')
 
@@ -26,15 +25,17 @@
     @endif
 @endpush
 
-<!--Para mostrar el desplegable de edificios de la sede central-->
+<!-- Para mostrar el desplegable de edificios del coordinador -->
 @section('dropdown-items')
-    @foreach($edificios as $edificio)
+    @forelse($edificios as $edificio)
         @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
+            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}"><i class="bi bi-building pe-1"></i> {{ $edificio->nombre_edi }}</a></li>
         @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
+            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}"><i class="bi bi-hospital pe-1"></i> {{ $edificio->nombre_edi }}</a></li>
         @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
+            <li><a class="dropdown-item text-secondary" href="{{ route('coordinator.inicio') }}?edificio={{ $edificio->id_edificio }}" title="Disponible en Bloque 3"><i class="bi bi-building-check pe-1"></i> {{ $edificio->nombre_edi }}</a></li>
         @endif
-    @endforeach
+    @empty
+        <li><span class="dropdown-item text-muted">Sin edificios asignados</span></li>
+    @endforelse
 @endsection

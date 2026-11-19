@@ -1,4 +1,4 @@
-@extends('layouts.coodinacion')
+﻿@extends('layouts.coordinator')
 
 @section('title', 'Detalles de Movimientos')
 

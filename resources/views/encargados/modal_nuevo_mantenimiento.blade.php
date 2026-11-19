@@ -23,13 +23,18 @@
 
             <div class="row g-2 mb-3">
                 <div class="col-md-8">
-                    <label class="form-label"><strong>Técnico</strong></label>
-                    <select name="TECNICO_id_tecnico" class="form-select" required>
-                        <option value="">Seleccione un técnico</option>
-                        @foreach ($tecnicos as $tecnico)
-                            <option value="{{ $tecnico->id_tecnico }}">{{ $tecnico->nombre }} {{ $tecnico->ap_paterno }}</option>
-                        @endforeach
-                    </select>
+                    <label class="form-label" for="selectTecnicoMantenimiento"><strong>Técnico <span class="text-danger">*</span></strong></label>
+                    <div class="input-group">
+                        <select name="TECNICO_id_tecnico" id="selectTecnicoMantenimiento" class="form-select" required>
+                            <option value="">Seleccione un técnico</option>
+                            @foreach ($tecnicos as $tecnico)
+                                <option value="{{ $tecnico->id_tecnico }}">{{ trim($tecnico->nombre . ' ' . $tecnico->ap_paterno . ' ' . $tecnico->ap_materno) }}</option>
+                            @endforeach
+                        </select>
+                        <button type="button" class="btn btn-outline-primary" id="btnAbrirModalTecnico" title="Registrar nuevo tecnico">
+                            <i class="bi bi-person-plus"></i>
+                        </button>
+                    </div>
                 </div>
                     
                 <input type="hidden" name="PERSONAL_id_personal" value="{{ Auth::user()->id_personal }}">

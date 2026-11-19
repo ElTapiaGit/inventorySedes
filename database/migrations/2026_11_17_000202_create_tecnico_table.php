@@ -19,11 +19,11 @@ return new class extends Migration
             $table->collation = 'utf8_general_ci';
 
             $table->integer('id_tecnico', true);
-            $table->string('nombre', 15)->nullable();
-            $table->string('ap_paterno', 15)->nullable();
-            $table->string('ap_materno', 15)->nullable();
-            $table->string('celular', 12)->nullable();
-            $table->string('direccion', 80)->nullable();
+            $table->string('nombre', 60)->nullable();
+            $table->string('ap_paterno', 60)->nullable();
+            $table->string('ap_materno', 60)->nullable();
+            $table->string('celular', 20)->nullable();
+            $table->string('direccion', 150)->nullable();
 
             // indexs
             $table->unique('id_tecnico', 'id_tecnico_UNIQUE');

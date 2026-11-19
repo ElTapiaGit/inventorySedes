@@ -66,6 +66,7 @@ use App\Http\Controllers\Encargado\UsuariosEncargController;
 use App\Http\Controllers\Encargado\PrestamopController;
 use App\Http\Controllers\Encargado\DetallePrestamoController;
 use App\Http\Controllers\Encargado\MantenimientopController;
+use App\Http\Controllers\Encargado\TecnicoController;
 
 //para el inicio de sesion
 use App\Http\Controllers\AuthController;
@@ -389,6 +390,9 @@ Route::prefix('encargado')->middleware(['auth', 'role:Encargado'])->group(functi
     Route::post('/mantenimientos', [MantenimientopController::class, 'store'])->name('encargado.mantenimiento.store');
     Route::get('/mantenimientos/{id}', [MantenimientopController::class, 'show'])->name('encargado.mantenimiento.show');
     Route::post('/mantenimientos/finalizar/{id}', [MantenimientopController::class, 'finalizar'])->name('encargado.mantenimiento.finalizar');
+
+    // Tecnicos
+    Route::post('/tecnicos/store', [TecnicoController::class, 'store'])->name('encargado.tecnicos.store');
 
 });
 

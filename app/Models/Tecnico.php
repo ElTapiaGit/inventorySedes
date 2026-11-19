@@ -28,4 +28,10 @@ class Tecnico extends Model
     {
         return $this->hasMany(Mantenimiento::class, 'TECNICO_id_tecnico');
     }
+
+    // Nombre completo del tecnico
+    public function getNombreCompletoAttribute(): string
+    {
+        return trim($this->nombre . ' ' . $this->ap_paterno . ' ' . ($this->ap_materno ?? ''));
+    }
 }

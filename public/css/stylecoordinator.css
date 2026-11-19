@@ -206,3 +206,23 @@ body{
     color: black;
     border-radius: 30px;
 }
+
+/* Tabla Institucional ULAT */
+.table-ulat {
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+.table-ulat thead th,
+.table-ulat-header th {
+    background-color: #1B4B82 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    border-color: #163d6b;
+    white-space: nowrap;
+}
+.table-ulat td {
+    border-color: #dee2e6;
+    vertical-align: middle;
+}

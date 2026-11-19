@@ -1,15 +1,12 @@
 /**** PARA LA PAGINA MOVIMIENTOS ***/
-.tablaMantenimiento tr th{
-    background-color: #f4d874;
-}
+.pagMovimientos .table-bordered th, .pagMovimientos .table-bordered tr,
 .pagMantenimiento .table-bordered th, .pagMantenimiento .table-bordered tr{
     text-align: center;
-    border-left: 1px solid black; 
-    border-right: 1px solid black; 
+    vertical-align: middle;
 }
 /*estilo para las celdas del registro que no finalizo el uso de ambiente*/
 .tbody .highlight-row .highlight-cell{
-    background-color: #aff0a1;
+    background-color: #e8f8f5;
 }
 
 

@@ -1,12 +1,14 @@
 
 /*para los estilos de la pagina prestamos*/
 .tablaPrestamo tr th{
-    background-color: #f38080;
+    background-color: #1B4B82;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
 }
 .pagPrestamo .table-bordered th, .pagPrestamo .table-bordered tr{
     text-align: center;
-    border-left: 1px solid black; 
-    border-right: 1px solid black; 
+    vertical-align: middle;
 }
 
 /*para los estilos de la pagina detalles prestamos*/

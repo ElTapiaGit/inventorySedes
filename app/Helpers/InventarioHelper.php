@@ -59,3 +59,44 @@ if (!function_exists('inventario_img_url')) {
     }
 }
 
+if (!function_exists('inventario_estado_badge')) {
+    function inventario_estado_badge(?string $estado): string
+    {
+        if ($estado === null) {
+            return 'bg-secondary';
+        }
+
+        $estadoLimpio = mb_strtolower(trim($estado));
+
+        if ($estadoLimpio === '') {
+            return 'bg-secondary';
+        }
+
+        $exitosos = ['nuevo', 'bueno', 'operativo', 'funcionando'];
+        if (in_array($estadoLimpio, $exitosos, true)) {
+            return 'bg-success';
+        }
+
+        if ($estadoLimpio === 'regular') {
+            return 'bg-warning text-dark';
+        }
+
+        $mantenimiento = ['para mantenimiento', 'en mantenimiento', 'para reparar', 'para reponer', 'para cambiar'];
+        foreach ($mantenimiento as $palabra) {
+            if (str_contains($estadoLimpio, $palabra)) {
+                return 'bg-info text-dark';
+            }
+        }
+
+        $criticos = ['para descarte', 'malo', 'danado', 'dañado'];
+        foreach ($criticos as $critico) {
+            if (str_contains($estadoLimpio, $critico)) {
+                return 'bg-danger';
+            }
+        }
+
+        return 'bg-secondary';
+    }
+}
+
+

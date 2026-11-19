@@ -11,49 +11,67 @@
 @endphp
 
 @section('content')
-<main class="content px-3 pagMantenimiento">
+<main class="content px-3 py-3 pagMantenimiento">
     <div class="container-fluid">
-        <div class="mb-3">
-            <h3 class="text-center fw-bold">MANTENIMIENTOS {{ isset($edificioActivo) ? '- ' . strtoupper($edificioActivo->nombre_edi) : '' }}</h3>
-        </div>
-        <div class="d-flex justify-content-center mb-4">
-            <a href="{{ route($isClinica ? 'clinica.historialmantenimientos.index' : 'historialmantenimientos.index') }}" class="btn btn-primary mx-2">Historial de mantenimiento</a>
-        </div>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <h4>Equipos Para Mantenimiento:</h4>
-            <a href="{{ route('print.equipos') }}" target="_blank" class="btn btn-success">Imprimir</a>
+        <!-- Titulo de pagina institucional con barra de acciones -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
+            <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+                <i class="bi bi-wrench me-2 text-primary"></i>Equipos para Mantenimiento {{ isset($edificioActivo) ? '- ' . $edificioActivo->nombre_edi : '' }}
+            </h4>
+            <div class="d-flex gap-2">
+                <a href="{{ route($isClinica ? 'clinica.historialmantenimientos.index' : 'historialmantenimientos.index') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
+                    <i class="bi bi-clock-history me-1"></i> Historial de Mantenimiento
+                </a>
+                <a href="{{ route('print.equipos') }}" target="_blank" class="btn btn-outline-danger btn-sm d-flex align-items-center">
+                    <i class="bi bi-printer me-1"></i> Imprimir Reporte
+                </a>
+            </div>
         </div>
 
         @if($equipos->isEmpty())
-            <div class="alert alert-info text-center">
-                No hay equipos registrados para mantenimiento.
+            <div class="card border-0 shadow-sm rounded-3 p-4 text-center">
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle me-1"></i> No hay equipos registrados para mantenimiento en este momento.
+                </div>
             </div>
         @else
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped">
-                    <thead class="tablaMantenimiento">
-                        <tr>
-                            <th>Código</th>
-                            <th>Nombre</th>
-                            <th>Observaciones</th>
-                            <th>Estado</th>
-                            <th>Ambiente</th>
-                        </tr>
-                    </thead>
-                    <tbody class="tbodyMante">
-                        @foreach($equipos as $equipo)
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                    <h5 class="card-title mb-0 fw-bold text-dark fs-6">
+                        <i class="bi bi-list-check me-2 text-primary"></i> Equipos que Requieren Mantenimiento
+                    </h5>
+                    <span class="badge bg-secondary rounded-pill">{{ $equipos->total() }}</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover table-ulat align-middle mb-0">
+                        <thead class="table-ulat-header">
                             <tr>
-                                <td>{{ $equipo->cod_equipo ?? $equipo->Cod_equipo }}</td>
-                                <td>{{ $equipo->nombre_equi }}</td>
-                                <td>{{ $equipo->observaciones_equi }}</td>
-                                <td>{{ $equipo->estado_equi }}</td>
-                                <td>{{ $equipo->nombre_ambiente }}</td>
+                                <th>Codigo</th>
+                                <th>Nombre</th>
+                                <th>Observaciones</th>
+                                <th>Estado</th>
+                                <th>Ambiente</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($equipos as $equipo)
+                                <tr>
+                                    <td class="fw-bold text-primary">{{ $equipo->cod_equipo ?? $equipo->Cod_equipo }}</td>
+                                    <td class="fw-semibold text-dark">{{ $equipo->nombre_equi }}</td>
+                                    <td class="small text-muted">{{ $equipo->observaciones_equi ?: 'Sin observaciones' }}</td>
+                                    <td class="text-center">
+                                        <span class="badge {{ inventario_estado_badge($equipo->estado_equi) }}">
+                                            {{ $equipo->estado_equi ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $equipo->nombre_ambiente ?: 'N/A' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center mt-4">
                 {{ $equipos->links('pagination::bootstrap-5') }}
             </div>
         @endif
@@ -74,7 +92,7 @@
         </script>
     @endif
 
-    <!-- Mensaje de error de comunicación con la BD -->
+    <!-- Mensaje de error de comunicacion con la BD -->
     @if(session('errordata'))
         <script>
             Swal.fire({

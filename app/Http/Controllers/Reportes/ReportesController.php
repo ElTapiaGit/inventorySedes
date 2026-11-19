@@ -211,7 +211,7 @@ class ReportesController extends Controller
         $edificio_id = $request->input('edificio');
 
         // Obtener lista de estados posibles (puedes definir esto en el controlador o en un archivo de configuración)
-        $estados_equipos = ['activo', 'inactivo', 'mantenimiento'];
+        $estados_equipos = ['Nuevo', 'Bueno', 'Regular', 'Para mantenimiento', 'Para reparar', 'Para descarte'];
 
         // Obtener lista de edificios para el filtro
         $edificios = Edificio::all();

@@ -109,9 +109,9 @@
                 <label for="estado_equi">Estado de Equipo:</label>
                 <input list="estados_equipos" id="estado_equi" name="estado_equi" value="{{ request('estado_equi') }}">
                 <datalist id="estados_equipos">
-                    <option value="Para reparar">
-                    <option value="Para mantenimiento">
-                    <option value="Nuevo">
+                    @foreach($estados_equipos as $estado)
+                        <option value="{{ $estado }}">
+                    @endforeach
                 </datalist>
 
                 <label for="edificio">Edificio:</label>

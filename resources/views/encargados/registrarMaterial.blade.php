@@ -193,11 +193,15 @@
                             </div>
 
                             <div class="col-md-6">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <label for="estado_mate" class="form-label fw-semibold">Estado del Material <span class="text-danger">*</span></label>
-                                    <span class="char-counter" data-for="estado_mate">0 / 45</span>
-                                </div>
-                                <input type="text" class="form-control @error('estado_mate') is-invalid @enderror" id="estado_mate" name="estado_mate" maxlength="45" data-maxlength="45" value="{{ old('estado_mate', 'OPERATIVO') }}" placeholder="Ej. BUENO / DISPONIBLE / EN USO" required>
+                                <label for="estado_mate" class="form-label fw-semibold">Estado del Material <span class="text-danger">*</span></label>
+                                <select class="form-select @error('estado_mate') is-invalid @enderror" id="estado_mate" name="estado_mate" required>
+                                    <option value="Nuevo" {{ old('estado_mate', 'Bueno') == 'Nuevo' ? 'selected' : '' }}>Nuevo</option>
+                                    <option value="Bueno" {{ old('estado_mate', 'Bueno') == 'Bueno' ? 'selected' : '' }}>Bueno</option>
+                                    <option value="Regular" {{ old('estado_mate', 'Bueno') == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                    <option value="Para mantenimiento" {{ old('estado_mate', 'Bueno') == 'Para mantenimiento' ? 'selected' : '' }}>Para mantenimiento</option>
+                                    <option value="Para reparar" {{ old('estado_mate', 'Bueno') == 'Para reparar' ? 'selected' : '' }}>Para reparar</option>
+                                    <option value="Para descarte" {{ old('estado_mate', 'Bueno') == 'Para descarte' ? 'selected' : '' }}>Para descarte</option>
+                                </select>
                                 @error('estado_mate')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

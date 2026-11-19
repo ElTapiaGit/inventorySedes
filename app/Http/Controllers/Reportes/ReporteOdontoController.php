@@ -173,7 +173,7 @@ class ReporteOdontoController extends Controller
             'piso.numero_piso'
         )->get();
 
-        $estados_equipos = ['nueno', 'nuevo', 'para mantenimiento'];  // Ejemplo de estados, ajusta según tu BD
+        $estados_equipos = ['Nuevo', 'Bueno', 'Regular', 'Para mantenimiento', 'Para reparar', 'Para descarte'];
         $edificios = Edificio::all();  // Ajusta según la relación con Sede
 
         return view('Reportes.reporteEstadoEquipoOdonto', compact('equipos', 'estados_equipos', 'edificios'));
@@ -298,7 +298,7 @@ class ReporteOdontoController extends Controller
             'piso.numero_piso'
         )->get();
 
-        $estados_equipos = ['nueno', 'nuevo', 'para mantenimiento'];  // Ejemplo de estados, ajusta según tu BD
+        $estados_equipos = ['Nuevo', 'Bueno', 'Regular', 'Para mantenimiento', 'Para reparar', 'Para descarte'];
         $edificios = Edificio::all();  // Ajusta según la relación con Sede
 
         return view('coordinator.reportes.reportEstadoEquipoClinica', compact('equipos', 'estados_equipos', 'edificios'));

@@ -81,11 +81,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <label for="estado_compo" class="form-label fw-semibold">Estado del Componente <span class="text-danger">*</span></label>
-                                <span class="char-counter" data-for="estado_compo">0 / 50</span>
-                            </div>
-                            <input type="text" class="form-control @error('estado_compo') is-invalid @enderror" id="estado_compo" name="estado_compo" maxlength="50" data-maxlength="50" value="{{ old('estado_compo', 'OPERATIVO') }}" placeholder="Ej. BUENO / OPERATIVO" required>
+                            <label for="estado_compo" class="form-label fw-semibold">Estado del Componente <span class="text-danger">*</span></label>
+                            <select class="form-select @error('estado_compo') is-invalid @enderror" id="estado_compo" name="estado_compo" required>
+                                <option value="Nuevo" {{ old('estado_compo', 'Bueno') == 'Nuevo' ? 'selected' : '' }}>Nuevo</option>
+                                <option value="Bueno" {{ old('estado_compo', 'Bueno') == 'Bueno' ? 'selected' : '' }}>Bueno</option>
+                                <option value="Regular" {{ old('estado_compo', 'Bueno') == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                <option value="Para mantenimiento" {{ old('estado_compo', 'Bueno') == 'Para mantenimiento' ? 'selected' : '' }}>Para mantenimiento</option>
+                                <option value="Para reparar" {{ old('estado_compo', 'Bueno') == 'Para reparar' ? 'selected' : '' }}>Para reparar</option>
+                                <option value="Para descarte" {{ old('estado_compo', 'Bueno') == 'Para descarte' ? 'selected' : '' }}>Para descarte</option>
+                            </select>
                             @error('estado_compo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -280,11 +284,14 @@
                                     </div>
 
                                     <div class="col-md-4">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <label for="estado_acce" class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
-                                            <span class="char-counter" data-for="estado_acce">0 / 45</span>
-                                        </div>
-                                        <input type="text" class="form-control @error('estado_acce') is-invalid @enderror" id="estado_acce" name="estado_acce" maxlength="45" data-maxlength="45" value="{{ old('estado_acce', 'BUENO') }}" placeholder="Ej. BUENO" required>
+                                        <label for="estado_acce" class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
+                                        <select class="form-select @error('estado_acce') is-invalid @enderror" id="estado_acce" name="estado_acce" required>
+                                            <option value="Nuevo" {{ old('estado_acce', 'Bueno') == 'Nuevo' ? 'selected' : '' }}>Nuevo</option>
+                                            <option value="Bueno" {{ old('estado_acce', 'Bueno') == 'Bueno' ? 'selected' : '' }}>Bueno</option>
+                                            <option value="Regular" {{ old('estado_acce', 'Bueno') == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                            <option value="Para reponer" {{ old('estado_acce', 'Bueno') == 'Para reponer' ? 'selected' : '' }}>Para reponer</option>
+                                            <option value="Para cambiar" {{ old('estado_acce', 'Bueno') == 'Para cambiar' ? 'selected' : '' }}>Para cambiar</option>
+                                        </select>
                                         @error('estado_acce')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror

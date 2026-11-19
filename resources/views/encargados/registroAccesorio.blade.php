@@ -178,11 +178,14 @@
                     <div class="card-body p-4">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <label for="estado_acce" class="form-label fw-semibold">Estado del Accesorio <span class="text-danger">*</span></label>
-                                    <span class="char-counter" data-for="estado_acce">0 / 45</span>
-                                </div>
-                                <input type="text" class="form-control @error('estado_acce') is-invalid @enderror" id="estado_acce" name="estado_acce" maxlength="45" data-maxlength="45" value="{{ old('estado_acce', 'BUENO') }}" placeholder="Ej. BUENO / REGULAR" required>
+                                <label for="estado_acce" class="form-label fw-semibold">Estado del Accesorio <span class="text-danger">*</span></label>
+                                <select class="form-select @error('estado_acce') is-invalid @enderror" id="estado_acce" name="estado_acce" required>
+                                    <option value="Nuevo" {{ old('estado_acce', 'Bueno') == 'Nuevo' ? 'selected' : '' }}>Nuevo</option>
+                                    <option value="Bueno" {{ old('estado_acce', 'Bueno') == 'Bueno' ? 'selected' : '' }}>Bueno</option>
+                                    <option value="Regular" {{ old('estado_acce', 'Bueno') == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                    <option value="Para reponer" {{ old('estado_acce', 'Bueno') == 'Para reponer' ? 'selected' : '' }}>Para reponer</option>
+                                    <option value="Para cambiar" {{ old('estado_acce', 'Bueno') == 'Para cambiar' ? 'selected' : '' }}>Para cambiar</option>
+                                </select>
                                 @error('estado_acce')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

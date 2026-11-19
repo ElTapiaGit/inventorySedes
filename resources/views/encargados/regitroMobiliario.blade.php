@@ -230,11 +230,15 @@
                             </div>
 
                             <div class="col-md-4">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <label for="estado_mueb" class="form-label fw-semibold">Estado del Mobiliario <span class="text-danger">*</span></label>
-                                    <span class="char-counter" data-for="estado_mueb">0 / 45</span>
-                                </div>
-                                <input type="text" class="form-control @error('estado_mueb') is-invalid @enderror" id="estado_mueb" name="estado_mueb" maxlength="45" data-maxlength="45" value="{{ old('estado_mueb', 'BUENO') }}" placeholder="Ej. BUENO / REGULAR" required>
+                                <label for="estado_mueb" class="form-label fw-semibold">Estado del Mobiliario <span class="text-danger">*</span></label>
+                                <select class="form-select @error('estado_mueb') is-invalid @enderror" id="estado_mueb" name="estado_mueb" required>
+                                    <option value="Nuevo" {{ old('estado_mueb', 'Bueno') == 'Nuevo' ? 'selected' : '' }}>Nuevo</option>
+                                    <option value="Bueno" {{ old('estado_mueb', 'Bueno') == 'Bueno' ? 'selected' : '' }}>Bueno</option>
+                                    <option value="Regular" {{ old('estado_mueb', 'Bueno') == 'Regular' ? 'selected' : '' }}>Regular</option>
+                                    <option value="Para mantenimiento" {{ old('estado_mueb', 'Bueno') == 'Para mantenimiento' ? 'selected' : '' }}>Para mantenimiento</option>
+                                    <option value="Para reparar" {{ old('estado_mueb', 'Bueno') == 'Para reparar' ? 'selected' : '' }}>Para reparar</option>
+                                    <option value="Para descarte" {{ old('estado_mueb', 'Bueno') == 'Para descarte' ? 'selected' : '' }}>Para descarte</option>
+                                </select>
                                 @error('estado_mueb')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

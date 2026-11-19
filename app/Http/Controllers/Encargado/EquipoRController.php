@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Encargado;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Personal;
 use App\Models\Ambiente;
 use App\Models\Foto;
@@ -11,141 +12,138 @@ use App\Models\Equipo;
 use App\Models\Componente;
 use App\Models\Accesorio;
 use App\Models\EquipoHasAccesorio;
+use App\Services\InventarioImageService;
 
 class EquipoRController extends Controller
 {
-    //
-    public function create(){
-        // Obtén el ID del usuario actualmente autenticado
-        $userId = auth()->user()->id_personal; // Asegúrate de que esto corresponda con tu implementación de autenticación
+    protected InventarioImageService $imageService;
 
-        // Obtener el id del edificio donde el personal trabaja
+    public function __construct(InventarioImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
+    public function create()
+    {
+        $userId = auth()->user()->id_personal;
         $edificioId = Personal::where('id_personal', $userId)->value('EDIFICIO_id_edificio');
 
-        // Obtén los ambientes asociados a ese edificio
         $ambientes = Ambiente::whereHas('piso', function ($query) use ($edificioId) {
             $query->where('Edificio_id_edificio', $edificioId);
         })->get();
 
         $fotos = Foto::all();
+        $fotosReutilizables = $this->imageService->getReusablePhotos('equipos');
+        $ultimaFotoId = session('ultima_foto_equipos');
 
-        return view('encargados.registroEquipo', compact('ambientes', 'fotos'));
+        return view('encargados.registroEquipo', compact('ambientes', 'fotos', 'fotosReutilizables', 'ultimaFotoId'));
     }
 
-    //registrar foto
-    public function store(Request $request)
-    {
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048' // Validar que sea una imagen
-        ]);
-
-        // Subir la imagen al servidor
-        if ($request->hasFile('foto')) {
-            // Obtén el archivo
-            $file = $request->file('foto');
-            // Define un nombre único para la foto, para evitar conflictos de nombres
-            $filename = $file->getClientOriginalName();
-
-            // Verificar si la ruta ya existe en la base de datos
-            $existingFoto = Foto::where('ruta_foto', 'img/equipos-img/' . $filename)->first();
-            if ($existingFoto) {
-                // Si la foto ya existe, redirige con un mensaje de que ya está registrada
-                return redirect()->back()->with([
-                    'aviso' => 'La foto ya está registrada.',
-                    'foto_id' => $existingFoto->id_foto,
-                    'ruta_foto' => $existingFoto->ruta_foto,
-                ]);
-            }
-
-            $filePath = $file->storeAs('img/equipos-img', $filename, 'public'); // Subir a la carpeta 'public/img/equipos-img'
-
-            // Mover la imagen a la carpeta correcta
-            $file->move(public_path('img/equipos-img'), $filename);
-
-            // Guardar la ruta de la imagen en la base de datos
-            $foto = new Foto();
-            $foto->ruta_foto = $filePath; // Ruta almacenada será 'img/equipos-img/nombre_de_archivo.ext'
-            $foto->save();
-
-            return redirect()->route('equipo.create')
-            ->with('ruta_foto', $foto->ruta_foto)
-            ->with('foto_id', $foto->id_foto);
-        }
-
-        return redirect()->back()->with('error', 'Error al subir la foto.');
-    }
-
-    //registrar equipoo
     public function storeEquipo(Request $request)
     {
-        try{
-            $request->validate([
-                'cod_equipo' => 'required|string|max:50',
-                'nombre_equi' => 'required|string|max:45',
-                'marca' => 'required|string|max:20',
-                'modelo' => 'required|string|max:50',
-                'descripcion_equi' => 'required|string',
-                'empotrado' => 'required|in:0,1',
-                'estado_equi' => 'required|string|max:50',
-                'vida_util' => 'required|string|max:50',
-                'AMBIENTE_id_ambiente' => 'required|integer',
-                'FOTO_id_foto' => 'required|integer',
-            ]);
+        $request->validate([
+            'cod_equipo' => 'required|string|max:50|unique:equipo,cod_equipo',
+            'nombre_equi' => 'required|string|max:100',
+            'marca' => 'required|string|max:60',
+            'modelo' => 'required|string|max:50',
+            'descripcion_equi' => 'required|string',
+            'observaciones_equi' => 'nullable|string',
+            'empotrado' => 'required|in:0,1',
+            'estado_equi' => 'required|string|max:45',
+            'vida_util' => 'required|string|max:50',
+            'AMBIENTE_id_ambiente' => 'required|integer|exists:ambiente,id_ambiente',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
+            'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
+        ], [
+            'cod_equipo.required' => 'El codigo del equipo es obligatorio.',
+            'cod_equipo.unique' => 'El codigo del equipo ya se encuentra registrado.',
+            'cod_equipo.max' => 'El codigo del equipo no debe superar los 50 caracteres.',
+            'nombre_equi.required' => 'El nombre del equipo es obligatorio.',
+            'nombre_equi.max' => 'El nombre del equipo no debe superar los 100 caracteres.',
+            'marca.required' => 'La marca es obligatoria.',
+            'marca.max' => 'La marca no debe superar los 60 caracteres.',
+            'modelo.required' => 'El modelo es obligatorio.',
+            'modelo.max' => 'El modelo no debe superar los 50 caracteres.',
+            'descripcion_equi.required' => 'La descripcion del equipo es obligatoria.',
+            'empotrado.required' => 'Debe indicar si el equipo esta empotrado o no.',
+            'estado_equi.required' => 'El estado del equipo es obligatorio.',
+            'vida_util.required' => 'La vida util es obligatoria.',
+            'AMBIENTE_id_ambiente.required' => 'Debe seleccionar un ambiente valido.',
+            'AMBIENTE_id_ambiente.exists' => 'El ambiente seleccionado no existe en el sistema.',
+            'foto.required_without' => 'Debe subir una fotografia o seleccionar una existente.',
+            'foto.image' => 'El archivo seleccionado debe ser una imagen.',
+            'foto.mimes' => 'La imagen debe tener formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB de tamano.',
+            'existing_foto_id.required_without' => 'Debe seleccionar una foto existente o subir una nueva.',
+            'existing_foto_id.exists' => 'La foto seleccionada no existe en el sistema.',
+        ]);
 
-             // Verificar si el código del equipo ya existe
-            $existingEquipo = Equipo::where('cod_equipo', $request->cod_equipo)->first();
-            if ($existingEquipo) {
-                // Si el equipo ya existe, redirigir con un mensaje de información
-                return redirect()->route('equipo.create')->with('info', 'El código del equipo ya existe.');
-            }
-    
-            $equipo = new Equipo();
-            $equipo->cod_equipo = $request->cod_equipo;
-            $equipo->nombre_equi = $request->nombre_equi;
-            $equipo->marca = $request->marca;
-            $equipo->modelo = $request->modelo;
-            $equipo->descripcion_equi = $request->descripcion_equi;
-            $equipo->empotrado = $request->empotrado;
-            $equipo->estado_equi = $request->estado_equi;
-            $equipo->observaciones_equi = $request->observaciones_equi;
-            $equipo->vida_util = $request->vida_util;
-            $equipo->fch_registro = now();
-            $equipo->AMBIENTE_id_ambiente = $request->AMBIENTE_id_ambiente;
-            $equipo->FOTO_id_foto = $request->FOTO_id_foto;
-            $equipo->save();
-    
-            // Redirigir a una página donde se pueden registrar componentes y accesorios
-            return redirect()->route('equipo.show', $request->cod_equipo)
-            ->with('success', 'Equipo registrado correctamente');
+        try {
+            $equipo = $this->imageService->storeWithTransaction(
+                $request->file('foto'),
+                $request->filled('existing_foto_id') ? (int) $request->input('existing_foto_id') : null,
+                'equipos',
+                function (Foto $foto) use ($request) {
+                    $equipo = new Equipo();
+                    $equipo->cod_equipo = $request->cod_equipo;
+                    $equipo->nombre_equi = $request->nombre_equi;
+                    $equipo->marca = $request->marca;
+                    $equipo->modelo = $request->modelo;
+                    $equipo->descripcion_equi = $request->descripcion_equi;
+                    $equipo->empotrado = $request->empotrado;
+                    $equipo->estado_equi = $request->estado_equi;
+                    $equipo->observaciones_equi = $request->observaciones_equi;
+                    $equipo->vida_util = $request->vida_util;
+                    $equipo->fch_registro = now();
+                    $equipo->AMBIENTE_id_ambiente = $request->AMBIENTE_id_ambiente;
+                    $equipo->FOTO_id_foto = $foto->id_foto;
+                    $equipo->save();
 
-        }catch (\Exception $e) {
-            return redirect()->route('equipo.create')->with('errordata', 'Error al registrar el equipo: ' . $e->getMessage());
+                    session()->put('ultima_foto_equipos', $foto->id_foto);
+
+                    return $equipo;
+                }
+            );
+
+            return redirect()->route('equipo.show', ['cod_equipo' => $equipo->cod_equipo])
+                ->with('success', 'Equipo registrado correctamente');
+        } catch (\Throwable $e) {
+            Log::error('Error al registrar equipo: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()
+                ->withInput()
+                ->with('errordata', 'No se pudo completar el registro del equipo. Intente nuevamente.');
         }
     }
 
-
-    // vista para la pagina componentes
     public function show($cod_equipo)
     {
         $equipo = Equipo::with('accesorios')->where('cod_equipo', $cod_equipo)->firstOrFail();
         $componentes = Componente::where('EQUIPO_cod_equipo', $cod_equipo)->get();
         $accesorios = Accesorio::all();
         $fotos = Foto::all();
+        $fotosReutilizables = $this->imageService->getReusablePhotos('accesorios');
+        $ultimaFotoId = session('ultima_foto_accesorios');
 
-        return view('encargados.registrarComponenteAccesorio', compact('equipo', 'componentes', 'accesorios', 'cod_equipo', 'fotos'));
+        return view('encargados.registrarComponenteAccesorio', compact('equipo', 'componentes', 'accesorios', 'cod_equipo', 'fotos', 'fotosReutilizables', 'ultimaFotoId'));
     }
 
-    //registrar componentes y accesorios
     public function storeComponente(Request $request)
     {
-        try {
-            $request->validate([
-                'cod_equipo' => 'required|string|max:50|exists:equipo,cod_equipo',
-                'nombre_compo' => 'required|string|max:50',
-                'descripcion_compo' => 'required|string',
-                'estado_compo' => 'required|string|max:50',
-            ]);
+        $request->validate([
+            'cod_equipo' => 'required|string|max:50|exists:equipo,cod_equipo',
+            'nombre_compo' => 'required|string|max:50',
+            'descripcion_compo' => 'required|string',
+            'estado_compo' => 'required|string|max:50',
+        ], [
+            'nombre_compo.required' => 'El nombre del componente es obligatorio.',
+            'nombre_compo.max' => 'El nombre del componente no debe superar los 50 caracteres.',
+            'descripcion_compo.required' => 'La descripcion del componente es obligatoria.',
+            'estado_compo.required' => 'El estado del componente es obligatorio.',
+            'cod_equipo.required' => 'El codigo del equipo es obligatorio.',
+            'cod_equipo.exists' => 'El equipo especificado no existe.',
+        ]);
 
+        try {
             $componente = new Componente();
             $componente->nombre_compo = $request->nombre_compo;
             $componente->descripcion_compo = $request->descripcion_compo;
@@ -153,98 +151,106 @@ class EquipoRController extends Controller
             $componente->EQUIPO_cod_equipo = $request->cod_equipo;
             $componente->save();
 
-            return redirect()->route('equipo.show', $request->cod_equipo)
-                            ->with('success', 'Componente registrado correctamente');
-        } catch (\Exception $e) {
-            return redirect()->route('equipo.show', $request->cod_equipo)
-                            ->with('errordata', 'Error al registrar el componente: ' . $e->getMessage());
+            return redirect()->route('equipo.show', ['cod_equipo' => $request->cod_equipo])
+                ->with('success', 'Componente registrado correctamente');
+        } catch (\Throwable $e) {
+            Log::error('Error al registrar componente: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->route('equipo.show', ['cod_equipo' => $request->cod_equipo])
+                ->withInput()
+                ->with('errordata', 'Error al registrar el componente. Intente nuevamente.');
         }
-    }
-
-    //registrar foto accesorio
-    public function storeFotoAccesorio(Request $request)
-    {
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048' // Validar que sea una imagen
-        ]);
-
-        // Subir la imagen al servidor
-        if ($request->hasFile('foto')) {
-            // Obtén el archivo
-            $file = $request->file('foto');
-            // Define un nombre único para la foto, para evitar conflictos de nombres
-            $filename = $file->getClientOriginalName();
-
-            // Verificar si la ruta ya existe en la base de datos
-            $existingFoto = Foto::where('ruta_foto', 'img/accesorios-img/' . $filename)->first();
-            if ($existingFoto) {
-                // Si la foto ya existe, redirige con un mensaje de que ya está registrada
-                return redirect()->back()->with([
-                    'aviso' => 'La foto ya está registrada.',
-                    'foto_id' => $existingFoto->id_foto,
-                    'ruta_foto' => $existingFoto->ruta_foto,
-                ]);
-            }
-
-            $filePath = $file->storeAs('img/accesorios-img', $filename, 'public'); // Subir a la carpeta 'public/img/accesorios-img'
-
-            // Mover la imagen a la carpeta correcta
-            $file->move(public_path('img/accesorios-img'), $filename);
-
-            // Guardar la ruta de la imagen en la base de datos
-            $foto = new Foto();
-            $foto->ruta_foto = $filePath; // Ruta almacenada será 'img/accesorios-img/nombre_de_archivo.ext'
-            $foto->save();
-
-            return redirect()->back()
-            ->with('success', 'Registro de foto correctamente');
-        }
-
-        return redirect()->back()->with('error', 'Error al subir la foto.');
     }
 
     public function storeAccesorioEquipo(Request $request)
     {
         $request->validate([
             'cod_accesorio' => 'required|string|max:50|unique:accesorio,cod_accesorio',
-            'nombre_acce' => 'required|string|max:50',
+            'nombre_acce' => 'required|string|max:80',
             'descripcion_acce' => 'nullable|string',
-            'estado_acce' => 'required|string|max:50',
-            'vida_util' => 'required|string|max:50',
-            'ubicacion' => 'required|string|max:50',
-            'cod_equipo' => 'nullable|string|max:50|exists:equipo,cod_equipo', // Solo si se incluye
+            'observacion_ace' => 'nullable|string',
+            'estado_acce' => 'required|string|max:45',
+            'vida_util' => 'required|string|max:45',
+            'ubicacion' => 'required|string|max:120',
+            'cod_equipo' => 'required|string|max:50|exists:equipo,cod_equipo',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
+            'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
+        ], [
+            'cod_accesorio.required' => 'El codigo del accesorio es obligatorio.',
+            'cod_accesorio.unique' => 'El codigo del accesorio ya se encuentra registrado.',
+            'cod_accesorio.max' => 'El codigo del accesorio no debe superar los 50 caracteres.',
+            'nombre_acce.required' => 'El nombre del accesorio es obligatorio.',
+            'nombre_acce.max' => 'El nombre del accesorio no debe superar los 80 caracteres.',
+            'estado_acce.required' => 'El estado del accesorio es obligatorio.',
+            'vida_util.required' => 'La vida util es obligatoria.',
+            'ubicacion.required' => 'La ubicacion del accesorio es obligatoria.',
+            'ubicacion.max' => 'La ubicacion no debe superar los 120 caracteres.',
+            'cod_equipo.required' => 'El codigo del equipo es obligatorio.',
+            'cod_equipo.exists' => 'El equipo indicado no existe en el sistema.',
+            'foto.required_without' => 'Debe subir una fotografia o seleccionar una existente.',
+            'foto.image' => 'El archivo seleccionado debe ser una imagen.',
+            'foto.mimes' => 'La imagen debe tener formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB de tamano.',
+            'existing_foto_id.required_without' => 'Debe seleccionar una foto existente o subir una nueva.',
+            'existing_foto_id.exists' => 'La foto seleccionada no existe en el sistema.',
         ]);
 
         try {
-            // Crear nuevo accesorio
-            $accesorio = new Accesorio();
-            $accesorio->cod_accesorio = $request->cod_accesorio;
-            $accesorio->nombre_acce = $request->nombre_acce;
-            $accesorio->descripcion_acce = $request->descripcion_acce;
-            $accesorio->observacion_ace = $request->observacion_ace;
-            $accesorio->estado_acce = $request->estado_acce;
-            $accesorio->vida_util = $request->vida_util;
-            $accesorio->ubicacion = $request->ubicacion;
-            $accesorio->fch_registro_acce = now();
-            $accesorio->FOTO_id_foto = $request->FOTO_id_foto;
-            $accesorio->save();
+            $this->imageService->storeWithTransaction(
+                $request->file('foto'),
+                $request->filled('existing_foto_id') ? (int) $request->input('existing_foto_id') : null,
+                'accesorios',
+                function (Foto $foto) use ($request) {
+                    $accesorio = new Accesorio();
+                    $accesorio->cod_accesorio = $request->cod_accesorio;
+                    $accesorio->nombre_acce = $request->nombre_acce;
+                    $accesorio->descripcion_acce = $request->descripcion_acce;
+                    $accesorio->observacion_ace = $request->observacion_ace;
+                    $accesorio->estado_acce = $request->estado_acce;
+                    $accesorio->vida_util = $request->vida_util;
+                    $accesorio->ubicacion = $request->ubicacion;
+                    $accesorio->fch_registro_acce = now();
+                    $accesorio->FOTO_id_foto = $foto->id_foto;
+                    $accesorio->save();
 
-            // Asociar el accesorio con el equipo
-            $equipoHasAccesorio = new EquipoHasAccesorio();
-            $equipoHasAccesorio->EQUIPO_cod_equipo = $request->cod_equipo;
-            $equipoHasAccesorio->ACCESORIO_cod_accesorio = $request->cod_accesorio;
-            $equipoHasAccesorio->save();
+                    // Asociar con el equipo a traves de equipo_has_accesorio
+                    $equipo = Equipo::where('cod_equipo', $request->cod_equipo)->firstOrFail();
+                    $equipo->accesorios()->syncWithoutDetaching([$accesorio->cod_accesorio]);
 
-            // Asociar el accesorio con el equipo si se proporciona el código del equipo
-            if ($request->has('cod_equipo')) {
-                $equipo = Equipo::where('cod_equipo', $request->cod_equipo)->firstOrFail();
-                $equipo->accesorios()->attach($accesorio->cod_accesorio);
-            }
+                    session()->put('ultima_foto_accesorios', $foto->id_foto);
 
-            return redirect()->return('equipo.show')->with('success', 'Accesorio registrado correctamente.');
+                    return $accesorio;
+                }
+            );
 
-        } catch (\Exception $e) {
-            return redirect()->back()->with('errordata', 'Problemas al registrar el accesorio del equipo: FAVOR REVISE LOS CAMPOS AL LLENAR ');
+            return redirect()->route('equipo.show', ['cod_equipo' => $request->cod_equipo])
+                ->with('success', 'Accesorio registrado y vinculado al equipo correctamente.');
+        } catch (\Throwable $e) {
+            Log::error('Error al registrar accesorio de equipo: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->route('equipo.show', ['cod_equipo' => $request->cod_equipo])
+                ->withInput()
+                ->with('errordata', 'No se pudo registrar el accesorio del equipo. Intente nuevamente.');
+        }
+    }
+
+    public function cambiarFoto(Request $request, $cod_equipo)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+            'foto.required' => 'Debe seleccionar una fotografia para actualizar.',
+            'foto.image' => 'El archivo debe ser una imagen valida.',
+            'foto.mimes' => 'La imagen debe ser de formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB.',
+        ]);
+
+        try {
+            $equipo = Equipo::where('cod_equipo', $cod_equipo)->firstOrFail();
+            $this->imageService->replaceArticleFoto($equipo, $request->file('foto'), 'equipos');
+
+            return redirect()->back()->with('success', 'Fotografia del equipo actualizada correctamente.');
+        } catch (\Throwable $e) {
+            Log::error('Error al cambiar foto del equipo: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()->with('errordata', 'Error al actualizar la fotografia del equipo.');
         }
     }
 }

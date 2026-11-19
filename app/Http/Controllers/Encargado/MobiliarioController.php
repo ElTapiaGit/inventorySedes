@@ -3,133 +3,144 @@
 namespace App\Http\Controllers\Encargado;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Personal;
 use App\Models\Ambiente;
-use Illuminate\Http\Request;
 use App\Models\Mobiliario;
 use App\Models\Foto;
 use App\Models\TipoMobiliario;
+use App\Services\InventarioImageService;
 
 class MobiliarioController extends Controller
 {
-    // vista de la pagina
-    public function create (){
-        // Obtén el ID del usuario actualmente autenticado
-        $userId = auth()->user()->id_personal; // Asegúrate de que esto corresponda con tu implementación de autenticación
+    protected InventarioImageService $imageService;
 
-        // Obtener el id del edificio donde el personal trabaja
+    public function __construct(InventarioImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
+    public function create()
+    {
+        $userId = auth()->user()->id_personal;
         $edificioId = Personal::where('id_personal', $userId)->value('EDIFICIO_id_edificio');
 
-        // Obtén los ambientes asociados a ese edificio
         $ambientes = Ambiente::whereHas('piso', function ($query) use ($edificioId) {
             $query->where('Edificio_id_edificio', $edificioId);
         })->get();
 
         $tipos_mobiliario = TipoMobiliario::all();
         $fotos = Foto::all();
+        $fotosReutilizables = $this->imageService->getReusablePhotos('mobiliarios');
+        $ultimaFotoId = session('ultima_foto_mobiliarios');
 
-        return view('encargados.regitroMobiliario', compact('tipos_mobiliario', 'ambientes', 'fotos'));
+        return view('encargados.regitroMobiliario', compact('tipos_mobiliario', 'ambientes', 'fotos', 'fotosReutilizables', 'ultimaFotoId'));
     }
 
-    public function storeFoto(Request $request){
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048'
-        ]);
-
-        // Subir la imagen al servidor
-        if ($request->hasFile('foto')) {
-            // Obtén el archivo
-            $file = $request->file('foto');
-
-            // Define un nombre único para la foto, para evitar conflictos de nombres
-            $filename = $file->getClientOriginalName();
-
-            // Verificar si la ruta ya existe en la base de datos
-            $existingFoto = Foto::where('ruta_foto', 'img/mobiliarios-img/' . $filename)->first();
-            if ($existingFoto) {
-                // Si la foto ya existe, redirige con un mensaje de que ya está registrada
-                return redirect()->back()->with([
-                    'aviso' => 'La foto ya está registrada.',
-                    'foto_id' => $existingFoto->id_foto,
-                    'ruta_foto' => $existingFoto->ruta_foto,
-                ]);
-            }
-
-            $filePath = $file->storeAs('img/mobiliarios-img', $filename, 'public'); // Subir a la carpeta 'public/img/img/mobiliarios-img'
-
-            // Mover la imagen a la carpeta correcta
-            $file->move(public_path('img/mobiliarios-img'), $filename);
-
-            // Guardar la ruta de la imagen en la base de datos
-            $foto = new Foto();
-            $foto->ruta_foto = $filePath; // Ruta almacenada será 'img/mabiliarios-img/nombre_de_archivo.ext'
-            $foto->save();
-
-            return redirect()->route('mobiliario.create')
-            ->with('ruta_foto', $foto->ruta_foto)
-            ->with('foto_id', $foto->id_foto);
-        }
-
-        return redirect()->back()->with('error', 'Error al subir la foto del Mobiliario.');
-    }
-
-    // registar tipo mobiliario
     public function storeTipoMobiliario(Request $request)
     {
-        // Validar los datos del formulario
         $request->validate([
             'tipo_mueble' => 'required|string|max:80',
+        ], [
+            'tipo_mueble.required' => 'El tipo de mueble es obligatorio.',
+            'tipo_mueble.max' => 'El tipo de mueble no debe superar los 80 caracteres.',
         ]);
 
-        // Crear un nuevo registro en la base de datos
         TipoMobiliario::create([
             'tipo_mueble' => $request->input('tipo_mueble'),
         ]);
 
-        // Redirigir con un mensaje de éxito
         return redirect()->back()->with('success', 'Tipo de mobiliario registrado con éxito.');
     }
 
-
     public function storeMobiliario(Request $request)
     {
-        try{
-            $request->validate([
-                'cod_mueble' => 'required|max:50',
-                'descripcion_mueb' => 'required',
-                'estado_mueb' => 'required',
-                'vida_util' => 'required',
-                'TIPO_MOBILIARIO_id_tipo_mueb' => 'required',
-                'AMBIENTE_id_ambiente' => 'required|integer',
-                'FOTO_id_foto' => 'required|exists:foto,id_foto'
-            ]);
-    
-            // Verificar si el código del equipo ya existe
-            $existingEquipo = Mobiliario::where('cod_mueble', $request->cod_mueble)->first();
-            if ($existingEquipo) {
-                // Si el equipo ya existe, redirigir con un mensaje de información
-                return redirect()->route('mobiliario.create')->with('info', 'El código del mobiliario ya existe.');
-            }
-    
-            // Crear registro de mobiliario
-            $mobiliario = new Mobiliario;
-            $mobiliario->cod_mueble = $request->cod_mueble;
-            $mobiliario->descripticion_mueb = $request->descripcion_mueb;
-            $mobiliario->fch_registro = now();
-            // Convertir la fecha a la zona horaria deseada
-            //$mobiliario->fch_registro = Carbon::now('America/La_Paz');
-            $mobiliario->estado_mueb = $request->estado_mueb;
-            $mobiliario->observacion = $request->observacion;
-            $mobiliario->vida_util = $request->vida_util;
-            $mobiliario->TIPO_MOBILIARIO_id_tipo_mueb = $request->TIPO_MOBILIARIO_id_tipo_mueb;
-            $mobiliario->AMBIENTE_id_ambiente = $request->AMBIENTE_id_ambiente;
-            $mobiliario->FOTO_id_foto = $request->FOTO_id_foto;
-            $mobiliario->save();
-    
-            return redirect()->route('mobiliario.create')->with('success', 'Mobiliario registrado exitosamente');
+        $request->validate([
+            'cod_mueble' => 'required|string|max:50|unique:mobiliario,cod_mueble',
+            'descripticion_mueb' => 'required_without:descripcion_mueb|nullable|string',
+            'descripcion_mueb' => 'required_without:descripticion_mueb|nullable|string',
+            'estado_mueb' => 'required|string|max:45',
+            'observacion' => 'nullable|string',
+            'vida_util' => 'required|string|max:50',
+            'TIPO_MOBILIARIO_id_tipo_mueb' => 'required|integer|exists:tipo_mobiliario,id_tipo_mueb',
+            'AMBIENTE_id_ambiente' => 'required|integer|exists:ambiente,id_ambiente',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
+            'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
+        ], [
+            'cod_mueble.required' => 'El codigo del mobiliario es obligatorio.',
+            'cod_mueble.unique' => 'El codigo del mobiliario ya se encuentra registrado.',
+            'cod_mueble.max' => 'El codigo del mobiliario no debe superar los 50 caracteres.',
+            'descripticion_mueb.required_without' => 'La descripcion del mobiliario es obligatoria.',
+            'descripcion_mueb.required_without' => 'La descripcion del mobiliario es obligatoria.',
+            'estado_mueb.required' => 'El estado del mobiliario es obligatorio.',
+            'vida_util.required' => 'La vida util es obligatoria.',
+            'TIPO_MOBILIARIO_id_tipo_mueb.required' => 'Debe seleccionar un tipo de mobiliario.',
+            'TIPO_MOBILIARIO_id_tipo_mueb.exists' => 'El tipo de mobiliario seleccionado no es valido.',
+            'AMBIENTE_id_ambiente.required' => 'Debe seleccionar un ambiente valido.',
+            'AMBIENTE_id_ambiente.exists' => 'El ambiente seleccionado no existe en el sistema.',
+            'foto.required_without' => 'Debe subir una fotografia o seleccionar una existente.',
+            'foto.image' => 'El archivo seleccionado debe ser una imagen.',
+            'foto.mimes' => 'La imagen debe tener formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB de tamano.',
+            'existing_foto_id.required_without' => 'Debe seleccionar una foto existente o subir una nueva.',
+            'existing_foto_id.exists' => 'La foto seleccionada no existe en el sistema.',
+        ]);
 
-        }catch (\Exception $e) {
-            return redirect()->route('mobiliario.create')->with('errordata', 'Problemas al registrar el Mobiliario: FAVOR DE REVISAR LOS CAMPOS AL LLENAR' );
+        $descripcion = $request->input('descripticion_mueb') ?? $request->input('descripcion_mueb');
+
+        try {
+            $this->imageService->storeWithTransaction(
+                $request->file('foto'),
+                $request->filled('existing_foto_id') ? (int) $request->input('existing_foto_id') : null,
+                'mobiliarios',
+                function (Foto $foto) use ($request, $descripcion) {
+                    $mobiliario = new Mobiliario();
+                    $mobiliario->cod_mueble = $request->cod_mueble;
+                    $mobiliario->descripticion_mueb = $descripcion;
+                    $mobiliario->fch_registro = now();
+                    $mobiliario->estado_mueb = $request->estado_mueb;
+                    $mobiliario->observacion = $request->observacion;
+                    $mobiliario->vida_util = $request->vida_util;
+                    $mobiliario->TIPO_MOBILIARIO_id_tipo_mueb = $request->TIPO_MOBILIARIO_id_tipo_mueb;
+                    $mobiliario->AMBIENTE_id_ambiente = $request->AMBIENTE_id_ambiente;
+                    $mobiliario->FOTO_id_foto = $foto->id_foto;
+                    $mobiliario->save();
+
+                    session()->put('ultima_foto_mobiliarios', $foto->id_foto);
+
+                    return $mobiliario;
+                }
+            );
+
+            return redirect()->route('mobiliario.create')->with('success', 'Mobiliario registrado exitosamente');
+        } catch (\Throwable $e) {
+            Log::error('Error al registrar mobiliario: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()
+                ->withInput()
+                ->with('errordata', 'No se pudo completar el registro del mobiliario. Intente nuevamente.');
+        }
+    }
+
+    public function cambiarFoto(Request $request, $cod_mueble)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+            'foto.required' => 'Debe seleccionar una fotografia para actualizar.',
+            'foto.image' => 'El archivo debe ser una imagen valida.',
+            'foto.mimes' => 'La imagen debe ser de formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB.',
+        ]);
+
+        try {
+            $mobiliario = Mobiliario::where('cod_mueble', $cod_mueble)->firstOrFail();
+            $this->imageService->replaceArticleFoto($mobiliario, $request->file('foto'), 'mobiliarios');
+
+            return redirect()->back()->with('success', 'Fotografia del mobiliario actualizada correctamente.');
+        } catch (\Throwable $e) {
+            Log::error('Error al cambiar foto del mobiliario: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()->with('errordata', 'Error al actualizar la fotografia del mobiliario.');
         }
     }
 }

@@ -4,96 +4,111 @@ namespace App\Http\Controllers\Encargado;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Foto;
 use App\Models\Accesorio;
+use App\Services\InventarioImageService;
 
 class AccesorioRController extends Controller
 {
-    // Metodo para mostrar el formulario de registro de accesorio
-    public function create(){
-        $fotos = Foto::all(); // Obtener todas las fotos para el select
-        return view('encargados.registroAccesorio', compact('fotos'));
-    }
+    protected InventarioImageService $imageService;
 
-    // Método para almacenar la foto del accesorio
-    public function storeFoto(Request $request)
+    public function __construct(InventarioImageService $imageService)
     {
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-
-        // Subir la imagen al servidor
-        if ($request->hasFile('foto')) {
-            // Obtén el archivo
-            $file = $request->file('foto');
-
-            // Define un nombre único para la foto, para evitar conflictos de nombres
-            $filename = $file->getClientOriginalName();
-
-            // Verificar si la ruta ya existe en la base de datos
-            $existingFoto = Foto::where('ruta_foto', 'img/accesorios-img/' . $filename)->first();
-            if ($existingFoto) {
-                // Si la foto ya existe, redirige con un mensaje de que ya está registrada
-                return redirect()->back()->with([
-                    'aviso' => 'La foto ya está registrada.',
-                    'foto_id' => $existingFoto->id_foto,
-                    'ruta_foto' => $existingFoto->ruta_foto,
-                ]);
-            }
-
-            $filePath = $file->storeAs('img/accesorios-img', $filename, 'public'); // Subir a la carpeta 'public/img/img/accesorios-img'
-
-            // Mover la imagen a la carpeta correcta
-            $file->move(public_path('img/accesorios-img'), $filename);
-
-            // Guardar la ruta de la imagen en la base de datos
-            $foto = new Foto();
-            $foto->ruta_foto = $filePath; // Ruta almacenada será 'img/accesorios-img/nombre_de_archivo.ext'
-            $foto->save();
-
-            return redirect()->route('accesorio.create')
-            ->with('ruta_foto', $foto->ruta_foto)
-            ->with('foto_id', $foto->id_foto);
-        }
-
-        return redirect()->back()->with('error', 'Error al subir la foto del Accesorio.');
+        $this->imageService = $imageService;
     }
 
-    // Método para almacenar el accesorio
+    public function create()
+    {
+        $fotos = Foto::all();
+        $fotosReutilizables = $this->imageService->getReusablePhotos('accesorios');
+        $ultimaFotoId = session('ultima_foto_accesorios');
+
+        return view('encargados.registroAccesorio', compact('fotos', 'fotosReutilizables', 'ultimaFotoId'));
+    }
+
     public function storeAccesorio(Request $request)
     {
-        try{
-            $request->validate([
-                'cod_accesorio' => 'required|max:50',
-                'nombre_acce' => 'required|max:80',
-                'estado_acce' => 'required|max:45',
-                'vida_util' => 'required|max:45',
-                'ubicacion' => 'required|max:120',
-                'FOTO_id_foto' => 'required|exists:foto,id_foto'
-            ]);
+        $request->validate([
+            'cod_accesorio' => 'required|string|max:50|unique:accesorio,cod_accesorio',
+            'nombre_acce' => 'required|string|max:80',
+            'descripcion_acce' => 'nullable|string',
+            'observacion_ace' => 'nullable|string',
+            'estado_acce' => 'required|string|max:45',
+            'vida_util' => 'required|string|max:45',
+            'ubicacion' => 'required|string|max:120',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
+            'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
+        ], [
+            'cod_accesorio.required' => 'El codigo del accesorio es obligatorio.',
+            'cod_accesorio.unique' => 'El codigo del accesorio ya se encuentra registrado.',
+            'cod_accesorio.max' => 'El codigo del accesorio no debe superar los 50 caracteres.',
+            'nombre_acce.required' => 'El nombre del accesorio es obligatorio.',
+            'nombre_acce.max' => 'El nombre del accesorio no debe superar los 80 caracteres.',
+            'estado_acce.required' => 'El estado del accesorio es obligatorio.',
+            'vida_util.required' => 'La vida util es obligatoria.',
+            'ubicacion.required' => 'La ubicacion del accesorio es obligatoria.',
+            'ubicacion.max' => 'La ubicacion no debe superar los 120 caracteres.',
+            'foto.required_without' => 'Debe subir una fotografia o seleccionar una existente.',
+            'foto.image' => 'El archivo seleccionado debe ser una imagen.',
+            'foto.mimes' => 'La imagen debe tener formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB de tamano.',
+            'existing_foto_id.required_without' => 'Debe seleccionar una foto existente o subir una nueva.',
+            'existing_foto_id.exists' => 'La foto seleccionada no existe en el sistema.',
+        ]);
 
-            // Verificar si el código del equipo ya existe
-            $existingEquipo = Accesorio::where('cod_accesorio', $request->cod_accesorio)->first();
-            if ($existingEquipo) {
-                // Si el equipo ya existe, redirigir con un mensaje de información
-                return redirect()->route('accesorio.create')->with('info', 'El código del accesorio ya existe.');
-            }
-       
-            $accesorio = new Accesorio();
-            $accesorio->cod_accesorio = $request->cod_accesorio;
-            $accesorio->nombre_acce = $request->nombre_acce;
-            $accesorio->descripcion_acce = $request->descripcion_acce;
-            $accesorio->observacion_ace = $request->observacion_ace;
-            $accesorio->estado_acce = $request->estado_acce;
-            $accesorio->vida_util = $request->vida_util;
-            $accesorio->ubicacion = $request->ubicacion;
-            $accesorio->fch_registro_acce = now();
-            $accesorio->FOTO_id_foto = $request->FOTO_id_foto;
-            $accesorio->save();
-    
+        try {
+            $this->imageService->storeWithTransaction(
+                $request->file('foto'),
+                $request->filled('existing_foto_id') ? (int) $request->input('existing_foto_id') : null,
+                'accesorios',
+                function (Foto $foto) use ($request) {
+                    $accesorio = new Accesorio();
+                    $accesorio->cod_accesorio = $request->cod_accesorio;
+                    $accesorio->nombre_acce = $request->nombre_acce;
+                    $accesorio->descripcion_acce = $request->descripcion_acce;
+                    $accesorio->observacion_ace = $request->observacion_ace;
+                    $accesorio->estado_acce = $request->estado_acce;
+                    $accesorio->vida_util = $request->vida_util;
+                    $accesorio->ubicacion = $request->ubicacion;
+                    $accesorio->fch_registro_acce = now();
+                    $accesorio->FOTO_id_foto = $foto->id_foto;
+                    $accesorio->save();
+
+                    session()->put('ultima_foto_accesorios', $foto->id_foto);
+
+                    return $accesorio;
+                }
+            );
+
             return redirect()->route('accesorio.create')->with('success', 'Accesorio registrado exitosamente');
-        }catch (\Exception $e) {
-            return redirect()->route('accesorio.create')->with('errordata', 'Problemas al registrar el Accesorio: FAVOR REVISAR LOS CAMPOS AL LLENAR');
+        } catch (\Throwable $e) {
+            Log::error('Error al registrar accesorio: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()
+                ->withInput()
+                ->with('errordata', 'No se pudo completar el registro del accesorio. Intente nuevamente.');
+        }
+    }
+
+    public function cambiarFoto(Request $request, $cod_accesorio)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+            'foto.required' => 'Debe seleccionar una fotografia para actualizar.',
+            'foto.image' => 'El archivo debe ser una imagen valida.',
+            'foto.mimes' => 'La imagen debe ser de formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB.',
+        ]);
+
+        try {
+            $accesorio = Accesorio::where('cod_accesorio', $cod_accesorio)->firstOrFail();
+            $this->imageService->replaceArticleFoto($accesorio, $request->file('foto'), 'accesorios');
+
+            return redirect()->back()->with('success', 'Fotografia del accesorio actualizada correctamente.');
+        } catch (\Throwable $e) {
+            Log::error('Error al cambiar foto del accesorio: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()->with('errordata', 'Error al actualizar la fotografia del accesorio.');
         }
     }
 }

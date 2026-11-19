@@ -332,31 +332,31 @@ Route::prefix('encargado')->middleware(['auth', 'role:Encargado'])->group(functi
 
     Route::get('/principal', [PrincipalController::class, 'principal'])->name('encargado.inicio');
 
+    // Equipos
     Route::get('/registro/equipo', [EquipoRController::class, 'create'])->name('equipo.create');
-    Route::post('/foto/store', [EquipoRController::class, 'store'])->name('foto.store');
     Route::post('/equipo/store', [EquipoRController::class, 'storeEquipo'])->name('equipo.store');
-    //registrar componentes y accesorios
-    Route::post('/componente/store', [EquipoRController::class, 'storeComponente'])->name('componente.store');
-    Route::post('/registro/foto/accesorio', [EquipoRController::class, 'storeFotoAccesorio'])->name('foto.accesorio');
-    Route::post('/accesorio/equipo/store', [EquipoRController::class, 'storeAccesorioEquipo'])->name('equipo.accesorios.store');
+    Route::post('/equipo/{cod_equipo}/cambiar-foto', [EquipoRController::class, 'cambiarFoto'])->name('equipo.cambiarFoto');
     Route::get('/equipo/{cod_equipo}', [EquipoRController::class, 'show'])->name('equipo.show');
 
-    //registrar material
-    // Rutas para materiales
-    Route::get('/material/crear', [MaterialController::class, 'create'])->name('material.create');
-    Route::post('/material/guardar-foto', [MaterialController::class, 'storeFoto'])->name('foto.storeMaterial');
-    Route::post('/material/guardar', [MaterialController::class, 'storeMaterial'])->name('material.store');
+    // Componentes y Accesorios vinculados a Equipos
+    Route::post('/componente/store', [EquipoRController::class, 'storeComponente'])->name('componente.store');
+    Route::post('/accesorio/equipo/store', [EquipoRController::class, 'storeAccesorioEquipo'])->name('equipo.accesorios.store');
 
-    //registro de mobiliario
+    // Materiales
+    Route::get('/material/crear', [MaterialController::class, 'create'])->name('material.create');
+    Route::post('/material/guardar', [MaterialController::class, 'storeMaterial'])->name('material.store');
+    Route::post('/material/{cod_mate}/cambiar-foto', [MaterialController::class, 'cambiarFoto'])->name('material.cambiarFoto');
+
+    // Mobiliarios
     Route::get('/mobiliario/create', [MobiliarioController::class, 'create'])->name('mobiliario.create');
     Route::post('/tipo_mobiliario/store', [MobiliarioController::class, 'storeTipoMobiliario'])->name('tipo_mobiliario.store');
-    Route::post('/foto/storeMobiliario', [MobiliarioController::class, 'storeFoto'])->name('foto.storeMobiliario');
     Route::post('/mobiliario/store', [MobiliarioController::class, 'storeMobiliario'])->name('mobiliario.store');
+    Route::post('/mobiliario/{cod_mueble}/cambiar-foto', [MobiliarioController::class, 'cambiarFoto'])->name('mobiliario.cambiarFoto');
 
-    //registro de accesorios
+    // Accesorios
     Route::get('/accesorio/create', [AccesorioRController::class, 'create'])->name('accesorio.create');
-    Route::post('/accesorio/storeFoto', [AccesorioRController::class, 'storeFoto'])->name('foto.storeAccesorio');
     Route::post('/accesorio/store', [AccesorioRController::class, 'storeAccesorio'])->name('accesorio.store');
+    Route::post('/accesorio/{cod_accesorio}/cambiar-foto', [AccesorioRController::class, 'cambiarFoto'])->name('accesorio.cambiarFoto');
 
     //pagina de uso de ambientes
     Route::get('/ambientes', [MovimientoAmbienteController::class, 'index'])->name('movimiento.ambiente.index');

@@ -4,101 +4,118 @@ namespace App\Http\Controllers\Encargado;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\Foto;
 use App\Models\Personal;
 use App\Models\Ambiente;
 use App\Models\Material;
-use Carbon\Carbon;
+use App\Services\InventarioImageService;
 
 class MaterialController extends Controller
 {
-    // Mostrar la vista del formulario de registro de material
+    protected InventarioImageService $imageService;
+
+    public function __construct(InventarioImageService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     public function create()
     {
-        // Obtén el ID del usuario actualmente autenticado
-        $userId = auth()->user()->id_personal; // Asegúrate de que esto corresponda con tu implementación de autenticación
-
-        // Obtener el id del edificio donde el personal trabaja
+        $userId = auth()->user()->id_personal;
         $edificioId = Personal::where('id_personal', $userId)->value('EDIFICIO_id_edificio');
 
-        // Obtén los ambientes asociados a ese edificio
         $ambientes = Ambiente::whereHas('piso', function ($query) use ($edificioId) {
             $query->where('Edificio_id_edificio', $edificioId);
         })->get();
+
         $fotos = Foto::all();
+        $fotosReutilizables = $this->imageService->getReusablePhotos('materiales');
+        $ultimaFotoId = session('ultima_foto_materiales');
 
-        return view('encargados.registrarMaterial', compact('ambientes', 'fotos'));
+        return view('encargados.registrarMaterial', compact('ambientes', 'fotos', 'fotosReutilizables', 'ultimaFotoId'));
     }
 
-    // Guardar la foto del material
-    public function storeFoto(Request $request)
-    {
-        $request->validate([
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
-
-        // Subir la imagen al servidor
-        if ($request->hasFile('foto')) {
-            // Obtén el archivo
-            $file = $request->file('foto');
-
-            // Define un nombre único para la foto, para evitar conflictos de nombres
-            $filename = $file->getClientOriginalName();
-
-            // Verificar si la ruta ya existe en la base de datos
-            $existingFoto = Foto::where('ruta_foto', 'img/materiales-img/' . $filename)->first();
-            if ($existingFoto) {
-                // Si la foto ya existe, redirige con un mensaje de que ya está registrada
-                return redirect()->back()->with([
-                    'aviso' => 'La foto ya está registrada.',
-                    'foto_id' => $existingFoto->id_foto,
-                    'ruta_foto' => $existingFoto->ruta_foto,
-                ]);
-            }
-
-            $filePath = $file->storeAs('img/materiales-img', $filename, 'public'); // Subir a la carpeta 'public/img/img/materiales-img'
-
-            // Mover la imagen a la carpeta correcta
-            $file->move(public_path('img/materiales-img'), $filename);
-
-            // Guardar la ruta de la imagen en la base de datos
-            $foto = new Foto();
-            $foto->ruta_foto = $filePath; // Ruta almacenada será 'img/materiales-img/nombre_de_archivo.ext'
-            $foto->save();
-
-            return redirect()->route('material.create')
-            ->with('ruta_foto', $foto->ruta_foto)
-            ->with('foto_id', $foto->id_foto);
-
-        }
-        return redirect()->back()->with('error', 'Error al subir la foto.');
-    }
-
-    // Guardar el material en la base de datos
     public function storeMaterial(Request $request)
     {
         $request->validate([
-            'cod_mate' => 'required|string|max:50',
+            'cod_mate' => 'required|string|max:50|unique:material,cod_mate',
             'tipo_mate' => 'required|string|max:50',
             'descripcion_mate' => 'required|string',
             'estado_mate' => 'required|string|max:45',
-            'observacion_mate' => 'nullable|string|max:80',
+            'observacion_mate' => 'nullable|string',
             'AMBIENTE_id_ambiente' => 'required|integer|exists:ambiente,id_ambiente',
-            'FOTO_id_foto' => 'required|integer|exists:foto,id_foto',
+            'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
+            'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
+        ], [
+            'cod_mate.required' => 'El codigo del material es obligatorio.',
+            'cod_mate.unique' => 'El codigo del material ya se encuentra registrado.',
+            'cod_mate.max' => 'El codigo del material no debe superar los 50 caracteres.',
+            'tipo_mate.required' => 'El tipo de material es obligatorio.',
+            'tipo_mate.max' => 'El tipo de material no debe superar los 50 caracteres.',
+            'descripcion_mate.required' => 'La descripcion del material es obligatoria.',
+            'estado_mate.required' => 'El estado del material es obligatorio.',
+            'AMBIENTE_id_ambiente.required' => 'Debe seleccionar un ambiente valido.',
+            'AMBIENTE_id_ambiente.exists' => 'El ambiente seleccionado no existe en el sistema.',
+            'foto.required_without' => 'Debe subir una fotografia o seleccionar una existente.',
+            'foto.image' => 'El archivo seleccionado debe ser una imagen.',
+            'foto.mimes' => 'La imagen debe tener formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB de tamano.',
+            'existing_foto_id.required_without' => 'Debe seleccionar una foto existente o subir una nueva.',
+            'existing_foto_id.exists' => 'La foto seleccionada no existe en el sistema.',
         ]);
 
-        // Guardar el material en la base de datos
-        $material = new Material();
-        $material->cod_mate = $request->cod_mate;
-        $material->tipo_mate = $request->tipo_mate;
-        $material->descripcion_mate = $request->descripcion_mate;
-        $material->estado_mate = $request->estado_mate;
-        $material->observacion_mate = $request->observacion_mate;
-        $material->AMBIENTE_id_ambiente = $request->AMBIENTE_id_ambiente;
-        $material->FOTO_id_foto = $request->FOTO_id_foto;
-        $material->fch_registrada = now();
-        $material->save();
+        try {
+            $this->imageService->storeWithTransaction(
+                $request->file('foto'),
+                $request->filled('existing_foto_id') ? (int) $request->input('existing_foto_id') : null,
+                'materiales',
+                function (Foto $foto) use ($request) {
+                    $material = new Material();
+                    $material->cod_mate = $request->cod_mate;
+                    $material->tipo_mate = $request->tipo_mate;
+                    $material->descripcion_mate = $request->descripcion_mate;
+                    $material->estado_mate = $request->estado_mate;
+                    $material->observacion_mate = $request->observacion_mate;
+                    $material->AMBIENTE_id_ambiente = $request->AMBIENTE_id_ambiente;
+                    $material->FOTO_id_foto = $foto->id_foto;
+                    $material->fch_registrada = now();
+                    $material->save();
 
-        return redirect()->route('material.create')->with('success', 'Material registrado exitosamente');
+                    session()->put('ultima_foto_materiales', $foto->id_foto);
+
+                    return $material;
+                }
+            );
+
+            return redirect()->route('material.create')->with('success', 'Material registrado exitosamente');
+        } catch (\Throwable $e) {
+            Log::error('Error al registrar material: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()
+                ->withInput()
+                ->with('errordata', 'No se pudo completar el registro del material. Intente nuevamente.');
+        }
+    }
+
+    public function cambiarFoto(Request $request, $cod_mate)
+    {
+        $request->validate([
+            'foto' => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
+        ], [
+            'foto.required' => 'Debe seleccionar una fotografia para actualizar.',
+            'foto.image' => 'El archivo debe ser una imagen valida.',
+            'foto.mimes' => 'La imagen debe ser de formato: jpeg, jpg, png o webp.',
+            'foto.max' => 'La imagen no debe superar los 5MB.',
+        ]);
+
+        try {
+            $material = Material::where('cod_mate', $cod_mate)->firstOrFail();
+            $this->imageService->replaceArticleFoto($material, $request->file('foto'), 'materiales');
+
+            return redirect()->back()->with('success', 'Fotografia del material actualizada correctamente.');
+        } catch (\Throwable $e) {
+            Log::error('Error al cambiar foto del material: ' . $e->getMessage(), ['exception' => $e]);
+            return redirect()->back()->with('errordata', 'Error al actualizar la fotografia del material.');
+        }
     }
 }

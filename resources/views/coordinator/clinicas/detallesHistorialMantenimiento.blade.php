@@ -70,7 +70,7 @@
                     </div>
                     <div class="card-body text-center">
                         @if($mantenimiento->ruta_foto)
-                            <img src="{{ inventario_img_url($mantenimiento->ruta_foto ?? null, 'img/equipos-img/default.jpg') }}" alt="Foto del artículo" class="img-fluid">
+                            <img src="{{ inventario_img_url($mantenimiento->ruta_foto ?? null) }}" alt="Foto del artículo" class="img-fluid">
                         @else
                             <p>No hay foto disponible.</p>
                         @endif

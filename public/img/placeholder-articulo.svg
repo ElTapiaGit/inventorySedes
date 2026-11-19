@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="100%" height="100%">
+  <rect width="398" height="298" x="1" y="1" rx="8" fill="#EEF3F8" stroke="#CBD5E1" stroke-width="2"/>
+  <g transform="translate(160, 95)" fill="none" stroke="#64748B" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="0" y="0" width="80" height="60" rx="8"/>
+    <circle cx="26" cy="22" r="8" fill="#64748B" stroke="none"/>
+    <path d="M6 52 L32 26 L52 46 L62 36 L74 48"/>
+  </g>
+  <text x="200" y="195" fill="#64748B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="500" text-anchor="middle" letter-spacing="0.5">Sin fotografia</text>
+</svg>

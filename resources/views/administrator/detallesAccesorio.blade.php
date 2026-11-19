@@ -20,11 +20,7 @@
                 <div class="row">
                     <div class="col-md-5">
                         <!-- Mostrar foto del accesorio si existe -->
-                        @if($accesorio->foto)
-                            <img src="{{ inventario_img_url($accesorio->foto->ruta_foto ?? null, 'img/accesorios-img/default.jpg') }}" class="img-fluid" alt="Foto del accesorio">
-                        @else
-                            <img src="{{ asset('images/no-image.png') }}" class="img-fluid" alt="No hay imagen">
-                        @endif
+                        <img src="{{ inventario_img_url($accesorio->foto->ruta_foto ?? null) }}" class="img-fluid" alt="Foto del accesorio">
                     </div>
                     <div class="col-md-7">
                         <ul class="list-group list-group-flush">
@@ -62,7 +58,7 @@
                         </div>
 
                         <div class="col-md-4">
-                            <img src="{{ inventario_img_url($equipo->foto->ruta_foto ?? null, 'img/equipos-img/default.jpg') }}" class="img-fluid" alt="{{ $equipo->nombre_equi }}">
+                            <img src="{{ inventario_img_url($equipo->foto->ruta_foto ?? null) }}" class="img-fluid" alt="{{ $equipo->nombre_equi }}">
                         </div>
                     </div>
                 </div>

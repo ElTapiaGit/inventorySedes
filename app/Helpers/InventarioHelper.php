@@ -3,7 +3,7 @@
 use Illuminate\Support\Str;
 
 if (!function_exists('inventario_img_url')) {
-    function inventario_img_url(?string $ruta, string $default = 'img/equipos-img/default.jpg'): string
+    function inventario_img_url(?string $ruta, string $default = 'img/placeholder-articulo.svg'): string
     {
         if (empty($ruta)) {
             return asset($default);

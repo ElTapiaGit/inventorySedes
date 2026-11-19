@@ -33,7 +33,7 @@
                         <!-- Imagen del material en el lado derecho -->
                         <div class="mueble-foto mt-3 text-center">
                             @if($material->foto)
-                                <img src="{{ inventario_img_url($material->foto->ruta_foto ?? null, 'img/materiales-img/default.jpg') }}" alt="Foto del material" class="img-fluid">
+                                <img src="{{ inventario_img_url($material->foto->ruta_foto ?? null) }}" alt="Foto del material" class="img-fluid">
                             @else
                                 <p>No hay foto disponible</p>
                             @endif

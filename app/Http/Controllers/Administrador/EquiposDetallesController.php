@@ -56,7 +56,7 @@ class EquiposDetallesController extends Controller
         try{
             $cod_accesorio = $request->input('cod_accesorio');
             $accesorio = Accesorio::with('foto')->where('cod_accesorio', $cod_accesorio)->firstOrFail();
-            $ruta_foto = inventario_img_url($accesorio->foto->ruta_foto ?? null, 'img/accesorios-img/default.jpg');
+            $ruta_foto = inventario_img_url($accesorio->foto->ruta_foto ?? null);
     
             return view('administrator.fotoAccesorio', compact('ruta_foto'));
 

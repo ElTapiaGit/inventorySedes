@@ -23,7 +23,7 @@ return new class extends Migration
             $table->date('fch_registro')->nullable();
             $table->string('estado_mueb', 45)->nullable();
             $table->text('observacion')->nullable();
-            $table->string('vida_util', 30)->nullable();
+            $table->string('vida_util', 50)->nullable();
             $table->integer('TIPO_MOBILIARIO_id_tipo_mueb');
             $table->integer('AMBIENTE_id_ambiente');
             $table->integer('FOTO_id_foto');

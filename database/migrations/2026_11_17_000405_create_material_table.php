@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('tipo_mate', 50)->nullable();
             $table->text('descripcion_mate')->nullable();
             $table->string('estado_mate', 45)->nullable();
-            $table->string('observacion_mate', 80)->nullable();
+            $table->text('observacion_mate')->nullable();
             $table->date('fch_registrada')->nullable();
             $table->integer('AMBIENTE_id_ambiente');
             $table->integer('FOTO_id_foto');

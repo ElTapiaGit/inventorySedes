@@ -19,14 +19,14 @@ return new class extends Migration
             $table->collation = 'utf8_general_ci';
 
             $table->string('cod_equipo', 50)->primary();
-            $table->string('nombre_equi', 45)->nullable();
-            $table->string('marca', 20)->nullable();
+            $table->string('nombre_equi', 100)->nullable();
+            $table->string('marca', 60)->nullable();
             $table->string('modelo', 50)->nullable();
-            $table->string('descripcion_equi', 90)->nullable();
+            $table->text('descripcion_equi')->nullable();
             $table->tinyInteger('empotrado')->nullable();
             $table->string('estado_equi', 45)->nullable();
             $table->text('observaciones_equi')->nullable();
-            $table->string('vida_util', 30)->nullable();
+            $table->string('vida_util', 50)->nullable();
             $table->date('fch_registro')->nullable();
             $table->integer('AMBIENTE_id_ambiente');
             $table->integer('FOTO_id_foto');

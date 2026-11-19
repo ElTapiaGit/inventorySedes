@@ -87,7 +87,7 @@
                 <p><strong>Fecha de Finalización:</strong> {{ \Carbon\Carbon::parse($mantenimiento->finalMantenimiento->fch_final)->format('d/m/Y') }}</p>
                 <p><strong>Informe Final:</strong> {{ $mantenimiento->finalMantenimiento->informe_final }}</p>
             @else
-                <p class="text-danger"><strong>⚠️ Este mantenimiento aún no ha sido finalizado.</strong></p>
+                <p class="text-danger"><strong><i class="bi bi-exclamation-triangle me-1"></i> Este mantenimiento aún no ha sido finalizado.</strong></p>
             @endif
         </div>
     </div>

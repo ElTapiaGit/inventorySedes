@@ -123,6 +123,11 @@
             // 1. Transicion limpia: Abrir modal de tecnico desde el boton (+) en mantenimiento
             if (btnAbrirModalTecnico && modalMantenimientoEl && modalTecnicoEl) {
                 btnAbrirModalTecnico.addEventListener('click', function () {
+                    this.blur();
+                    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                        document.activeElement.blur();
+                    }
+
                     openedFromMantenimiento = true;
                     // Proteger datos del formulario de mantenimiento contra reseteo de form-protection.js
                     if (formMantenimiento) {

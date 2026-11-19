@@ -27,7 +27,7 @@
                     <span class="input-group-text">
                         <i class="bi bi-person"></i>
                     </span>
-                    <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre" value="{{ request('nombre') }}">
+                    <input type="text" id="filtro_usuario_nombre" name="nombre" class="form-control" placeholder="Buscar por nombre" aria-label="Buscar por nombre" value="{{ request('nombre') }}">
                 </div>
             </div>
             <div class="col-md-3">
@@ -35,7 +35,7 @@
                     <span class="input-group-text">
                         <i class="bi bi-funnel"></i>
                     </span>
-                    <select name="tipo_usuario" class="form-select">
+                    <select id="filtro_tipo_usuario" name="tipo_usuario" class="form-select" aria-label="Filtrar por tipo de usuario">
                         <option value="">Filtrar por tipo de usuario</option>
                         @foreach($tipoUsuarios as $tipo)
                             <option value="{{ $tipo->id_tipo_usu }}" {{ request('tipo_usuario') == $tipo->id_tipo_usu ? 'selected' : '' }}>
@@ -158,20 +158,20 @@
                 <form method="POST" action="{{route('encargado.register.usuarios')}}">
                     @csrf
                     <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" maxlength="45" id="nombre" name="nombre" required>
+                        <label for="nuevo_nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" maxlength="45" id="nuevo_nombre" name="nombre" required>
                     </div>
                     <div class="mb-3">
-                        <label for="apellidos" class="form-label">Apellidos</label>
-                        <input type="text" class="form-control" maxlength="45" id="apellidos" name="apellidos" required>
+                        <label for="nuevo_apellidos" class="form-label">Apellidos</label>
+                        <input type="text" class="form-control" maxlength="45" id="nuevo_apellidos" name="apellidos" required>
                     </div>
                     <div class="mb-3">
-                        <label for="celular" class="form-label">Celular</label>
-                        <input type="text" class="form-control" maxlength="15" id="celular" name="celular" required>
+                        <label for="nuevo_celular" class="form-label">Celular</label>
+                        <input type="text" class="form-control" maxlength="15" id="nuevo_celular" name="celular" required>
                     </div>
                     <div class="mb-3">
-                        <label for="tipo_usuario" class="form-label">Tipo de Usuario</label>
-                        <select class="form-select" id="tipo_usuario" name="tipo_usuario" required>
+                        <label for="nuevo_tipo_usuario" class="form-label">Tipo de Usuario</label>
+                        <select class="form-select" id="nuevo_tipo_usuario" name="tipo_usuario" required>
                             @foreach($tipoUsuarios as $tipo)
                                 <option value="{{ $tipo->id_tipo_usu }}">{{ $tipo->tipo }}</option>
                             @endforeach

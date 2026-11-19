@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Encargado;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Personal;
 use App\Models\Ambiente;
@@ -41,6 +42,8 @@ class EquipoRController extends Controller
 
     public function storeEquipo(Request $request)
     {
+        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
         $request->validate([
             'cod_equipo' => 'required|string|max:50|unique:equipo,cod_equipo',
             'nombre_equi' => 'required|string|max:100',
@@ -51,7 +54,20 @@ class EquipoRController extends Controller
             'empotrado' => 'required|in:0,1',
             'estado_equi' => 'required|string|in:Nuevo,Bueno,Regular,Para mantenimiento,Para reparar,Para descarte',
             'vida_util' => 'nullable|string|max:50',
-            'AMBIENTE_id_ambiente' => 'required|integer|exists:ambiente,id_ambiente',
+            'AMBIENTE_id_ambiente' => [
+                'required',
+                'integer',
+                'exists:ambiente,id_ambiente',
+                function ($attribute, $value, $fail) use ($edificioId) {
+                    $pertenece = Ambiente::where('id_ambiente', $value)
+                        ->whereHas('piso', function ($q) use ($edificioId) {
+                            $q->where('EDIFICIO_id_edificio', $edificioId);
+                        })->exists();
+                    if (!$pertenece) {
+                        $fail('El ambiente seleccionado no pertenece a su edificio asignado.');
+                    }
+                },
+            ],
             'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
             'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
         ], [
@@ -116,9 +132,22 @@ class EquipoRController extends Controller
 
     public function show($cod_equipo)
     {
-        $equipo = Equipo::with('accesorios')->where('cod_equipo', $cod_equipo)->firstOrFail();
+        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
+        $equipo = Equipo::with('accesorios')
+            ->where('cod_equipo', $cod_equipo)
+            ->whereHas('ambiente.piso', function ($q) use ($edificioId) {
+                $q->where('EDIFICIO_id_edificio', $edificioId);
+            })
+            ->firstOrFail();
+
         $componentes = Componente::where('EQUIPO_cod_equipo', $cod_equipo)->get();
-        $accesorios = Accesorio::all();
+        $accesorios = Accesorio::where(function ($query) use ($edificioId) {
+            $query->whereHas('equipos.ambiente.piso', function ($q) use ($edificioId) {
+                $q->where('EDIFICIO_id_edificio', $edificioId);
+            })->orWhereDoesntHave('equipos');
+        })->get();
+
         $fotos = Foto::all();
         $fotosReutilizables = $this->imageService->getReusablePhotos('accesorios');
         $ultimaFotoId = session('ultima_foto_accesorios');
@@ -128,8 +157,24 @@ class EquipoRController extends Controller
 
     public function storeComponente(Request $request)
     {
+        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
         $request->validate([
-            'cod_equipo' => 'required|string|max:50|exists:equipo,cod_equipo',
+            'cod_equipo' => [
+                'required',
+                'string',
+                'max:50',
+                'exists:equipo,cod_equipo',
+                function ($attribute, $value, $fail) use ($edificioId) {
+                    $pertenece = Equipo::where('cod_equipo', $value)
+                        ->whereHas('ambiente.piso', function ($q) use ($edificioId) {
+                            $q->where('EDIFICIO_id_edificio', $edificioId);
+                        })->exists();
+                    if (!$pertenece) {
+                        $fail('El equipo especificado no pertenece a su edificio asignado.');
+                    }
+                },
+            ],
             'nombre_compo' => 'required|string|max:50',
             'descripcion_compo' => 'required|string',
             'estado_compo' => 'required|string|in:Nuevo,Bueno,Regular,Para mantenimiento,Para reparar,Para descarte',
@@ -163,6 +208,8 @@ class EquipoRController extends Controller
 
     public function storeAccesorioEquipo(Request $request)
     {
+        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
         $request->validate([
             'cod_accesorio' => 'required|string|max:50|unique:accesorio,cod_accesorio',
             'nombre_acce' => 'required|string|max:80',
@@ -171,7 +218,21 @@ class EquipoRController extends Controller
             'estado_acce' => 'required|string|in:Nuevo,Bueno,Regular,Para reponer,Para cambiar',
             'vida_util' => 'nullable|string|max:45',
             'ubicacion' => 'required|string|max:120',
-            'cod_equipo' => 'required|string|max:50|exists:equipo,cod_equipo',
+            'cod_equipo' => [
+                'required',
+                'string',
+                'max:50',
+                'exists:equipo,cod_equipo',
+                function ($attribute, $value, $fail) use ($edificioId) {
+                    $pertenece = Equipo::where('cod_equipo', $value)
+                        ->whereHas('ambiente.piso', function ($q) use ($edificioId) {
+                            $q->where('EDIFICIO_id_edificio', $edificioId);
+                        })->exists();
+                    if (!$pertenece) {
+                        $fail('El equipo indicado no pertenece a su edificio asignado.');
+                    }
+                },
+            ],
             'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
             'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
         ], [
@@ -246,10 +307,19 @@ class EquipoRController extends Controller
         ]);
 
         try {
-            $equipo = Equipo::where('cod_equipo', $cod_equipo)->firstOrFail();
+            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
+            $equipo = Equipo::where('cod_equipo', $cod_equipo)
+                ->whereHas('ambiente.piso', function ($q) use ($edificioId) {
+                    $q->where('EDIFICIO_id_edificio', $edificioId);
+                })
+                ->firstOrFail();
+
             $this->imageService->replaceArticleFoto($equipo, $request->file('foto'), 'equipos');
 
             return redirect()->back()->with('success', 'Fotografia del equipo actualizada correctamente.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('errordata', 'No tiene permisos para modificar la fotografia de un equipo de otro edificio.');
         } catch (\Throwable $e) {
             Log::error('Error al cambiar foto del equipo: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->back()->with('errordata', 'Error al actualizar la fotografia del equipo.');

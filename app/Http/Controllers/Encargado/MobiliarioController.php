@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Encargado;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Personal;
 use App\Models\Ambiente;
@@ -56,6 +57,8 @@ class MobiliarioController extends Controller
 
     public function storeMobiliario(Request $request)
     {
+        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
         $request->validate([
             'cod_mueble' => 'required|string|max:50|unique:mobiliario,cod_mueble',
             'descripticion_mueb' => 'required_without:descripcion_mueb|nullable|string',
@@ -64,7 +67,20 @@ class MobiliarioController extends Controller
             'observacion' => 'nullable|string',
             'vida_util' => 'nullable|string|max:50',
             'TIPO_MOBILIARIO_id_tipo_mueb' => 'required|integer|exists:tipo_mobiliario,id_tipo_mueb',
-            'AMBIENTE_id_ambiente' => 'required|integer|exists:ambiente,id_ambiente',
+            'AMBIENTE_id_ambiente' => [
+                'required',
+                'integer',
+                'exists:ambiente,id_ambiente',
+                function ($attribute, $value, $fail) use ($edificioId) {
+                    $pertenece = Ambiente::where('id_ambiente', $value)
+                        ->whereHas('piso', function ($q) use ($edificioId) {
+                            $q->where('EDIFICIO_id_edificio', $edificioId);
+                        })->exists();
+                    if (!$pertenece) {
+                        $fail('El ambiente seleccionado no pertenece a su edificio asignado.');
+                    }
+                },
+            ],
             'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
             'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
         ], [
@@ -135,10 +151,19 @@ class MobiliarioController extends Controller
         ]);
 
         try {
-            $mobiliario = Mobiliario::where('cod_mueble', $cod_mueble)->firstOrFail();
+            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
+            $mobiliario = Mobiliario::where('cod_mueble', $cod_mueble)
+                ->whereHas('ambiente.piso', function ($q) use ($edificioId) {
+                    $q->where('EDIFICIO_id_edificio', $edificioId);
+                })
+                ->firstOrFail();
+
             $this->imageService->replaceArticleFoto($mobiliario, $request->file('foto'), 'mobiliarios');
 
             return redirect()->back()->with('success', 'Fotografia del mobiliario actualizada correctamente.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('errordata', 'No tiene permisos para modificar la fotografia de un mobiliario de otro edificio.');
         } catch (\Throwable $e) {
             Log::error('Error al cambiar foto del mobiliario: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->back()->with('errordata', 'Error al actualizar la fotografia del mobiliario.');

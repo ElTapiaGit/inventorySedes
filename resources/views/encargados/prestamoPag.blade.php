@@ -87,31 +87,35 @@
                 <form id="formNuevoPrestamo" method="POST" action="{{ route('encargado.prestamo.store') }}">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label"><strong>Nombre del Solicitante</strong></label>
-                        <input type="text" name="nombre_solicitante" class="form-control" required>
+                        <label for="nombre_solicitante" class="form-label"><strong>Nombre del Solicitante</strong></label>
+                        <input type="text" id="nombre_solicitante" name="nombre_solicitante" class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label"><strong>Descripción</strong></label>
-                        <textarea name="descripcion_prestamo" class="form-control" rows="3" required></textarea>
+                        <label for="descripcion_prestamo" class="form-label"><strong>Descripción</strong></label>
+                        <textarea id="descripcion_prestamo" name="descripcion_prestamo" class="form-control" rows="3" required></textarea>
                     </div>
                     @php
                         $fechaHoraActual = \Carbon\Carbon::now()->timezone(config('app.timezone'));
                     @endphp
                     <div class="row g-2 mb-3">
                         <div class="col-md-6">
-                            <label class="form-label"><strong>Fecha del Préstamo</strong></label>
-                            <input type="text" class="form-control" value="{{ $fechaHoraActual->format('d/m/Y') }}" readonly>
+                            <label for="fch_prestamo_display" class="form-label"><strong>Fecha del Préstamo</strong></label>
+                            <input type="text" id="fch_prestamo_display" class="form-control" value="{{ $fechaHoraActual->format('d/m/Y') }}" readonly>
                             <input type="hidden" name="fch_prestamo" value="{{ $fechaHoraActual->toDateString() }}">
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label"><strong>Hora del Préstamo</strong></label>
-                            <input type="text" class="form-control" value="{{ $fechaHoraActual->format('H:i') }}" readonly>
+                            <label for="hora_prestamo_display" class="form-label"><strong>Hora del Préstamo</strong></label>
+                            <input type="text" id="hora_prestamo_display" class="form-control" value="{{ $fechaHoraActual->format('H:i') }}" readonly>
                             <input type="hidden" name="hora_prestamo" value="{{ $fechaHoraActual->format('H:i') }}">
                         </div>
                     </div>
                     
-                    <input type="hidden" name="PERSONAL_id_personal" value="{{ Auth::user()->id_personal }}">
+                    <div class="mb-3">
+                        <label for="responsable_prestamo_display" class="form-label"><strong>Encargado Responsable</strong></label>
+                        <input type="text" id="responsable_prestamo_display" class="form-control bg-light" value="{{ Auth::user()->nombre_completo ?? (Auth::user()->nombre . ' ' . Auth::user()->ap_paterno) }}" readonly>
+                        <input type="hidden" name="PERSONAL_id_personal" value="{{ Auth::user()->id_personal }}">
+                    </div>
 
                     <hr class="mb-3">
 
@@ -119,10 +123,10 @@
                     <div id="articulos-prestamo-container">
                         <div class="row g-2 mb-2 articulo-row">
                             <div class="col-md-5">
-                            <input type="text" name="cod_articulo[]" class="form-control" placeholder="Código del artículo" required>
+                            <input type="text" name="cod_articulo[]" class="form-control" placeholder="Código del artículo" aria-label="Código del artículo" required>
                             </div>
                             <div class="col-md-5">
-                            <input type="text" name="observacion_detalle[]" class="form-control" placeholder="Observación (Opcional)">
+                            <input type="text" name="observacion_detalle[]" class="form-control" placeholder="Observación (Opcional)" aria-label="Observación previa al préstamo">
                             </div>
                             <div class="col-md-2">
                             <button type="button" class="btn btn-danger w-100 remove-articulo" title="Eliminar"><i class="bi bi-trash"></i></button>
@@ -153,22 +157,26 @@
                 <form id="formRegistrarDevolucion" method="POST" action="">
                     @csrf
                     <input type="hidden" name="PRESTAMO_id_prestamo" id="prestamoDevolucionId">
-                    <input type="hidden" name="PERSONAL_id_personal" value="{{ Auth::user()->id_personal }}">
+                    <div class="mb-3">
+                        <label for="responsable_devolucion_display" class="form-label"><strong>Personal Responsable de Recepción</strong></label>
+                        <input type="text" id="responsable_devolucion_display" class="form-control bg-light" value="{{ Auth::user()->nombre_completo ?? (Auth::user()->nombre . ' ' . Auth::user()->ap_paterno) }}" readonly>
+                        <input type="hidden" name="PERSONAL_id_personal" value="{{ Auth::user()->id_personal }}">
+                    </div>
 
                     <div class="mb-3">
                         <label for="descripcion_devolucion" class="form-label"><strong>Descripción de la Devolución</strong></label>
-                        <textarea name="descripcion_devolucion" class="form-control" rows="3" required></textarea>
+                        <textarea id="descripcion_devolucion" name="descripcion_devolucion" class="form-control" rows="3" required></textarea>
                     </div>
 
                     <div class="row g-2 mb-3">
                         <div class="col-md-6">
-                            <label for="fch_devolucion" class="form-label"><strong>Fecha de Devolución</strong></label>
-                            <input type="text" class="form-control" value="{{ now()->format('d/m/Y') }}" readonly>
+                            <label for="fch_devolucion_display" class="form-label"><strong>Fecha de Devolución</strong></label>
+                            <input type="text" id="fch_devolucion_display" class="form-control" value="{{ now()->format('d/m/Y') }}" readonly>
                             <input type="hidden" name="fch_devolucion" value="{{ now()->toDateString() }}">
                         </div>
                         <div class="col-md-6">
-                            <label for="hora_devolucion" class="form-label"><strong>Hora de Devolución</strong></label>
-                            <input type="text" class="form-control" value="{{ now()->format('H:i') }}" readonly>
+                            <label for="hora_devolucion_display" class="form-label"><strong>Hora de Devolución</strong></label>
+                            <input type="text" id="hora_devolucion_display" class="form-control" value="{{ now()->format('H:i') }}" readonly>
                             <input type="hidden" name="hora_devolucion" value="{{ now()->format('H:i') }}">
                         </div>
                     </div>

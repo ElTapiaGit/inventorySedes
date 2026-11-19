@@ -95,10 +95,10 @@
                         <!-- Galeria de Fotos de Materiales Existentes -->
                         @if(isset($fotosReutilizables) && $fotosReutilizables->count() > 0)
                             <div class="mt-3">
-                                <label class="form-label fw-semibold text-secondary small d-flex justify-content-between align-items-center mb-1">
+                                <div class="form-label fw-semibold text-secondary small d-flex justify-content-between align-items-center mb-1">
                                     <span><i class="bi bi-images me-1"></i> Fotos de materiales existentes</span>
                                     <span class="badge bg-light text-dark border">{{ $fotosReutilizables->count() }}</span>
-                                </label>
+                                </div>
                                 <div class="reusable-gallery-scroll">
                                     <div class="row g-2">
                                         @foreach($fotosReutilizables as $fr)

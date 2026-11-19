@@ -142,18 +142,19 @@
                             <i class="bi bi-search text-muted"></i>
                         </span>
                         <input type="text"
+                               id="filtro_inventario_q"
                                name="q"
                                value="{{ request('q') }}"
                                class="form-control border-start-0"
                                placeholder="{{ $tab === 'accesorios' ? 'Buscar por codigo, nombre, descripcion o ubicacion...' : 'Buscar por codigo, nombre, marca o modelo...' }}"
-                               aria-label="Buscar">
+                               aria-label="{{ $tab === 'accesorios' ? 'Buscar accesorios por codigo, nombre o ubicacion' : 'Buscar articulos por codigo, nombre, marca o modelo' }}">
                     </div>
                 </div>
 
                 <!-- Filtro por Ambiente (Solo para categorias ubicadas en ambiente) -->
                 @if($tab !== 'accesorios')
                     <div class="col-md-4 col-lg-3">
-                        <select name="ambiente_id" class="form-select">
+                        <select name="ambiente_id" id="filtro_ambiente_id" class="form-select" aria-label="Filtrar por ambiente">
                             <option value="">Todos los Ambientes</option>
                             @foreach($ambientes as $amb)
                                 <option value="{{ $amb->id_ambiente }}" {{ request('ambiente_id') == $amb->id_ambiente ? 'selected' : '' }}>
@@ -166,7 +167,7 @@
 
                 <!-- Filtro por Estado -->
                 <div class="{{ $tab === 'accesorios' ? 'col-md-3 col-lg-2' : 'col-md-2 col-lg-2' }}">
-                    <select name="estado" class="form-select">
+                    <select name="estado" id="filtro_estado" class="form-select" aria-label="Filtrar por estado">
                         <option value="">Todos los Estados</option>
                         <option value="Bueno" {{ request('estado') === 'Bueno' ? 'selected' : '' }}>Bueno</option>
                         <option value="Regular" {{ request('estado') === 'Regular' ? 'selected' : '' }}>Regular</option>

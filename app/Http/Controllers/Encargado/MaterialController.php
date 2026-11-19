@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Encargado;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Foto;
 use App\Models\Personal;
@@ -38,13 +39,28 @@ class MaterialController extends Controller
 
     public function storeMaterial(Request $request)
     {
+        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
         $request->validate([
             'cod_mate' => 'required|string|max:50|unique:material,cod_mate',
             'tipo_mate' => 'required|string|max:50',
             'descripcion_mate' => 'required|string',
             'estado_mate' => 'required|string|in:Nuevo,Bueno,Regular,Para mantenimiento,Para reparar,Para descarte',
             'observacion_mate' => 'nullable|string',
-            'AMBIENTE_id_ambiente' => 'required|integer|exists:ambiente,id_ambiente',
+            'AMBIENTE_id_ambiente' => [
+                'required',
+                'integer',
+                'exists:ambiente,id_ambiente',
+                function ($attribute, $value, $fail) use ($edificioId) {
+                    $pertenece = Ambiente::where('id_ambiente', $value)
+                        ->whereHas('piso', function ($q) use ($edificioId) {
+                            $q->where('EDIFICIO_id_edificio', $edificioId);
+                        })->exists();
+                    if (!$pertenece) {
+                        $fail('El ambiente seleccionado no pertenece a su edificio asignado.');
+                    }
+                },
+            ],
             'foto' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120|required_without:existing_foto_id',
             'existing_foto_id' => 'nullable|integer|exists:foto,id_foto|required_without:foto',
         ], [
@@ -110,10 +126,19 @@ class MaterialController extends Controller
         ]);
 
         try {
-            $material = Material::where('cod_mate', $cod_mate)->firstOrFail();
+            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
+            $material = Material::where('cod_mate', $cod_mate)
+                ->whereHas('ambiente.piso', function ($q) use ($edificioId) {
+                    $q->where('EDIFICIO_id_edificio', $edificioId);
+                })
+                ->firstOrFail();
+
             $this->imageService->replaceArticleFoto($material, $request->file('foto'), 'materiales');
 
             return redirect()->back()->with('success', 'Fotografia del material actualizada correctamente.');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->back()->with('errordata', 'No tiene permisos para modificar la fotografia de un material de otro edificio.');
         } catch (\Throwable $e) {
             Log::error('Error al cambiar foto del material: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->back()->with('errordata', 'Error al actualizar la fotografia del material.');

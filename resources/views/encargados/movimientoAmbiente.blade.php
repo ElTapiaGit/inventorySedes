@@ -30,8 +30,9 @@
                     <span class="input-group-text bg-white">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" name="usuario_nombre" class="form-control" 
+                    <input type="text" id="filtro_usuario_nombre" name="usuario_nombre" class="form-control" 
                         placeholder="Buscar por nombre completo del usuario" 
+                        aria-label="Buscar por nombre completo del usuario"
                         value="{{ request('usuario_nombre') }}">
                 </div>
             </div>
@@ -42,7 +43,9 @@
                     <span class="input-group-text bg-white">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input type="date" name="fecha_uso" class="form-control" value="{{ request('fecha_uso') }}">
+                    <input type="date" id="filtro_fecha_uso" name="fecha_uso" class="form-control" 
+                        aria-label="Buscar por fecha de uso"
+                        value="{{ request('fecha_uso') }}">
                 </div>
             </div>
 
@@ -154,12 +157,12 @@
                             </div>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label">Fecha de Uso</label>
-                                    <input type="text" class="form-control-plaintext border px-2 py-1 rounded" value="{{ $currentDate }}" readonly>
+                                    <label for="fecha_uso_display" class="form-label">Fecha de Uso</label>
+                                    <input type="text" id="fecha_uso_display" class="form-control-plaintext border px-2 py-1 rounded" value="{{ $currentDate }}" readonly>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">Hora de Uso</label>
-                                    <input type="text" class="form-control-plaintext border px-2 py-1 rounded" value="{{ $currentTime }}" readonly>
+                                    <label for="hora_uso_display" class="form-label">Hora de Uso</label>
+                                    <input type="text" id="hora_uso_display" class="form-control-plaintext border px-2 py-1 rounded" value="{{ $currentTime }}" readonly>
                                 </div>
                             </div>
                         </div>
@@ -188,7 +191,7 @@
                             <!-- Campo oculto para el ID del uso de ambiente -->
                             <input type="hidden" id="uso_ambiente_id" name="uso_ambiente_id">
 
-                            <label for="uso_ambiente" class="form-label">Uso de Ambiente</label>
+                            <label for="nombre_ambiente" class="form-label">Uso de Ambiente</label>
                             <input type="text" class="form-control" id="nombre_ambiente" name="nombre_ambiente" readonly>
                         </div>
                         <div class="row g-3">

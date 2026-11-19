@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Encargado;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Foto;
 use App\Models\Accesorio;
@@ -103,8 +104,23 @@ class AccesorioRController extends Controller
             'foto.max' => 'La imagen no debe superar los 5MB.',
         ]);
 
+        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
+        $accesorio = Accesorio::with('equipos.ambiente.piso')->where('cod_accesorio', $cod_accesorio)->firstOrFail();
+
+        // Validar que no pertenezca exclusivamente a un equipo de otro edificio
+        $equiposOtroEdificio = $accesorio->equipos->filter(function ($eq) use ($edificioId) {
+            return $eq->ambiente && $eq->ambiente->piso && $eq->ambiente->piso->EDIFICIO_id_edificio != $edificioId;
+        });
+        $equiposEsteEdificio = $accesorio->equipos->filter(function ($eq) use ($edificioId) {
+            return $eq->ambiente && $eq->ambiente->piso && $eq->ambiente->piso->EDIFICIO_id_edificio == $edificioId;
+        });
+
+        if ($equiposOtroEdificio->isNotEmpty() && $equiposEsteEdificio->isEmpty()) {
+            abort(403, 'No tiene permisos para modificar la fotografia de este accesorio.');
+        }
+
         try {
-            $accesorio = Accesorio::where('cod_accesorio', $cod_accesorio)->firstOrFail();
             $this->imageService->replaceArticleFoto($accesorio, $request->file('foto'), 'accesorios');
 
             return redirect()->back()->with('success', 'Fotografia del accesorio actualizada correctamente.');

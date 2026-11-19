@@ -165,9 +165,9 @@
                         <div class="row g-4">
                             <!-- Columna Lateral: Fotografia del Accesorio -->
                             <div class="col-lg-4 col-md-5">
-                                <label class="form-label fw-semibold text-secondary small">
+                                <div class="form-label fw-semibold text-secondary small">
                                     <i class="bi bi-camera me-1"></i> Fotografía del Accesorio
-                                </label>
+                                </div>
 
                                 <!-- Contenedor de Vista Previa -->
                                 <div class="preview-photo-box mb-3" id="previewBox">
@@ -219,10 +219,10 @@
                                 <!-- Galeria de Fotos de Accesorios Existentes -->
                                 @if(isset($fotosReutilizables) && $fotosReutilizables->count() > 0)
                                     <div class="mt-3">
-                                        <label class="form-label fw-semibold text-secondary small d-flex justify-content-between align-items-center mb-1">
+                                        <div class="form-label fw-semibold text-secondary small d-flex justify-content-between align-items-center mb-1">
                                             <span><i class="bi bi-images me-1"></i> Fotos de accesorios</span>
                                             <span class="badge bg-light text-dark border">{{ $fotosReutilizables->count() }}</span>
-                                        </label>
+                                        </div>
                                         <div class="reusable-gallery-scroll">
                                             <div class="row g-2">
                                                 @foreach($fotosReutilizables as $fr)

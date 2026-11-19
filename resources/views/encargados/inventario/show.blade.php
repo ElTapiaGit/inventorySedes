@@ -203,41 +203,41 @@
                     <div class="row g-3">
                         @if($tipo === 'equipo')
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Nombre del Equipo</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Nombre del Equipo</div>
                                 <div class="fw-semibold text-dark">{{ $articulo->nombre_equi }}</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Estado Fisico</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Estado Fisico</div>
                                 <div><span class="badge {{ $badgeClass }}">{{ $articulo->estado_equi }}</span></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Marca</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Marca</div>
                                 <div class="text-dark">{{ $articulo->marca ?: 'No especificada' }}</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Modelo</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Modelo</div>
                                 <div class="text-dark">{{ $articulo->modelo ?: 'No especificado' }}</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Vida Util Estimada</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Vida Util Estimada</div>
                                 <div class="text-dark">
                                     {{ $articulo->vida_util ? $articulo->vida_util . ' ano(s)' : 'No especificada' }}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Ambiente Asignado</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Ambiente Asignado</div>
                                 <div class="text-dark">
                                     <i class="bi bi-door-open text-primary me-1"></i> {{ $articulo->ambiente->nombre ?? 'Sin ambiente' }}
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Descripcion</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Descripcion</div>
                                 <div class="p-3 bg-light rounded-2 text-dark">
                                     {{ $articulo->descripcion_equi ?: 'Sin descripcion registrada.' }}
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Observaciones</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Observaciones</div>
                                 <div class="p-3 bg-light rounded-2 text-dark">
                                     {{ $articulo->observaciones_equi ?: 'Sin observaciones registradas.' }}
                                 </div>
@@ -245,33 +245,33 @@
 
                         @elseif($tipo === 'mobiliario')
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Tipo de Mobiliario</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Tipo de Mobiliario</div>
                                 <div class="fw-semibold text-dark">{{ $articulo->tipoMobiliario->tipo_mueble ?? 'No especificado' }}</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Estado Fisico</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Estado Fisico</div>
                                 <div><span class="badge {{ $badgeClass }}">{{ $articulo->estado_mueb }}</span></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Vida Util Estimada</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Vida Util Estimada</div>
                                 <div class="text-dark">
                                     {{ $articulo->vida_util ? $articulo->vida_util . ' ano(s)' : 'No especificada' }}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Ambiente Asignado</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Ambiente Asignado</div>
                                 <div class="text-dark">
                                     <i class="bi bi-door-open text-primary me-1"></i> {{ $articulo->ambiente->nombre ?? 'Sin ambiente' }}
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Descripcion</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Descripcion</div>
                                 <div class="p-3 bg-light rounded-2 text-dark">
                                     {{ $articulo->descripticion_mueb ?: 'Sin descripcion registrada.' }}
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Observaciones</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Observaciones</div>
                                 <div class="p-3 bg-light rounded-2 text-dark">
                                     {{ $articulo->observacion ?: 'Sin observaciones registradas.' }}
                                 </div>
@@ -279,27 +279,27 @@
 
                         @elseif($tipo === 'material')
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Tipo de Material</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Tipo de Material</div>
                                 <div class="fw-semibold text-dark">{{ $articulo->tipo_mate }}</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Estado Fisico</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Estado Fisico</div>
                                 <div><span class="badge {{ $badgeClass }}">{{ $articulo->estado_mate }}</span></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Ambiente Asignado</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Ambiente Asignado</div>
                                 <div class="text-dark">
                                     <i class="bi bi-door-open text-primary me-1"></i> {{ $articulo->ambiente->nombre ?? 'Sin ambiente' }}
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Descripcion</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Descripcion</div>
                                 <div class="p-3 bg-light rounded-2 text-dark">
                                     {{ $articulo->descripcion_mate ?: 'Sin descripcion registrada.' }}
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Observaciones</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Observaciones</div>
                                 <div class="p-3 bg-light rounded-2 text-dark">
                                     {{ $articulo->observacion_mate ?: 'Sin observaciones registradas.' }}
                                 </div>
@@ -307,33 +307,33 @@
 
                         @elseif($tipo === 'accesorio')
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Nombre del Accesorio</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Nombre del Accesorio</div>
                                 <div class="fw-semibold text-dark">{{ $articulo->nombre_acce }}</div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Estado Fisico</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Estado Fisico</div>
                                 <div><span class="badge {{ $badgeClass }}">{{ $articulo->estado_acce }}</span></div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Ubicacion</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Ubicacion</div>
                                 <div class="text-dark">
                                     <i class="bi bi-geo-alt text-primary me-1"></i> {{ $articulo->ubicacion ?: 'No especificada' }}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Vida Util Estimada</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Vida Util Estimada</div>
                                 <div class="text-dark">
                                     {{ $articulo->vida_util ? $articulo->vida_util . ' ano(s)' : 'No especificada' }}
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Descripcion</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Descripcion</div>
                                 <div class="p-3 bg-light rounded-2 text-dark">
                                     {{ $articulo->descripcion_acce ?: 'Sin descripcion registrada.' }}
                                 </div>
                             </div>
                             <div class="col-12">
-                                <label class="text-muted small text-uppercase fw-semibold mb-1 d-block">Observaciones</label>
+                                <div class="text-muted small text-uppercase fw-semibold mb-1">Observaciones</div>
                                 <div class="p-3 bg-light rounded-2 text-dark">
                                     {{ $articulo->observacion_ace ?: 'Sin observaciones registradas.' }}
                                 </div>

@@ -28,13 +28,13 @@
                     <!-- Comparativa visual: Foto Actual vs Nueva Foto -->
                     <div class="row g-3 mb-3">
                         <div class="col-6 text-center">
-                            <label class="form-label small fw-bold text-muted text-uppercase mb-1">Foto Actual</label>
+                            <div class="form-label small fw-bold text-muted text-uppercase mb-1">Foto Actual</div>
                             <div class="border rounded-3 p-1 bg-white shadow-sm d-flex align-items-center justify-content-center" style="height: 140px; overflow: hidden;">
                                 <img id="modalFotoActualPreview" src="{{ asset('img/placeholder-articulo.svg') }}" alt="Foto actual" style="max-height: 100%; max-width: 100%; object-fit: contain;">
                             </div>
                         </div>
                         <div class="col-6 text-center">
-                            <label class="form-label small fw-bold text-muted text-uppercase mb-1">Nueva Foto</label>
+                            <div class="form-label small fw-bold text-muted text-uppercase mb-1">Nueva Foto</div>
                             <div class="border rounded-3 p-1 bg-white shadow-sm d-flex align-items-center justify-content-center position-relative" style="height: 140px; overflow: hidden;" id="modalFotoNuevaContainer">
                                 <img id="modalFotoNuevaPreview" src="{{ asset('img/placeholder-articulo.svg') }}" alt="Nueva foto" style="max-height: 100%; max-width: 100%; object-fit: contain; opacity: 0.4;">
                                 <span class="badge bg-secondary position-absolute bottom-0 mb-2" id="modalFotoNuevaBadge">Sin seleccionar</span>

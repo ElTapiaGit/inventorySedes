@@ -12,6 +12,7 @@ use App\Models\FinalUso;
 use App\Models\Usuario;
 use App\Models\Personal;
 use App\Models\TipoUsuario;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 
@@ -115,9 +116,23 @@ class MovimientoAmbienteController extends Controller
 
     public function registrarUso(Request $request)
     {
-        // Validar los datos del formulario
+        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
+        // Validar los datos del formulario fuera de try-catch
         $request->validate([
-            'ambiente_id' => 'required|exists:ambiente,id_ambiente',
+            'ambiente_id' => [
+                'required',
+                'exists:ambiente,id_ambiente',
+                function ($attribute, $value, $fail) use ($edificioId) {
+                    $pertenece = Ambiente::where('id_ambiente', $value)
+                        ->whereHas('piso', function ($q) use ($edificioId) {
+                            $q->where('EDIFICIO_id_edificio', $edificioId);
+                        })->exists();
+                    if (!$pertenece) {
+                        $fail('El ambiente seleccionado no pertenece a su edificio asignado.');
+                    }
+                },
+            ],
             'descripcion' => 'required|string',
             'semestre' => 'nullable|string',
             'usuario_id' => 'required|exists:usuario,id_usuario',
@@ -127,66 +142,67 @@ class MovimientoAmbienteController extends Controller
             // Verificar si el ambiente aun esta en uso
             $ambiente_id = $request->input('ambiente_id');
             $existeUsoActivo = UsoAmbiente::where('AMBIENTE_id_ambiente', $ambiente_id)
-                ->whereDoesntHave('finalUsos')   // Verifica si no tiene fecha de finalización
+                ->whereDoesntHave('finalUsos')
                 ->exists();
 
             if ($existeUsoActivo) {
-                return redirect()->back()->withErrors('El ambiente ya está en uso. Por favor, finalice el uso actual antes de registrar uno nuevo.');
+                return redirect()->back()->withErrors('El ambiente ya esta en uso. Por favor, finalice el uso actual antes de registrar uno nuevo.');
             }
 
-            // Obtener el personal actual
-            $personal = Personal::where('id_personal', auth()->user()->id_personal)->firstOrFail();
-            
-            // Crear un nuevo registro de uso de ambiente
+            // Crear un nuevo registro de uso de ambiente forzando autor del edificio
             UsoAmbiente::create([
                 'AMBIENTE_id_ambiente' => $request->input('ambiente_id'),
                 'USUARIO_id_usuario' => $request->input('usuario_id'),
                 'descripcion' => $request->input('descripcion'),
                 'semestre' => $request->input('semestre'),
-                'fch_uso' => now()->format('Y-m-d'), // Usar la fecha actual
-                'hora_uso' => now()->format('H:i:s'), // Usar la hora actual
-                'PERSONAL_id_personal' => $personal->id_personal,
+                'fch_uso' => now()->format('Y-m-d'),
+                'hora_uso' => now()->format('H:i:s'),
+                'PERSONAL_id_personal' => Auth::user()->id_personal,
             ]);
 
-            // Redirigir con mensaje de éxito
             return redirect()->route('movimiento.ambiente.index')->with('success', 'Uso registrado exitosamente.');
         } catch (\Exception $e) {
-            // Manejo de excepciones
             return redirect()->back()->withErrors('Error al registrar el uso del ambiente: ' . $e->getMessage());
         }
     }
 
     public function finalizarUso(Request $request)
     {
-        try{
-            $request->validate([
-                'uso_ambiente_id' => 'required|exists:uso_ambiente,id_uso_ambiente',
-                'fch_fin' => 'required|date',
-                'hora_fin' => 'required|date_format:H:i',
-            ]);
-    
-            $usoAmbiente = UsoAmbiente::find($request->input('uso_ambiente_id'));
-    
+        // Validacion de datos fuera de try-catch
+        $request->validate([
+            'uso_ambiente_id' => 'required|exists:uso_ambiente,id_uso_ambiente',
+            'fch_fin' => 'required|date',
+            'hora_fin' => 'required|date_format:H:i',
+        ]);
+
+        try {
+            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+
+            // Verificar aislamiento territorial del uso antes de finalizar
+            $usoAmbiente = UsoAmbiente::where('id_uso_ambiente', $request->input('uso_ambiente_id'))
+                ->whereHas('ambiente.piso', function ($q) use ($edificioId) {
+                    $q->where('EDIFICIO_id_edificio', $edificioId);
+                })
+                ->firstOrFail();
+
             // Verificar si ya se ha registrado el final de uso
             if ($usoAmbiente->finalUsos()->exists()) {
-                return redirect()->back()->withErrors('El ambiente laboratorio ya ha sido finalizado.');
+                return redirect()->back()->withErrors('El ambiente ya ha sido finalizado previamente.');
             }
 
-            // Obtener el personal actual
-            $personal = Personal::where('id_personal', auth()->user()->id_personal)->firstOrFail();
-    
-            // Crear el registro de final de uso
+            // Crear el registro de final de uso forzando personal autenticado
             $finalUso = new FinalUso();
             $finalUso->fch_fin = now()->format('Y-m-d');
             $finalUso->hora_fin = now()->format('H:i:s');
-            $finalUso->USO_AMBIENTE_id_uso_ambiente = $request->input('uso_ambiente_id');
-            $finalUso->PERSONAL_id_personal = $personal->id_personal; 
+            $finalUso->USO_AMBIENTE_id_uso_ambiente = $usoAmbiente->id_uso_ambiente;
+            $finalUso->PERSONAL_id_personal = Auth::user()->id_personal;
             $finalUso->save();
-    
+
             return redirect()->route('movimiento.ambiente.index')->with('success', 'Uso de ambiente finalizado correctamente.');
-        }catch (\Exception $e) {
-            // Manejo de excepciones
-            return redirect()->back()->withErrors('Error al  final el uso del ambiente: ' . $e->getMessage());
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->withErrors('No tiene permisos para finalizar el uso de un ambiente de otro edificio.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('Error al finalizar el uso del ambiente: ' . $e->getMessage());
         }
     }
 
@@ -198,13 +214,18 @@ class MovimientoAmbienteController extends Controller
             abort(404);
         }
 
-        try{
-            // Obtener el movimiento por el ID
-            $movimiento = UsoAmbiente::with(['personalInicio', 'personalFin'])
-            ->where('id_uso_ambiente', $id_ambiente)
-            ->firstOrFail();
+        try {
+            $edificioId = Auth::user()->EDIFICIO_id_edificio;
 
-            // Obtener los detalles de finalización si existen
+            // Obtener el movimiento verificando aislamiento territorial por edificio
+            $movimiento = UsoAmbiente::with(['personalInicio', 'personalFin'])
+                ->where('id_uso_ambiente', $id_ambiente)
+                ->whereHas('ambiente.piso', function ($q) use ($edificioId) {
+                    $q->where('EDIFICIO_id_edificio', $edificioId);
+                })
+                ->firstOrFail();
+
+            // Obtener los detalles de finalizacion si existen
             $finalUso = FinalUso::where('USO_AMBIENTE_id_uso_ambiente', $id_ambiente)->first();
 
             // Obtener el personal de inicio y fin
@@ -212,35 +233,34 @@ class MovimientoAmbienteController extends Controller
             $personal_fin = $movimiento->fch_fin ? $movimiento->personalFin : null;
 
             return view('encargados.detallesUsoAmbiente', compact('movimiento', 'personal_inicio', 'personal_fin', 'finalUso'));
-
-        } catch(\Exception $e) {
-            // Manejo de errores
-            return redirect()->back()->withErrors('errorNo se pudo encontrar el detalle del movimiento.');
+        } catch (ModelNotFoundException $e) {
+            return redirect()->route('movimiento.ambiente.index')->withErrors('No tiene permisos para consultar el detalle de un ambiente de otro edificio.');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('No se pudo encontrar el detalle del movimiento.');
         }
-        
     }
 
     public function registraruser(Request $request)
     {
-        try{
-            $request->validate([
-                'nombre' => 'required|string|max:50',
-                'apellidos' => 'required|string|max:50',
-                'celular' => 'required|string|max:50',
-                'TIPO_USUARIO_id_tipo_usu' => 'required|exists:tipo_usuario,id_tipo_usu',
-            ]);
-        
+        // Validacion fuera de try-catch
+        $request->validate([
+            'nombre' => 'required|string|max:50',
+            'apellidos' => 'required|string|max:50',
+            'celular' => 'required|string|max:50',
+            'TIPO_USUARIO_id_tipo_usu' => 'required|exists:tipo_usuario,id_tipo_usu',
+        ]);
+
+        try {
             Usuario::create([
                 'nombre' => $request->input('nombre'),
                 'apellidos' => $request->input('apellidos'),
                 'celular' => $request->input('celular'),
                 'TIPO_USUARIO_id_tipo_usu' => $request->input('TIPO_USUARIO_id_tipo_usu'),
             ]);
-        
+
             return redirect()->back()->with('success', 'Usuario registrado exitosamente.');
-        }catch (\Exception $e) {
-            // Manejo de excepciones
-            return redirect()->back()->withErrors('Error al registrar el uso del ambiente: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('Error al registrar el usuario: ' . $e->getMessage());
         }
     }
 }

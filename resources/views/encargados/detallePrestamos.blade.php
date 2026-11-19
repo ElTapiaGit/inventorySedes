@@ -87,7 +87,7 @@
                 <p><strong>Registrada por:</strong> {{ $prestamo->devolucion->personal->nombre }} {{ $prestamo->devolucion->personal->ap_paterno }}</p>
                 <span class="badge bg-success">Devolución Registrada</span>
             @else
-                <p class="text-danger"><strong>⚠️ Este préstamo aún no ha sido devuelto.</strong></p>
+                <p class="text-danger"><strong><i class="bi bi-exclamation-triangle me-1"></i> Este préstamo aún no ha sido devuelto.</strong></p>
             @endif
         </div>
     </div>

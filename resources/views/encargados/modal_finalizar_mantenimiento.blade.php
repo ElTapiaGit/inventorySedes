@@ -16,12 +16,12 @@
 
           <div class="mb-3">
             <label for="informe_final" class="form-label"><strong>Informe Final</strong></label>
-            <textarea name="informe_final" class="form-control" rows="3" required></textarea>
+            <textarea id="informe_final" name="informe_final" class="form-control" rows="3" required></textarea>
           </div>
 
           <div class="mb-3">
-            <label for="fch_final" class="form-label"><strong>Fecha de Finalización</strong></label>
-            <input type="text" class="form-control" value="{{ now()->format('d/m/Y') }}" readonly>
+            <label for="fch_final_display" class="form-label"><strong>Fecha de Finalización</strong></label>
+            <input id="fch_final_display" type="text" class="form-control" value="{{ now()->format('d/m/Y') }}" readonly>
             <input type="hidden" name="fch_final" value="{{ now()->toDateString() }}">
           </div>
 

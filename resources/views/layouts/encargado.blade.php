@@ -47,13 +47,6 @@
             <!-- Menu de navegacion -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-lg-center">
-                    <!-- Inicio / Dashboard -->
-                    <li class="nav-item {{ Request::is('encargado/principal*') ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('encargado.inicio') }}">
-                            <i class="bi bi-speedometer2 me-1"></i> Inicio
-                        </a>
-                    </li>
-
                     <!-- Menu Articulos con submenu -->
                     <li class="nav-item dropdown {{ Request::is('encargado/registro/*') || Request::is('encargado/mobiliario*') || Request::is('encargado/material*') || Request::is('encargado/accesorio*') || Request::is('encargado/equipo*') ? 'active' : '' }}">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -126,6 +119,13 @@
     <!-- Scripts de Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{ asset('js/core/form-protection.js') }}"></script>
+    <script>
+        document.addEventListener('hide.bs.modal', function (event) {
+            if (document.activeElement && event.target.contains(document.activeElement)) {
+                document.activeElement.blur();
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

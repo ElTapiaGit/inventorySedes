@@ -48,7 +48,7 @@
             <div class="col-md-6">
                 <h3>Foto del Accesorio</h3>
                 @if ($accesorio->foto)
-                    <img src="{{ asset($accesorio->foto->ruta_foto) }}" class="img-thumbnail" alt="Foto del accesorio">
+                    <img src="{{ inventario_img_url($accesorio->foto->ruta_foto ?? null, 'img/accesorios-img/default.jpg') }}" class="img-thumbnail" alt="Foto del accesorio">
                 @else
                     <p>No hay foto disponible</p>
                 @endif

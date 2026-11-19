@@ -40,4 +40,12 @@ class Foto extends Model
     {
         return $this->hasOne(Accesorio::class, 'FOTO_id_foto');
     }
+
+    /**
+     * Accessor para obtener la URL publica universal y retrocompatible de la foto.
+     */
+    public function getUrlAttribute(): string
+    {
+        return inventario_img_url($this->ruta_foto);
+    }
 }

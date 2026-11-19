@@ -30,7 +30,7 @@
                         <!-- Imagen del mueble en el lado derecho -->
                         <div class="ml-md-3 px-1">
                             @if($mobiliario->ruta_foto)
-                                <img src="{{ asset($mobiliario->ruta_foto) }}" alt="Foto del equipo" class="img-fluid img-thumbnail" width="600px">
+                                <img src="{{ inventario_img_url($mobiliario->ruta_foto ?? null, 'img/mobiliarios-img/default.jpg') }}" alt="Foto del mueble" class="img-fluid img-thumbnail" width="600px">
                             @else
                                 <p>No hay foto disponible</p>
                             @endif

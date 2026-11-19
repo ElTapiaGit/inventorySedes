@@ -28,7 +28,7 @@
     <div class="container-fluid text-center">
         <h1 class="mb-4">Foto del Accesorio</h1>
         <div class="zoom-container">
-            <img id="fotoAccesorio" src="{{ asset($fotos->ruta_foto) }}" alt="Foto del accesorio" class="img-fluid">
+            <img id="fotoAccesorio" src="{{ inventario_img_url($fotos->ruta_foto ?? null, 'img/accesorios-img/default.jpg') }}" alt="Foto del accesorio" class="img-fluid">
         </div>
     </div>
 </main>

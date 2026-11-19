@@ -19,12 +19,17 @@ class Edificio extends Model
         'nombre_edi',
         'direccion',
         'SEDE_id_sede',
+        'CARRERA_id_carrera',
     ];
 
     //define la relacion hasMany donde un Edificio puede tener muchos Piso
     public function sede()
     {
         return $this->belongsTo(Sede::class, 'SEDE_id_sede');
+    }
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class, 'CARRERA_id_carrera', 'id_carrera');
     }
     public function pisos()
     {

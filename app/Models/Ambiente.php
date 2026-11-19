@@ -18,7 +18,13 @@ class Ambiente extends Model
         'descripcion_amb',
         'TIPO_AMBIENTE_id_ambiente',
         'PISO_id_piso',
+        'CARRERA_id_carrera',
     ];
+
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class, 'CARRERA_id_carrera', 'id_carrera');
+    }
 
     public function tipoAmbiente()
     {

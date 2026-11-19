@@ -204,7 +204,7 @@ Route::prefix('administrator')->middleware(['auth', 'role:Administrador'])->grou
 
 });
 
-Route::prefix('coordinator')->middleware(['auth', 'role:Coordinador Odontologia'])->group(function () {
+Route::prefix('coordinator')->middleware(['auth', 'role:Coordinador*'])->group(function () {
     Route::get('/inicio', [CoodinatorController::class, 'inicio'])->name('coordinator.inicio');
 
     // Ruta para mostrar la página de laboratorios

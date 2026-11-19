@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Auth\Authenticatable as AuthenticatableTrait;
+use Illuminate\Support\Str;
 
 
 class Personal extends Model implements AuthenticatableContract
@@ -27,8 +28,57 @@ class Personal extends Model implements AuthenticatableContract
         'celular',
         'estado',
         'TIPO_PERSONAL_id_tipo_per',
-        'EDIFICIO_id_edificio'
+        'EDIFICIO_id_edificio',
+        'CARRERA_id_carrera'
     ];
+
+    // Relación con el modelo Carrera
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class, 'CARRERA_id_carrera', 'id_carrera');
+    }
+
+    // Comprueba si el personal tiene rol de coordinador
+    public function esCoordinador(): bool
+    {
+        $rol = $this->tipoPersonal->descripcion_per ?? '';
+        return Str::startsWith(Str::lower(trim($rol)), 'coordinador');
+    }
+
+    // Obtiene el nombre de la carrera coordinada (priorizando relacion, con fallback al texto del rol)
+    public function getCarreraCoordinadaAttribute(): ?string
+    {
+        if ($this->relationLoaded('carrera') && $this->carrera) {
+            return $this->carrera->nombre_carrera;
+        }
+
+        if ($this->carrera) {
+            return $this->carrera->nombre_carrera;
+        }
+
+        $rol = trim($this->tipoPersonal->descripcion_per ?? '');
+        if (preg_match('/^coordinador(?:\s+de)?\s+(.+)$/i', $rol, $matches)) {
+            return trim($matches[1]);
+        }
+
+        return null;
+    }
+
+    // Obtiene el ID de la carrera coordinada (priorizando columna FK, con fallback por nombre en Carrera)
+    public function getIdCarreraCoordinadaAttribute(): ?int
+    {
+        if (!is_null($this->CARRERA_id_carrera)) {
+            return (int) $this->CARRERA_id_carrera;
+        }
+
+        $nombreCarrera = $this->carrera_coordinada;
+        if ($nombreCarrera) {
+            $carrera = Carrera::where('nombre_carrera', $nombreCarrera)->first();
+            return $carrera ? (int) $carrera->id_carrera : null;
+        }
+
+        return null;
+    }
 
 
     // Relación con el modelo TipoPersonal

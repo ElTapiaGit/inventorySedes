@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class CheckRole
 {
@@ -13,16 +14,26 @@ class CheckRole
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @param  string  $role
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next,  $role)//$role es una regla que definire
+    public function handle(Request $request, Closure $next, $role)
     {
         $user = Auth::user();
 
-        if ($user && $user->tipoPersonal->descripcion_per == $role) {
-            return $next($request);
+        if ($user && $user->tipoPersonal) {
+            $userRole = trim($user->tipoPersonal->descripcion_per ?? '');
+
+            if (Str::endsWith($role, '*')) {
+                $prefix = rtrim($role, '*');
+                if (Str::startsWith(Str::lower($userRole), Str::lower($prefix))) {
+                    return $next($request);
+                }
+            } elseif ($userRole === $role) {
+                return $next($request);
+            }
         }
 
-        return redirect('/');// Redirigir si no tiene el rol adecuado
+        return redirect('/');
     }
 }

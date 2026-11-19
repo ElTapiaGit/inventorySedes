@@ -62,12 +62,16 @@ class AuthController extends Controller
                 RateLimiter::clear($key);
 
                 // Determinar ruta segun el rol del usuario
-                $redirectUrl = match ($personal->tipoPersonal->descripcion_per ?? null) {
-                    'Administrador' => route('admin.index'),
-                    'Coordinador Odontologia' => route('coordinator.inicio'),
-                    'Encargado' => route('encargado.inicio'),
-                    default => null,
-                };
+                $rolDescripcion = $personal->tipoPersonal->descripcion_per ?? null;
+                $redirectUrl = null;
+
+                if ($personal->esCoordinador()) {
+                    $redirectUrl = route('coordinator.inicio');
+                } elseif ($rolDescripcion === 'Administrador') {
+                    $redirectUrl = route('admin.index');
+                } elseif ($rolDescripcion === 'Encargado') {
+                    $redirectUrl = route('encargado.inicio');
+                }
 
                 if (!$redirectUrl) {
                     if ($request->expectsJson() || $request->ajax()) {

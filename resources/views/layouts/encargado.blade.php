@@ -57,14 +57,23 @@
                     <!-- Menu Articulos con submenu -->
                     <li class="nav-item dropdown {{ Request::is('encargado/registro/*') || Request::is('encargado/mobiliario*') || Request::is('encargado/material*') || Request::is('encargado/accesorio*') || Request::is('encargado/equipo*') ? 'active' : '' }}">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-box-seam me-1"></i> Artículos
+                            <i class="bi bi-plus-circle me-1"></i> Registrar Artículos
                         </a>
                         <ul class="dropdown-menu shadow border-0" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="{{ route('equipo.create') }}"><i class="bi bi-pc-display me-2 text-primary"></i> Equipos</a></li>
                             <li><a class="dropdown-item" href="{{ route('mobiliario.create') }}"><i class="bi bi-chair me-2 text-primary"></i> Mobiliarios</a></li>
                             <li><a class="dropdown-item" href="{{ route('material.create') }}"><i class="bi bi-tools me-2 text-primary"></i> Materiales</a></li>
                             <li><a class="dropdown-item" href="{{ route('accesorio.create') }}"><i class="bi bi-plug me-2 text-primary"></i> Accesorios</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ route('encargado.inventario.index') }}"><i class="bi bi-box-seam me-2 text-primary"></i> Consultar Inventario</a></li>
                         </ul>
+                    </li>
+
+                    <!-- Consultar Inventario -->
+                    <li class="nav-item {{ request()->routeIs('encargado.inventario.*') ? 'active' : '' }}">
+                        <a class="nav-link" href="{{ route('encargado.inventario.index') }}">
+                            <i class="bi bi-box-seam me-1"></i> Consultar Inventario
+                        </a>
                     </li>
 
                     <!-- Uso Laboratorios -->

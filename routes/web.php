@@ -67,6 +67,7 @@ use App\Http\Controllers\Encargado\PrestamopController;
 use App\Http\Controllers\Encargado\DetallePrestamoController;
 use App\Http\Controllers\Encargado\MantenimientopController;
 use App\Http\Controllers\Encargado\TecnicoController;
+use App\Http\Controllers\Encargado\InventarioConsultaController;
 
 //para el inicio de sesion
 use App\Http\Controllers\AuthController;
@@ -393,6 +394,10 @@ Route::prefix('encargado')->middleware(['auth', 'role:Encargado'])->group(functi
 
     // Tecnicos
     Route::post('/tecnicos/store', [TecnicoController::class, 'store'])->name('encargado.tecnicos.store');
+
+    // Consulta de Inventario
+    Route::get('/inventario', [InventarioConsultaController::class, 'index'])->name('encargado.inventario.index');
+    Route::get('/inventario/{tipo}/{codigo}', [InventarioConsultaController::class, 'show'])->name('encargado.inventario.show');
 
 });
 

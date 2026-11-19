@@ -160,7 +160,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="observacion_mate" class="form-label fw-semibold">Observaciones</label>
+                                <label for="observacion_mate" class="form-label fw-semibold">Observaciones <small class="text-muted fw-normal">(Opcional)</small></label>
                                 <textarea class="form-control @error('observacion_mate') is-invalid @enderror" id="observacion_mate" name="observacion_mate" rows="2" placeholder="Anotaciones adicionales o advertencias de uso (opcional)">{{ old('observacion_mate') }}</textarea>
                                 @error('observacion_mate')
                                     <div class="invalid-feedback">{{ $message }}</div>

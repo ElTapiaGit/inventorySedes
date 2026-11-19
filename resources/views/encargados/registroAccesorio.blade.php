@@ -152,15 +152,15 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="descripcion_acce" class="form-label fw-semibold">Descripción</label>
-                                <textarea class="form-control @error('descripcion_acce') is-invalid @enderror" id="descripcion_acce" name="descripcion_acce" rows="3" placeholder="Detalle marca, especificaciones, interfaz o características físicas...">{{ old('descripcion_acce') }}</textarea>
+                                <label for="descripcion_acce" class="form-label fw-semibold">Descripción <span class="text-danger">*</span></label>
+                                <textarea class="form-control @error('descripcion_acce') is-invalid @enderror" id="descripcion_acce" name="descripcion_acce" rows="3" placeholder="Detalle marca, especificaciones, interfaz o características físicas..." required>{{ old('descripcion_acce') }}</textarea>
                                 @error('descripcion_acce')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
 
                             <div class="col-12">
-                                <label for="observacion_ace" class="form-label fw-semibold">Observaciones</label>
+                                <label for="observacion_ace" class="form-label fw-semibold">Observaciones <small class="text-muted fw-normal">(Opcional)</small></label>
                                 <textarea class="form-control @error('observacion_ace') is-invalid @enderror" id="observacion_ace" name="observacion_ace" rows="2" placeholder="Notas sobre el estado físico o asignación (opcional)">{{ old('observacion_ace') }}</textarea>
                                 @error('observacion_ace')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -193,10 +193,10 @@
 
                             <div class="col-md-6">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="vida_util" class="form-label fw-semibold">Vida Útil Estimada <span class="text-danger">*</span></label>
+                                    <label for="vida_util" class="form-label fw-semibold">Vida Útil Estimada <small class="text-muted fw-normal">(Opcional)</small></label>
                                     <span class="char-counter" data-for="vida_util">0 / 45</span>
                                 </div>
-                                <input type="text" class="form-control @error('vida_util') is-invalid @enderror" id="vida_util" name="vida_util" maxlength="45" data-maxlength="45" value="{{ old('vida_util') }}" placeholder="Ej. 3 años / 2027" required>
+                                <input type="text" class="form-control @error('vida_util') is-invalid @enderror" id="vida_util" name="vida_util" maxlength="45" data-maxlength="45" value="{{ old('vida_util') }}" placeholder="Ej. 3 años / 2027">
                                 @error('vida_util')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

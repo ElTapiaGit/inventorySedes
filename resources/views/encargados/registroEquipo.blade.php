@@ -153,10 +153,10 @@
 
                             <div class="col-md-6">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="marca" class="form-label fw-semibold">Marca <span class="text-danger">*</span></label>
+                                    <label for="marca" class="form-label fw-semibold">Marca <small class="text-muted fw-normal">(Opcional)</small></label>
                                     <span class="char-counter" data-for="marca">0 / 60</span>
                                 </div>
-                                <input type="text" class="form-control @error('marca') is-invalid @enderror" id="marca" name="marca" maxlength="60" data-maxlength="60" value="{{ old('marca') }}" placeholder="Ej. Dell / HP / Lenovo" required>
+                                <input type="text" class="form-control @error('marca') is-invalid @enderror" id="marca" name="marca" maxlength="60" data-maxlength="60" value="{{ old('marca') }}" placeholder="Ej. Dell / HP / Lenovo">
                                 @error('marca')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -164,10 +164,10 @@
 
                             <div class="col-md-6">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="modelo" class="form-label fw-semibold">Modelo <span class="text-danger">*</span></label>
+                                    <label for="modelo" class="form-label fw-semibold">Modelo <small class="text-muted fw-normal">(Opcional)</small></label>
                                     <span class="char-counter" data-for="modelo">0 / 50</span>
                                 </div>
-                                <input type="text" class="form-control @error('modelo') is-invalid @enderror" id="modelo" name="modelo" maxlength="50" data-maxlength="50" value="{{ old('modelo') }}" placeholder="Ej. OptiPlex 7090" required>
+                                <input type="text" class="form-control @error('modelo') is-invalid @enderror" id="modelo" name="modelo" maxlength="50" data-maxlength="50" value="{{ old('modelo') }}" placeholder="Ej. OptiPlex 7090">
                                 @error('modelo')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -182,7 +182,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="observaciones_equi" class="form-label fw-semibold">Observaciones</label>
+                                <label for="observaciones_equi" class="form-label fw-semibold">Observaciones <small class="text-muted fw-normal">(Opcional)</small></label>
                                 <textarea class="form-control @error('observaciones_equi') is-invalid @enderror" id="observaciones_equi" name="observaciones_equi" rows="2" placeholder="Detalles de estado físico, procedencia, o condiciones especiales (opcional)">{{ old('observaciones_equi') }}</textarea>
                                 @error('observaciones_equi')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -242,10 +242,10 @@
 
                             <div class="col-md-6">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="vida_util" class="form-label fw-semibold">Vida Útil Estimada <span class="text-danger">*</span></label>
+                                    <label for="vida_util" class="form-label fw-semibold">Vida Útil Estimada <small class="text-muted fw-normal">(Opcional)</small></label>
                                     <span class="char-counter" data-for="vida_util">0 / 50</span>
                                 </div>
-                                <input type="text" class="form-control @error('vida_util') is-invalid @enderror" id="vida_util" name="vida_util" maxlength="50" data-maxlength="50" value="{{ old('vida_util') }}" placeholder="Ej. 5 años / 2029" required>
+                                <input type="text" class="form-control @error('vida_util') is-invalid @enderror" id="vida_util" name="vida_util" maxlength="50" data-maxlength="50" value="{{ old('vida_util') }}" placeholder="Ej. 5 años / 2029">
                                 @error('vida_util')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

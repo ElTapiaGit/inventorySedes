@@ -197,7 +197,7 @@
                             </div>
 
                             <div class="col-12">
-                                <label for="observacion" class="form-label fw-semibold">Observaciones</label>
+                                <label for="observacion" class="form-label fw-semibold">Observaciones <small class="text-muted fw-normal">(Opcional)</small></label>
                                 <textarea class="form-control @error('observacion') is-invalid @enderror" id="observacion" name="observacion" rows="2" placeholder="Detalles de estado físico, marcas o anotaciones (opcional)">{{ old('observacion') }}</textarea>
                                 @error('observacion')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -246,10 +246,10 @@
 
                             <div class="col-md-4">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <label for="vida_util" class="form-label fw-semibold">Vida Útil Estimada <span class="text-danger">*</span></label>
+                                    <label for="vida_util" class="form-label fw-semibold">Vida Útil Estimada <small class="text-muted fw-normal">(Opcional)</small></label>
                                     <span class="char-counter" data-for="vida_util">0 / 50</span>
                                 </div>
-                                <input type="text" class="form-control @error('vida_util') is-invalid @enderror" id="vida_util" name="vida_util" maxlength="50" data-maxlength="50" value="{{ old('vida_util') }}" placeholder="Ej. 10 años / 2034" required>
+                                <input type="text" class="form-control @error('vida_util') is-invalid @enderror" id="vida_util" name="vida_util" maxlength="50" data-maxlength="50" value="{{ old('vida_util') }}" placeholder="Ej. 10 años / 2034">
                                 @error('vida_util')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

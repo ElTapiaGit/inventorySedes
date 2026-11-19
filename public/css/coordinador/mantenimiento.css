@@ -21,19 +21,13 @@
     border-right: 1px solid black; 
 }
 
-/***** PARA DETALLES DE HISTORIAL DE MANTENIEMTO DE LA CLINICA ****/
-.detallesMantenimiento .card-header {
-    background-color: #f3d3cd;
-    border-bottom: 1px solid #333;
+/***** PARA DETALLES DE HISTORIAL DE MANTENIMIENTO ****/
+.detallesMantenimiento .card {
+    margin-bottom: 1.5rem;
 }
 
 .detallesMantenimiento .card-body p {
     margin-bottom: 0.5rem;
-}
-
-.detallesMantenimiento .card { /*para los fondos  de carjetas*/
-    margin-bottom: 1.5rem;
-    border: solid red 2px;
 }
 
 .text-center {

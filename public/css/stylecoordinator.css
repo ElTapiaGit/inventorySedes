@@ -18,17 +18,20 @@ body{
 /*para el dasboar*/
 .wrapper{/*contenedor de la estructura de la pagina*/
     display: flex;
-    height: 100%;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /*seccion para el menu de navegacion*/
 #sidebar{
     width: 255px;
-    height: 100%;
+    height: 100vh;
     box-shadow: 0 0 35px 0 rgba(49, 57, 66, 0.5);
     z-index: 1000;
     background-image: linear-gradient(to bottom, #0f0e4a, #1c3d7b, #24749f);
     position: fixed;
+    top: 0;
+    left: 0;
     overflow-y: auto;
     transition: margin-left 0.2s ease;
 }
@@ -83,11 +86,12 @@ body{
 .main{
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
     margin-left: 250px;
     width: calc(100% - 250px);
     max-width: calc(100% - 250px);
     min-width: 0;
+    overflow-y: auto;
     overflow-x: hidden;
     transition: margin-left 0.2s ease, width 0.2s ease, max-width 0.2s ease;
 }
@@ -98,10 +102,20 @@ body{
     max-width: 100%;
 }
 
+/* Cabecera fija con container-scroll */
+.main header {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    width: 100%;
+    flex-shrink: 0;
+}
+
 /*para la cabecera*/
 .navbar{
     width: 100%;
     background-image: linear-gradient(to bottom, #153355, #1b477a, #3185E8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 .namaAdmin{ /*para el estilo del nombre de usuario*/
     color: #fff;
@@ -138,6 +152,7 @@ body{
     border: none;
     min-width: 220px;
     max-width: 320px;
+    z-index: 1030;
 }
 #optio .dropdown-item {
     white-space: normal;

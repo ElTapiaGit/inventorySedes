@@ -14,7 +14,10 @@
     background-color: #fff;
 }
 .tablaCabecera tr th{
-    background-color: #f3c39b;
+    background-color: #1B4B82;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
 }
 .pagDetallesprestamo .table-bordered th, .pagDetallesprestamo .table-bordered tr{
     text-align: center;

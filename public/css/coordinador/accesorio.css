@@ -14,5 +14,6 @@
 
 /************ PARA PAGINA DETALLES ACCESORIO **********/
 .pagAccesorio .table th{
-    background-color: aliceblue;
+    background-color: #f8f9fa;
+    color: #333;
 }

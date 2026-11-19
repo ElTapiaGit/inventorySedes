@@ -1,13 +1,16 @@
 
 .headerComp tr th{
-    background-color: #d9d4aa; 
-} 
-.table-bordered th, .table-bordered tr{
+    background-color: #1B4B82; 
+    color: #ffffff;
     text-align: center;
     vertical-align: middle;
-    border-left: 1px solid black; 
-    border-right: 1px solid black; 
-}
+} 
 .headerAcces tr th{
-    background-color: #78a0c1; 
+    background-color: #1B4B82; 
+    color: #ffffff;
+    text-align: center;
+    vertical-align: middle;
+} 
+.detallesEquipo .table th, .detallesEquipo .table td {
+    vertical-align: middle;
 } 

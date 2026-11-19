@@ -1,6 +1,6 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
-@section('title', 'Imagen Accesoirio-Equipo')
+@section('title', 'Imagen Accesorio-Equipo')
 
 @push('styles')
 <style>
@@ -18,24 +18,45 @@
     }
 
     .zoom-container:hover img {
-        transform: scale(1.5);
+        transform: scale(1.3);
     }
 </style>
 @endpush
 
 @section('content')
-<main class="content px-3">
-    <div class="container-fluid text-center">
-        <h1 class="mb-4">Foto del Accesorio</h1>
-        <div class="zoom-container">
-            <img id="fotoAccesorio" src="{{ inventario_img_url($fotos->ruta_foto ?? null) }}" alt="Foto del accesorio" class="img-fluid">
+<main class="content px-3 py-3">
+    <div class="container-fluid">
+        <!-- Barra de navegacion -->
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
+            <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+                <i class="bi bi-image me-2 text-primary"></i>Fotografia del Accesorio
+            </h4>
+            <button type="button" class="btn btn-outline-secondary d-flex align-items-center" onclick="window.history.back()">
+                <i class="bi bi-arrow-left me-1"></i> Volver
+            </button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-body p-4 text-center">
+                        <div class="zoom-container p-2 border rounded bg-light mb-3">
+                            <img id="fotoAccesorio"
+                                 src="{{ inventario_img_url($fotos->ruta_foto ?? null) }}"
+                                 alt="Foto del accesorio"
+                                 class="img-fluid rounded"
+                                 onerror="this.onerror=null;this.src='{{ asset('img/placeholder-articulo.svg') }}';">
+                        </div>
+                        <p class="text-muted small mb-0">Pase el cursor sobre la imagen para ampliar los detalles.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </main>
 @endsection
 
 @push('scripts')
-    <!-- SweetAlert2 Scripts -->
     @if($errors->any())
         <script>
             Swal.fire({
@@ -46,16 +67,3 @@
         </script>
     @endif
 @endpush
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
-@endsection

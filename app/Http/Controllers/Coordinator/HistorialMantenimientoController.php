@@ -194,7 +194,7 @@ class HistorialMantenimientoController extends Controller
 
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.historialMantenimientos', compact('mantenimientos', 'edificios'));
+            return view('coordinator.historialMantenimiento', compact('mantenimientos', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina historial de mantenimiento.');
         }

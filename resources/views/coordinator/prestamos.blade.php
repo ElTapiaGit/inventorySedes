@@ -1,26 +1,31 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
-@section('title', 'Prestamos')
+@section('title', 'Préstamos')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/coordinador/prestamos.css') }}">
 @endpush
 
+@php
+    $isClinica = request()->is('*clinica*');
+@endphp
+
 @section('content')
 <main class="content px-3 pagPrestamo">
     <div class="container-fluid">
         <div class="mb-3">
-            <h3 class="text-center fw-bold">PRESTAMOS REALIZADOS DE LA SEDE CENTRAL</h3>
+            <h3 class="text-center fw-bold">PRESTAMOS REALIZADOS {{ isset($edificioActivo) ? '- ' . strtoupper($edificioActivo->nombre_edi) : '' }}</h3>
         </div>
     
         <div class="row mb-3 g-2">
             <!-- Formulario de búsqueda por nombre de usuario -->
             <div class="col-md-6 d-flex justify-content-center">
-                <form method="GET" action="{{ route('prestamos.buscar') }}" class="d-flex align-items-center">
+                <form method="GET" action="{{ route($isClinica ? 'clinica.prestamos.buscar' : 'prestamos.buscar') }}" class="d-flex align-items-center">
                     @csrf
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" id="usuario" name="usuario" placeholder="Nombre Prestatario">
+                        <label for="usuario_prestamo" class="visually-hidden">Nombre Prestatario</label>
+                        <input type="text" class="form-control" id="usuario_prestamo" name="usuario" placeholder="Nombre Prestatario" value="{{ request('usuario') }}" aria-label="Nombre Prestatario">
                         <button class="btn btn-primary" type="submit">Buscar</button>
                     </div>
                 </form>
@@ -28,25 +33,28 @@
 
             <!-- Formulario de búsqueda por fecha -->
             <div class="col-md-6 d-flex justify-content-center">
-                <form method="GET" action="{{ route('prestamos.buscar') }}" class="d-flex align-items-center">
+                <form method="GET" action="{{ route($isClinica ? 'clinica.prestamos.buscar' : 'prestamos.buscar') }}" class="d-flex align-items-center">
                     @csrf
-                    <input type="date" class="form-control me-2 w-50" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha de inicio">
-                    <input type="date" class="form-control me-2 w-50" id="fecha_fin" name="fecha_fin" placeholder="Fecha de fin">
+                    <label for="fecha_inicio" class="visually-hidden">Fecha de inicio</label>
+                    <input type="date" class="form-control me-2 w-50" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha de inicio" value="{{ request('fecha_inicio') }}" aria-label="Fecha de inicio">
+                    <label for="fecha_fin" class="visually-hidden">Fecha de fin</label>
+                    <input type="date" class="form-control me-2 w-50" id="fecha_fin" name="fecha_fin" placeholder="Fecha de fin" value="{{ request('fecha_fin') }}" aria-label="Fecha de fin">
                     <button class="btn btn-primary" type="submit">Buscar</button>
                 </form>
             </div>
         </div>
 
-
         <div class="table-responsive">
-            <table class="table table-bordered">
+            <table class="table table-bordered table-striped">
                 <thead class="tablaPrestamo">
-                    <th>Prestatarios</th>
-                    <th>Descripcion</th>
-                    <th>Fecha Prestada</th>
-                    <th>Encargado</th>
-                    <th>Fecha Devolucion</th>
-                    <th>Detalles</th>
+                    <tr>
+                        <th>Prestatarios</th>
+                        <th>Descripción</th>
+                        <th>Fecha Prestada</th>
+                        <th>Encargado</th>
+                        <th>Fecha Devolución</th>
+                        <th>Detalles</th>
+                    </tr>
                 </thead>
                 <tbody>
                     @foreach($prestamos as $prestamo)
@@ -57,7 +65,7 @@
                             <td>{{ $prestamo->encargado }}</td>
                             <td>{{ \Carbon\Carbon::parse($prestamo->fch_devolucion)->format('d/m/Y') ?? 'No devuelto' }}</td>
                             <td class="text-center">
-                                <a href="{{ route('prestamos.detalles', ['token' => Crypt::encrypt($prestamo->id_prestamo)])  }}" title="Detalles">
+                                <a href="{{ route($isClinica ? 'clinica.prestamos.detalles' : 'prestamos.detalles', ['token' => Crypt::encrypt($prestamo->id_prestamo)]) }}" title="Detalles">
                                     <i class="bi bi-plus-square-fill"></i>
                                 </a>
                             </td>
@@ -88,7 +96,7 @@
         });
     </script>
 
-    <!-- Mensajes cuando no hay resultados en la busqueda -->
+    <!-- Mensajes cuando no hay resultados en la búsqueda -->
     @if(session('error_usuario'))
         <script>
             Swal.fire({
@@ -96,7 +104,7 @@
                 title: 'Oops...',
                 text: '{{ session('error_usuario') }}'
             }).then(() => {
-                window.location.href = "{{ route('prestamos.index') }}";
+                window.location.href = "{{ route($isClinica ? 'clinica.prestamos.index' : 'prestamos.index') }}";
             });
         </script>
     @endif
@@ -111,7 +119,7 @@
         </script>
     @endif
 
-    <!-- Mensaje de error de comunicacion a la BD -->
+    <!-- Mensaje de error de comunicación con la BD -->
     @if(session('errordata'))
         <script>
             Swal.fire({
@@ -122,16 +130,3 @@
         </script>
     @endif
 @endpush
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
-@endsection

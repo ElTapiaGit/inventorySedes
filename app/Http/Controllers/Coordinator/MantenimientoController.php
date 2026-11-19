@@ -68,7 +68,7 @@ class MantenimientoController extends Controller
 
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.mantenimientos', compact('equipos', 'edificios'));
+            return view('coordinator.mantenimiento', compact('equipos', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina mantenimiento.');
         }

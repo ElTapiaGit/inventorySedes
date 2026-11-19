@@ -21,6 +21,6 @@ class CoodinatorController extends BaseController   //se esta herendo al control
     //metodos para las clinicas
     public function home()
     {
-        return view('coordinator.clinicas.home');
+        return view('coordinator.inicio');
     }
 }

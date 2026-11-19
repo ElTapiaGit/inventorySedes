@@ -1,10 +1,14 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
 @section('title', 'Accesorios')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/coordinador/accesorio.css') }}">
 @endpush
+
+@php
+    $isClinica = request()->is('*clinica*');
+@endphp
 
 @section('content')
 <main class="content px-3 pagacces">
@@ -15,25 +19,27 @@
         </div>
         <!-- Botones de navegación -->
         <div class="d-flex justify-content-center mb-4">
-            <a href="{{ route('accesorios.equipo') }}" class="btn btn-primary mx-2">Equipo con Accesorios</a>
-            <a href="{{ route('accesorios.unicos') }}" class="btn btn-secondary mx-2">Accesorios Únicos</a>
+            <a href="{{ route($isClinica ? 'clinica.accesorios.equipo' : 'accesorios.equipo') }}" class="btn btn-primary mx-2">Equipo con Accesorios</a>
+            <a href="{{ route($isClinica ? 'clinica.accesorios.unicos' : 'accesorios.unicos') }}" class="btn btn-secondary mx-2">Accesorios Únicos</a>
         </div>
-        <!-- Formulario de búsqueda por código -->
+        <!-- Formulario de búsqueda -->
         <div class="row mb-3">
             <div class="col-md-6 d-flex justify-content-center align-items-center my-3">
-                <form method="GET" action="{{ route('accesorios.buscarCodigo') }}" class="personaliacces">
+                <form method="GET" action="{{ route($isClinica ? 'clinica.accesorios.buscarCodigo' : 'accesorios.buscarCodigo') }}" class="personaliacces">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" name="codigo" placeholder="Buscar por código">
+                        <label for="buscar_accesorio_codigo" class="visually-hidden">Buscar por código</label>
+                        <input type="text" id="buscar_accesorio_codigo" class="form-control" name="codigo" placeholder="Buscar por código" value="{{ request('codigo') }}" aria-label="Buscar por código">
                         <button class="btn btn-primary" type="submit">Buscar</button>
                     </div>
                 </form>
             </div>
-            <div class="col-md-6 d-flex justify-content-center align-items-center " >
-                <form method="GET" action="{{ route('accesorios.buscarNombre') }}" class="personaliacces">
+            <div class="col-md-6 d-flex justify-content-center align-items-center">
+                <form method="GET" action="{{ route($isClinica ? 'clinica.accesorios.buscarNombre' : 'accesorios.buscarNombre') }}" class="personaliacces">
                     <div class="input-group">
                         <span class="input-group-text"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" name="nombre" placeholder="Buscar por nombre">
+                        <label for="buscar_accesorio_nombre" class="visually-hidden">Buscar por nombre</label>
+                        <input type="text" id="buscar_accesorio_nombre" class="form-control" name="nombre" placeholder="Buscar por nombre" value="{{ request('nombre') }}" aria-label="Buscar por nombre">
                         <button class="btn btn-primary" type="submit">Buscar</button>
                     </div>
                 </form>
@@ -44,12 +50,12 @@
             <table class="table table-bordered table-striped">
                 <thead class="tablaAcces">
                     <tr>
-                        <th >Codigo</th>
+                        <th>Código</th>
                         <th>Nombre</th>
                         <th>Observaciones</th>
                         <th>Estado</th>
-                        <th>Ubicacion</th>
-                        <th>Resgistrada</th>
+                        <th>Ubicación</th>
+                        <th>Registrada</th>
                         <th>Detalles</th>
                     </tr>
                 </thead>
@@ -63,7 +69,7 @@
                             <td>{{ $accesorio->ubicacion }}</td>
                             <td>{{ \Carbon\Carbon::parse($accesorio->fch_registro_acce)->format('d/m/Y') }}</td>
                             <td>
-                                <a href="{{ route('accesorios.show', $accesorio->cod_accesorio) }}" title="Mas Informacion">
+                                <a href="{{ route($isClinica ? 'clinica.accesorios.show' : 'accesorios.show', $accesorio->cod_accesorio) }}" title="Más Información">
                                     <i class="fas fa-info-circle"></i>
                                 </a>
                             </td>
@@ -80,18 +86,18 @@
 @endsection
 
 @push('scripts')
-    <!-- Mensaje cuando no se encuentra resultados de busqueda -->
+    <!-- Mensaje cuando no se encuentra resultados de búsqueda -->
     @if (session('errorbuscar'))
         <script>
             Swal.fire({
                 icon: 'info',
-                title: 'Busqueda NO Encontrada',
+                title: 'Búsqueda NO Encontrada',
                 text: '{{ session('errorbuscar') }}'
             });
         </script>
     @endif
 
-    <!-- Mensaje de error en la comunicacion a BD -->
+    <!-- Mensaje de error en la comunicación a BD -->
     @if(session('error'))
         <script>
             Swal.fire({
@@ -102,16 +108,3 @@
         </script>
     @endif
 @endpush
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
-@endsection

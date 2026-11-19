@@ -11,24 +11,63 @@ use Illuminate\Support\Facades\View;
 
 class BaseController extends Controller
 {
-    // Controlador base para compartir contexto dinamico de carrera y edificios
     public function __construct()
     {
         static::registerViewComposer();
     }
 
-    // Cambia el edificio activo en la sesion del coordinador
+    // Cambia el edificio activo en la sesion del coordinador con redireccion inteligente
     public function seleccionarEdificio($id, CoordinatorScopeService $scopeService)
     {
         $scopeService->validarAccesoEdificio((int) $id);
         session(['coordinator_edificio_id' => (int) $id]);
+        $scopeService->resetMemoization();
 
         $edificio = Edificio::find((int) $id);
-        if ($edificio && str_contains(mb_strtolower($edificio->nombre_edi), 'clinica')) {
-            return redirect()->route('coordinator.clinica.inicio');
+        $isTargetClinica = $edificio && str_contains(mb_strtolower($edificio->nombre_edi), 'clinica');
+
+        // Redireccion inteligente segun el modulo en el que se encontraba el usuario
+        $prevUrl = url()->previous();
+        $prevPath = parse_url($prevUrl, PHP_URL_PATH) ?? '';
+        $prevPathLower = mb_strtolower($prevPath);
+
+        // Si estaba en historial de mantenimiento (excluyendo detalle numerico)
+        if (str_contains($prevPathLower, 'historial-mantenimiento') && !preg_match('#historial-mantenimiento/\w+#', $prevPathLower)) {
+            return redirect()->route($isTargetClinica ? 'clinica.historialmantenimientos.index' : 'historialmantenimientos.index');
         }
 
-        return redirect()->route('coordinator.inicio');
+        // Si estaba en mantenimientos (excluyendo detalle)
+        if (str_contains($prevPathLower, 'mantenimiento') && !str_contains($prevPathLower, 'detalles')) {
+            return redirect()->route($isTargetClinica ? 'clinica.mantenimiento.index' : 'mantenimiento.index');
+        }
+
+        // Si estaba en prestamos (excluyendo detalle)
+        if (str_contains($prevPathLower, 'prestamo') && !str_contains($prevPathLower, 'detalles')) {
+            return redirect()->route($isTargetClinica ? 'clinica.prestamos.index' : 'prestamos.index');
+        }
+
+        // Si estaba en movimientos (excluyendo detalle)
+        if (str_contains($prevPathLower, 'movimiento') && !str_contains($prevPathLower, 'detalles')) {
+            return redirect()->route($isTargetClinica ? 'clinica.movimientos.index' : 'movimientos.index');
+        }
+
+        // Si estaba en accesorios (excluyendo detalle y fotos)
+        if (str_contains($prevPathLower, 'accesorio') && !str_contains($prevPathLower, 'detalles') && !str_contains($prevPathLower, 'foto')) {
+            return redirect()->route($isTargetClinica ? 'clinica.accesorios.index' : 'accesorios.index');
+        }
+
+        // Si estaba en laboratorios / ambientes de edificio (excluyendo fichas de ambiente especifico)
+        if (str_contains($prevPathLower, 'laboratorio') || (str_contains($prevPathLower, 'ambientes') && !str_contains($prevPathLower, 'contenido') && !str_contains($prevPathLower, 'equipos') && !str_contains($prevPathLower, 'material') && !str_contains($prevPathLower, 'mobiliario'))) {
+            return redirect()->route($isTargetClinica ? 'coordinator.clinica.ambientes' : 'laboratorios.index');
+        }
+
+        // Si estaba en reportes
+        if (str_contains($prevPathLower, 'reporte')) {
+            return redirect()->route($isTargetClinica ? 'reporte.clinica.index' : 'reporte.index');
+        }
+
+        // Por defecto o si estaba en inicio / ficha de detalle
+        return redirect()->route($isTargetClinica ? 'coordinator.clinica.inicio' : 'coordinator.inicio');
     }
 
     // Registra el View Composer exclusivo para las vistas de coordinador y sus layouts
@@ -36,8 +75,6 @@ class BaseController extends Controller
     {
         View::composer([
             'layouts.coordinator',
-            'layouts.coodinacion',
-            'layouts.pagClinica',
             'coordinator.*',
         ], function ($view) {
             $user = Auth::user();
@@ -47,6 +84,7 @@ class BaseController extends Controller
                     'coordCarreraNombre' => 'Coordinacion Academica',
                     'coordCarreraTitulo' => 'Coordinacion Academica',
                     'coordLogoUrl' => asset('img/logo.webp'),
+                    'coordFondoUrl' => null,
                     'edificios' => collect(),
                     'edificioActivo' => null,
                     'edificioActivoId' => 0,
@@ -83,7 +121,19 @@ class BaseController extends Controller
                 $coordLogoUrl = asset('img/logo.webp');
             }
 
-            // 3. Edificios y edificio activo
+            // 3. Fondo dinamico por carrera
+            $carreraId = $scopeService->getCarreraId($user);
+            $carreraLower = mb_strtolower($coordCarreraNombre);
+
+            if (($carreraId === 1 || str_contains($carreraLower, 'odontolog')) && file_exists(public_path('img/coordinator/fondo_odonot.webp'))) {
+                $coordFondoUrl = asset('img/coordinator/fondo_odonot.webp');
+            } elseif (file_exists(public_path('img/coordinator/fondo-coordincion.webp'))) {
+                $coordFondoUrl = asset('img/coordinator/fondo-coordincion.webp');
+            } else {
+                $coordFondoUrl = null;
+            }
+
+            // 4. Edificios y edificio activo
             $edificios = $scopeService->getEdificiosPermitidos($user);
             $edificioActivoId = $scopeService->getEdificioActivoId($user);
             $edificioActivo = $edificios->firstWhere('id_edificio', $edificioActivoId);
@@ -92,6 +142,7 @@ class BaseController extends Controller
                 'coordCarreraNombre' => $coordCarreraNombre,
                 'coordCarreraTitulo' => $coordCarreraTitulo,
                 'coordLogoUrl' => $coordLogoUrl,
+                'coordFondoUrl' => $coordFondoUrl,
                 'edificios' => $edificios,
                 'edificioActivo' => $edificioActivo,
                 'edificioActivoId' => $edificioActivoId,

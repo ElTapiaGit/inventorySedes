@@ -11,16 +11,56 @@ use Illuminate\Support\Facades\Auth;
 class CoordinatorScopeService
 {
     /**
+     * Cache en memoria por request para evitar consultas SQL redundantes.
+     */
+    protected array $memoCarreraId = [];
+    protected array $memoEdificios = [];
+    protected array $memoEdificiosIds = [];
+    protected array $memoAmbientesIds = [];
+    protected array $memoActivoId = [];
+    protected array $memoEdificioActivo = [];
+
+    /**
+     * Limpia la cache en memoria de la instancia.
+     */
+    public function resetMemoization(): void
+    {
+        $this->memoCarreraId = [];
+        $this->memoEdificios = [];
+        $this->memoEdificiosIds = [];
+        $this->memoAmbientesIds = [];
+        $this->memoActivoId = [];
+        $this->memoEdificioActivo = [];
+    }
+
+    /**
+     * Resuelve la clave de usuario para la cache en memoria.
+     */
+    protected function getUserKey(?Personal $user): string
+    {
+        if ($user && $user->id_personal) {
+            return (string) $user->id_personal;
+        }
+        $authId = Auth::id();
+        return $authId ? (string) $authId : 'guest';
+    }
+
+    /**
      * Obtiene el ID de la carrera coordinada por el usuario.
      */
     public function getCarreraId(?Personal $user = null): ?int
     {
-        $user = $user ?? Auth::user();
-        if (!$user) {
-            return null;
+        $userKey = $this->getUserKey($user);
+        if (array_key_exists($userKey, $this->memoCarreraId)) {
+            return $this->memoCarreraId[$userKey];
         }
 
-        return $user->id_carrera_coordinada;
+        $user = $user ?? Auth::user();
+        if (!$user) {
+            return $this->memoCarreraId[$userKey] = null;
+        }
+
+        return $this->memoCarreraId[$userKey] = $user->id_carrera_coordinada;
     }
 
     /**
@@ -28,9 +68,14 @@ class CoordinatorScopeService
      */
     public function getEdificiosPermitidos(?Personal $user = null): Collection
     {
+        $userKey = $this->getUserKey($user);
+        if (isset($this->memoEdificios[$userKey])) {
+            return $this->memoEdificios[$userKey];
+        }
+
         $user = $user ?? Auth::user();
         if (!$user) {
-            return new Collection();
+            return $this->memoEdificios[$userKey] = new Collection();
         }
 
         $carreraId = $this->getCarreraId($user);
@@ -53,7 +98,7 @@ class CoordinatorScopeService
             $query->where('SEDE_id_sede', $sedeId);
         }
 
-        return $query->orderBy('id_edificio')->get();
+        return $this->memoEdificios[$userKey] = $query->orderBy('id_edificio')->get();
     }
 
     /**
@@ -61,7 +106,15 @@ class CoordinatorScopeService
      */
     public function getEdificiosPermitidosIds(?Personal $user = null): array
     {
-        return $this->getEdificiosPermitidos($user)->pluck('id_edificio')->map(fn($id) => (int)$id)->toArray();
+        $userKey = $this->getUserKey($user);
+        if (isset($this->memoEdificiosIds[$userKey])) {
+            return $this->memoEdificiosIds[$userKey];
+        }
+
+        return $this->memoEdificiosIds[$userKey] = $this->getEdificiosPermitidos($user)
+            ->pluck('id_edificio')
+            ->map(fn($id) => (int)$id)
+            ->toArray();
     }
 
     /**
@@ -69,26 +122,31 @@ class CoordinatorScopeService
      */
     public function getEdificioActivoId(?Personal $user = null): int
     {
+        $userKey = $this->getUserKey($user);
+        if (isset($this->memoActivoId[$userKey])) {
+            return $this->memoActivoId[$userKey];
+        }
+
         $user = $user ?? Auth::user();
         $permitidos = $this->getEdificiosPermitidosIds($user);
 
         if (empty($permitidos)) {
-            return 0;
+            return $this->memoActivoId[$userKey] = 0;
         }
 
         $sessionEdificioId = session('coordinator_edificio_id');
         if ($sessionEdificioId && in_array((int) $sessionEdificioId, $permitidos, true)) {
-            return (int) $sessionEdificioId;
+            return $this->memoActivoId[$userKey] = (int) $sessionEdificioId;
         }
 
         // Priorizar el edificio asignado al usuario si esta permitido
         if ($user && $user->EDIFICIO_id_edificio && in_array((int) $user->EDIFICIO_id_edificio, $permitidos, true)) {
             session(['coordinator_edificio_id' => (int) $user->EDIFICIO_id_edificio]);
-            return (int) $user->EDIFICIO_id_edificio;
+            return $this->memoActivoId[$userKey] = (int) $user->EDIFICIO_id_edificio;
         }
 
         session(['coordinator_edificio_id' => $permitidos[0]]);
-        return $permitidos[0];
+        return $this->memoActivoId[$userKey] = $permitidos[0];
     }
 
     /**
@@ -96,8 +154,13 @@ class CoordinatorScopeService
      */
     public function getEdificioActivo(?Personal $user = null): ?Edificio
     {
+        $userKey = $this->getUserKey($user);
+        if (array_key_exists($userKey, $this->memoEdificioActivo)) {
+            return $this->memoEdificioActivo[$userKey];
+        }
+
         $id = $this->getEdificioActivoId($user);
-        return $id > 0 ? Edificio::find($id) : null;
+        return $this->memoEdificioActivo[$userKey] = ($id > 0 ? Edificio::find($id) : null);
     }
 
     /**
@@ -105,9 +168,16 @@ class CoordinatorScopeService
      */
     public function getAmbientesPermitidosIds(?int $edificioId = null, ?Personal $user = null): array
     {
+        $userKey = $this->getUserKey($user);
+        $cacheKey = $edificioId !== null ? (string)$edificioId : 'all';
+
+        if (isset($this->memoAmbientesIds[$userKey][$cacheKey])) {
+            return $this->memoAmbientesIds[$userKey][$cacheKey];
+        }
+
         $user = $user ?? Auth::user();
         if (!$user) {
-            return [];
+            return $this->memoAmbientesIds[$userKey][$cacheKey] = [];
         }
 
         $carreraId = $this->getCarreraId($user);
@@ -116,9 +186,9 @@ class CoordinatorScopeService
         if ($edificioId !== null) {
             $targetEdificio = $permitidosEdificios->firstWhere('id_edificio', $edificioId);
             if (!$targetEdificio) {
-                return [];
+                return $this->memoAmbientesIds[$userKey][$cacheKey] = [];
             }
-            return $this->resolverAmbientesDeEdificio($targetEdificio, $carreraId);
+            return $this->memoAmbientesIds[$userKey][$cacheKey] = $this->resolverAmbientesDeEdificio($targetEdificio, $carreraId);
         }
 
         $todosAmbientes = [];
@@ -127,7 +197,7 @@ class CoordinatorScopeService
             $todosAmbientes = array_merge($todosAmbientes, $ambientesEdificio);
         }
 
-        return array_values(array_unique($todosAmbientes));
+        return $this->memoAmbientesIds[$userKey][$cacheKey] = array_values(array_unique($todosAmbientes));
     }
 
     /**

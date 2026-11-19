@@ -205,7 +205,7 @@ class PrestamosController extends Controller
 
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.prestamos', compact('nombresSolicitantes', 'fechasPrestamo', 'prestamos', 'edificios'));
+            return view('coordinator.prestamos', compact('nombresSolicitantes', 'fechasPrestamo', 'prestamos', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina prestamos.');
         }

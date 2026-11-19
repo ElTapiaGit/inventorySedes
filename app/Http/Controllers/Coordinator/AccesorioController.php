@@ -159,7 +159,7 @@ class AccesorioController extends Controller
             $accesorios = $this->getAccesoriosQuery($edificioId)->paginate(10);
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
+            return view('coordinator.accesorio', compact('accesorios', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina accesorios.');
         }
@@ -181,7 +181,7 @@ class AccesorioController extends Controller
 
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
+            return view('coordinator.accesorio', compact('accesorios', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('clinica.accesorios.index')->with('error', 'Error al obtener los accesorios con equipos.');
         }
@@ -196,7 +196,7 @@ class AccesorioController extends Controller
 
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
+            return view('coordinator.accesorio', compact('accesorios', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('clinica.accesorios.index')->with('error', 'Error al obtener los accesorios unicos.');
         }
@@ -220,7 +220,7 @@ class AccesorioController extends Controller
 
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
+            return view('coordinator.accesorio', compact('accesorios', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('clinica.accesorios.index')->with('error', 'Error al buscar por codigo de accesorio.');
         }
@@ -244,7 +244,7 @@ class AccesorioController extends Controller
 
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.accesorios', compact('accesorios', 'edificios'));
+            return view('coordinator.accesorio', compact('accesorios', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('clinica.accesorios.index')->with('error', 'Error al buscar por nombre de accesorio.');
         }

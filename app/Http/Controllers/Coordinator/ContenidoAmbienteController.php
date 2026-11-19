@@ -64,7 +64,7 @@ class ContenidoAmbienteController extends Controller
             // Obtener los edificios permitidos
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.clinicas.contenidoAmbiente', compact('ambiente', 'equipos', 'materiales', 'mobiliarios', 'edificios'));
+            return view('coordinator.ambiente', compact('ambiente', 'equipos', 'materiales', 'mobiliarios', 'edificios'));
         } catch (\Exception $e) {
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
                 throw $e;
@@ -93,7 +93,7 @@ class ContenidoAmbienteController extends Controller
             $equipos = DB::table('equipo')->where('AMBIENTE_id_ambiente', $id)->get();
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.clinicas.equiposAmbiente', compact('ambiente', 'equipos', 'edificios'));
+            return view('coordinator.ambienteEquipo', compact('ambiente', 'equipos', 'edificios'));
         } catch (\Exception $e) {
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
                 throw $e;
@@ -122,7 +122,7 @@ class ContenidoAmbienteController extends Controller
             $materiales = DB::table('material')->where('AMBIENTE_id_ambiente', $id)->get();
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.clinicas.materialesAmbiente', compact('ambiente', 'materiales', 'edificios'));
+            return view('coordinator.ambienteMaterial', compact('ambiente', 'materiales', 'edificios'));
         } catch (\Exception $e) {
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
                 throw $e;
@@ -155,7 +155,7 @@ class ContenidoAmbienteController extends Controller
 
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.clinicas.mobiliariosAmbiente', compact('ambiente', 'mobiliarios', 'edificios'));
+            return view('coordinator.ambienteMobiliario', compact('ambiente', 'mobiliarios', 'edificios'));
         } catch (\Exception $e) {
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
                 throw $e;
@@ -215,7 +215,7 @@ class ContenidoAmbienteController extends Controller
 
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.ambientes', compact('pisos', 'ambientes', 'edificios', 'pisoSeleccionado'));
+            return view('coordinator.ambientes', compact('pisos', 'ambientes', 'edificios', 'pisoSeleccionado'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Problemas al obtener los datos para la pagina ambientes.');
         }

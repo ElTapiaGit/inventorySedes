@@ -188,7 +188,7 @@ class MovimientosController extends Controller
             $movimientos = $this->getMovimientosQuery($ambientesIds)->paginate(10);
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.movimientos', compact('nombresUsuarios', 'fechas', 'movimientos', 'edificios'));
+            return view('coordinator.movimientos', compact('nombresUsuarios', 'fechas', 'movimientos', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la pagina movimientos.');
         }
@@ -234,7 +234,7 @@ class MovimientosController extends Controller
 
             $edificios = $edificiosPermitidos;
 
-            return view('coordinator.clinicas.movimientos', compact('nombresUsuarios', 'fechas', 'movimientos', 'edificios'));
+            return view('coordinator.movimientos', compact('nombresUsuarios', 'fechas', 'movimientos', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Problemas al obtener los datos de busqueda.');
         }

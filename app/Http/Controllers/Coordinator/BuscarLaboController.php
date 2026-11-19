@@ -68,7 +68,7 @@ class BuscarLaboController extends Controller
     {
         try {
             $edificios = $this->scopeService->getEdificiosPermitidos();
-            return view('coordinator.clinicas.niveles', compact('edificios'));
+            return view('coordinator.niveles', compact('edificios'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener los datos para la busqueda rapida.');
         }

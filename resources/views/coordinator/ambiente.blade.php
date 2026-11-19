@@ -1,23 +1,33 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
-@section('title', 'Inventario del Laboratorio')
+@section('title', 'Inventario del Ambiente')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/coordinador/ambiente.css') }}">
 @endpush
 
+@php
+    $isClinica = request()->is('*clinica*');
+    $tokenAmb = Crypt::encryptString($ambiente->id_ambiente);
+@endphp
+
 @section('content')
 <main class="content px-3 ambiente-page">
     <div class="container-fluid">
         <div class="mb-3">
-            <h3 class="text-center titulo fw-bold">{{ $ambiente->nombre }}</h3>
+            <h3 class="text-center titulo fw-bold">{{ $ambiente->nombre_completo_ambiente ?? $ambiente->nombre }}</h3>
         </div>
         <div class="btnambiente d-flex justify-content-center mb-3">
-            <a href="{{ route('equipos.show', ['token' => Crypt::encryptString($ambiente->id_ambiente)]) }}" class="btn btn-primary mx-2">EQUIPOS</a>
-            <a href="{{ route('materiales.show', ['token' => Crypt::encryptString($ambiente->id_ambiente)]) }}" class="btn btn-primary mx-2">MATERIALES</a>
-            <a href="{{ route('mobiliarios.show', ['token' => Crypt::encryptString($ambiente->id_ambiente)]) }}" class="btn btn-primary mx-2">MOBILIARIA</a>
+            <a href="{{ route($isClinica ? 'coordinator.clinica.equipos' : 'equipos.show', $isClinica ? ['id_ambiente' => $tokenAmb] : ['token' => $tokenAmb]) }}" class="btn btn-primary mx-2">EQUIPOS</a>
+            <a href="{{ route($isClinica ? 'coordinator.clinica.materiales' : 'materiales.show', $isClinica ? ['id_ambiente' => $tokenAmb] : ['token' => $tokenAmb]) }}" class="btn btn-primary mx-2">MATERIALES</a>
+            <a href="{{ route($isClinica ? 'coordinator.clinica.mobiliarios' : 'mobiliarios.show', $isClinica ? ['id_ambiente' => $tokenAmb] : ['token' => $tokenAmb]) }}" class="btn btn-primary mx-2">MOBILIARIO</a>
         </div>
         
+        @if($equipos->isEmpty() && $materiales->isEmpty() && $mobiliarios->isEmpty())
+            <div class="alert alert-info text-center">
+                El ambiente {{ $ambiente->nombre_completo_ambiente ?? $ambiente->nombre }} no tiene registros de equipos, materiales ni mobiliarios.
+            </div>
+        @else
         <div class="table-responsive">
             <table class="table table-bordered table-striped">
                 <thead>
@@ -46,9 +56,8 @@
                             <td>{{ $equipo->vida_util }}</td>
                             <td>{{ \Carbon\Carbon::parse($equipo->fch_registro)->format('d/m/Y') }}</td>
                             <td>
-                                <a href="{{ route('equipo.detalles', ['token' => Crypt::encrypt($equipo->cod_equipo)]) }}" title="Detalles">
+                                <a href="{{ route($isClinica ? 'clinica.equipo.detalles' : 'equipo.detalles', ['token' => Crypt::encrypt($equipo->cod_equipo)]) }}" title="Detalles">
                                     <i class="fas fa-info-circle"></i>
-                                    
                                 </a>
                             </td>
                         </tr>
@@ -60,10 +69,10 @@
                             <td>{{ $material->tipo_mate }}</td>
                             <td>{{ $material->estado_mate }}</td>
                             <td>{{ $material->observacion_mate }}</td>
-                            <td>null</td>
+                            <td>N/A</td>
                             <td>{{ \Carbon\Carbon::parse($material->fch_registrada)->format('d/m/Y') }}</td>
                             <td>
-                                <a href="{{ route('material.detalles', ['token' => Crypt::encrypt($material->cod_mate)]) }}">
+                                <a href="{{ route($isClinica ? 'clinica.material.detalles' : 'material.detalles', ['token' => Crypt::encrypt($material->cod_mate)]) }}" title="Detalles">
                                     <i class="fas fa-info-circle"></i>
                                 </a>
                             </td>
@@ -79,7 +88,7 @@
                             <td>{{ $mobiliario->vida_util }}</td>
                             <td>{{ \Carbon\Carbon::parse($mobiliario->fch_registro)->format('d/m/Y') }}</td>
                             <td>
-                                <a href="{{ route('mobiliario.detalles', ['token' => Crypt::encrypt($mobiliario->cod_mueble)]) }}">
+                                <a href="{{ route($isClinica ? 'clinica.mobiliario.detalles' : 'mobiliario.detalles', ['token' => Crypt::encrypt($mobiliario->cod_mueble)]) }}" title="Detalles">
                                     <i class="fas fa-info-circle"></i>
                                 </a>
                             </td>
@@ -88,19 +97,7 @@
                 </tbody>
             </table>
         </div>
+        @endif
     </div>
 </main>
-@endsection
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
 @endsection

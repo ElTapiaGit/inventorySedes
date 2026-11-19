@@ -100,7 +100,7 @@ class DetallesMaterialController extends Controller
 
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.clinicas.detallesMateriales', [
+            return view('coordinator.detallesMaterial', [
                 'material' => $material,
                 'edificios' => $edificios
             ]);

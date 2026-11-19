@@ -55,10 +55,11 @@ class AmbienteClinicaController extends Controller
                 )
                 ->get();
 
-            return view('coordinator.clinicas.ambienteClinica', [
+            return view('coordinator.ambientes_piso', [
                 'ambientes' => $ambientes,
                 'edificios' => $edificios,
                 'pisos' => $pisos,
+                'piso' => $pisos,
             ]);
         } catch (\Exception $e) {
             if ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {

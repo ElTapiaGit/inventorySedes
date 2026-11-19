@@ -177,7 +177,7 @@ class DetallesEquipoController extends Controller
 
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.clinicas.detallesEquipos', [
+            return view('coordinator.detallesEquipo', [
                 'equipo' => $equipo,
                 'componentes' => $componentes,
                 'accesorios' => $accesorios,
@@ -202,7 +202,7 @@ class DetallesEquipoController extends Controller
 
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.fotosAccesorio', compact('fotos', 'edificios'));
+            return view('coordinator.fotoAccess', compact('fotos', 'edificios'));
         } catch (\Exception $e) {
             return redirect()->route('coordinator.clinica.inicio')->with('errordata', 'Error al obtener la foto.');
         }

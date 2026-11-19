@@ -1,4 +1,4 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
 @section('title', 'Detalles de Mobiliario')
 
@@ -18,19 +18,19 @@
                         <!-- Aquí mostrar la información del mueble -->
                         <div class="flex-grow-1 mb-3 mb-md-0" style="max-width: 500px">
                             <p><strong>Código:</strong> {{ $mobiliario->cod_mueble }}</p>
-                            <p><strong>Ambiente:</strong> {{ $mobiliario->nombre }}</p>
+                            <p><strong>Ambiente:</strong> {{ $mobiliario->nombre ?? 'N/A' }}</p>
                             <p><strong>Tipo de Mueble:</strong> {{ $mobiliario->tipo_mueble }}</p>
                             <p style="text-align: justify;"><strong>Descripción:</strong><br> {{ $mobiliario->descripticion_mueb }}</p>
                             <p style="text-align: justify;"><strong>Observaciones:</strong><br> {{ $mobiliario->observacion }}</p>
                             <p><strong>Estado:</strong> {{ $mobiliario->estado_mueb }}</p>
                             <p><strong>Vida Útil:</strong> {{ $mobiliario->vida_util }}</p>
-                            <p><strong>Fecha Adquirida:</strong> {{ \Carbon\Carbon::parse($mobiliario->fch_registro)->format('d/m/Y') }}</p>
+                            <p><strong>Fecha Registrada:</strong> {{ \Carbon\Carbon::parse($mobiliario->fch_registro)->format('d/m/Y') }}</p>
                         </div>
                     
                         <!-- Imagen del mueble en el lado derecho -->
                         <div class="ml-md-3 px-1">
                             @if($mobiliario->ruta_foto)
-                                <img src="{{ inventario_img_url($mobiliario->ruta_foto ?? null) }}" alt="Foto del mueble" class="img-fluid img-thumbnail" width="600px">
+                                <img src="{{ inventario_img_url($mobiliario->ruta_foto ?? null) }}" alt="Foto del mueble" class="img-fluid img-thumbnail" style="max-width: 600px;">
                             @else
                                 <p>No hay foto disponible</p>
                             @endif
@@ -41,17 +41,4 @@
         </div>
     </div>
 </main>
-@endsection
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
 @endsection

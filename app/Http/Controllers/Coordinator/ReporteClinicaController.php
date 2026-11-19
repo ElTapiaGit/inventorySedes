@@ -24,6 +24,6 @@ class ReporteClinicaController extends Controller
     public function indexClinica()
     {
         $edificios = $this->scopeService->getEdificiosPermitidos();
-        return view('coordinator.clinicas.reporteClinica', compact('edificios'));
+        return view('coordinator.reporte', compact('edificios'));
     }
 }

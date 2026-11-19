@@ -1,6 +1,6 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
-@section('title', 'Detalles de Material')
+@section('title', 'Detalles del Material')
 
 @section('content')
 <main class="content px-3">
@@ -15,10 +15,10 @@
                         <h5>Información del Material</h5>
                     </div>
                     <div class="card-body d-flex flex-column flex-md-row">
-                        <!-- Aquí mostrar la información del material -->
+                        <!-- Información del material -->
                         <div class="flex-grow-1 mb-3 mb-md-0" style="max-width: 500px">
                             <p><strong>Código:</strong> {{ $material->cod_mate }}</p>
-                            <p><strong>Ambiente:</strong> {{ $material->nombre }}</p>
+                            <p><strong>Ambiente:</strong> {{ $material->nombre ?? 'N/A' }}</p>
                             <p><strong>Tipo de material:</strong> {{ $material->tipo_mate }}</p>
                             <p style="text-align: justify;"><strong>Descripción:</strong><br> {{ $material->descripcion_mate }}</p>
                             <p><strong>Estado:</strong> {{ $material->estado_mate }}</p>
@@ -29,7 +29,7 @@
                         <!-- Imagen del material en el lado derecho -->
                         <div class="ml-md-3 px-2">
                             @if($material->ruta_foto)
-                                <img src="{{ inventario_img_url($material->ruta_foto ?? null) }}" alt="Foto del material" class="img-fluid img-thumbnail" width="600px">
+                                <img src="{{ inventario_img_url($material->ruta_foto ?? null) }}" alt="Foto del material" class="img-fluid img-thumbnail" style="max-width: 600px;">
                             @else
                                 <p>No hay foto disponible</p>
                             @endif
@@ -40,17 +40,4 @@
         </div>
     </div>
 </main>
-@endsection
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
 @endsection

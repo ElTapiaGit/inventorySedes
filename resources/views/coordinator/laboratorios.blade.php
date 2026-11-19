@@ -1,4 +1,4 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
 @section('title', 'Laboratorios')
 
@@ -10,11 +10,12 @@
 <main class="content px-3">
     <div class="container-fluid">
         <div class="mb-3">
-            <h3 class="text-center fw-bold">LABORATORIOS DE ODONTOLOGIA</h3>
+            <h3 class="text-center fw-bold">LABORATORIOS {{ isset($carreraCoordinada) ? 'DE ' . strtoupper($carreraCoordinada) : (isset($edificioActivo) ? '- ' . strtoupper($edificioActivo->nombre_edi) : '') }}</h3>
         </div>
         <form class="form-container" action="{{ route('laboratorios.buscar') }}" method="POST">
             @csrf
-            <input list="laboratorios" name="Laboratorio" id="Laboratorio" class="form-control" required placeholder="Escriba su búsqueda" style="width: 300px;">
+            <label for="Laboratorio" class="visually-hidden">Buscar laboratorio</label>
+            <input list="laboratorios" name="Laboratorio" id="Laboratorio" class="form-control" required placeholder="Escriba su búsqueda" style="width: 300px;" aria-label="Buscar laboratorio">
             <datalist id="laboratorios">
                 @foreach($laboratorios as $laboratorio)
                     <option value="{{ $laboratorio->nombre }}"></option>
@@ -38,16 +39,3 @@
         </script>
     @endif
 @endpush
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
-@endsection

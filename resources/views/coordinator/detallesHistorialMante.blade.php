@@ -1,10 +1,14 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
 @section('title', 'Detalles de Mantenimiento')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/coordinador/mantenimiento.css') }}">
 @endpush
+
+@php
+    $isClinica = request()->is('*clinica*');
+@endphp
 
 @section('content')
 <main class="content px-3">
@@ -38,7 +42,7 @@
                         <h4>Datos del Artículo</h4>
                     </div>
                     <div class="card-body">
-                        <p><strong>Codigo:</strong> {{ $articulo->codigo }}</p>
+                        <p><strong>Código:</strong> {{ $articulo->codigo }}</p>
                         <p><strong>Nombre:</strong> {{ $articulo->nombre }}</p>
                     </div>
                 </div>
@@ -61,7 +65,7 @@
                         <h4>Datos del Personal Encargado</h4>
                     </div>
                     <div class="card-body">
-                        <p><strong>Nombre:</strong> {{ $personal->nombre_completo }}</p>
+                        <p><strong>Nombre:</strong> {{ $personal->nombre_completo ?? ($personal->nombre . ' ' . $personal->ap_paterno) }}</p>
                         <p><strong>Celular:</strong> {{ $personal->celular }}</p>
                     </div>
                 </div>
@@ -82,19 +86,9 @@
                 </div>
             </div>
         </div>
+        <div class="d-flex justify-content-center mb-4">
+            <a href="{{ route($isClinica ? 'clinica.historialmantenimientos.index' : 'historialmantenimientos.index') }}" class="btn btn-secondary">Volver</a>
+        </div>
     </div>
 </main>
-@endsection
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
 @endsection

@@ -1,10 +1,14 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
 @section('title', 'Detalles de Equipo')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/coordinador/detallesequipo.css') }}">
 @endpush
+
+@php
+    $isClinica = request()->is('*clinica*');
+@endphp
 
 @section('content')
 <main class="content px-3 detallesEquipo">
@@ -25,13 +29,13 @@
                             <p><strong>Nombre:</strong> {{ $equipo->nombre_equi }}</p>
                             <p><strong>Marca:</strong> {{ $equipo->marca }}</p>
                             <p><strong>Modelo:</strong> {{ $equipo->modelo }}</p>
-                            <p><strong>Ambiente:</strong> {{ $equipo->nombre }}</p>
+                            <p><strong>Ambiente:</strong> {{ $equipo->nombre ?? 'N/A' }}</p>
                             <p style="text-align: justify;"><strong>Descripción:</strong> <br> {{ $equipo->descripcion_equi }} </p>
                             <p><strong>Empotrado:</strong> {{ $equipo->empotrado ? 'Sí' : 'No' }}</p>
                             <p><strong>Estado:</strong> {{ $equipo->estado_equi }}</p>
                             <p style="text-align: justify;"><strong>Observaciones:</strong><br> {{ $equipo->observaciones_equi }}</p>
-                            <p><strong>Vida Util:</strong> {{ $equipo->vida_util }}</p>
-                            <p><strong>Fecha Adquirida:</strong> {{ \Carbon\Carbon::parse($equipo->fch_registro)->format('d/m/Y') }}</p>
+                            <p><strong>Vida Útil:</strong> {{ $equipo->vida_util }}</p>
+                            <p><strong>Fecha Registrada:</strong> {{ \Carbon\Carbon::parse($equipo->fch_registro)->format('d/m/Y') }}</p>
                         </div>
 
                         <!-- Imagen del equipo -->
@@ -55,7 +59,7 @@
                     <div class="card-header bg-secondary text-white">
                         <h5>Componentes del Equipo</h5>
                     </div>
-                     <div class="table-responsive">
+                    <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead class="headerComp">
                                 <tr>
@@ -65,7 +69,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse ($componentes as $componente)
+                                @forelse (($componentes ?? []) as $componente)
                                 <tr>
                                     <td>{{ $componente->nombre_compo }}</td>
                                     <td>{{ $componente->descripcion_compo }}</td>
@@ -86,7 +90,7 @@
         <!-- Accesorios del equipo -->
         <h2 class="mt-3">Accesorios del equipo</h2>
         <div class="table-responsive">
-            <table class="table table-bordered">
+            <table class="table table-bordered table-striped">
                 <thead class="headerAcces">
                     <tr>
                         <th>Código</th>
@@ -113,10 +117,10 @@
                         <td>{{ \Carbon\Carbon::parse($accesorio->fch_registro_acce)->format('d/m/Y') }}</td>
                         <td class="text-center">
                             @if($accesorio->FOTO_id_foto)
-                                <form action="{{ route('equipo.access.foto') }}" method="POST" style="display:inline;">
+                                <form action="{{ route($isClinica ? 'clinica.equiposAccefoto' : 'equipo.access.foto') }}" method="POST" style="display:inline;">
                                     @csrf
                                     <input type="hidden" name="cod_accesorio" value="{{ $accesorio->FOTO_id_foto }}">
-                                    <button type="submit" class="btn btn-link">
+                                    <button type="submit" class="btn btn-link" aria-label="Ver foto del accesorio">
                                         <i class="fas fa-camera"></i>
                                     </button>
                                 </form>
@@ -127,7 +131,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="text-center">No hay componentes para este equipo.</td>
+                        <td colspan="9" class="text-center">No hay accesorios para este equipo.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -135,17 +139,4 @@
         </div>
     </div>
 </main>
-@endsection
-
-
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
 @endsection

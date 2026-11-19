@@ -14,7 +14,6 @@
     <!-- Hojas de estilo principales -->
     <link rel="stylesheet" href="{{ asset('css/stylecoordinator.css') }}">
     @if($isClinicaContext)
-        <link rel="stylesheet" href="{{ asset('css/styleClinica.css') }}">
         <link rel="stylesheet" href="{{ asset('css/coordinador/laboratorios.css') }}">
         <link rel="stylesheet" href="{{ asset('css/coordinador/ambiente.css') }}">
         <link rel="stylesheet" href="{{ asset('css/coordinador/detallesequipo.css') }}">
@@ -26,7 +25,8 @@
 
     <!-- Iconografia y Bootstrap 5 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/989bcc080d.js" crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/989bcc080d.js" crossorigin="anonymous" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -81,7 +81,7 @@
                         </li>
                         <li class="sidebar-item {{ Request::is('coordinator/clinica/prestamo*') ? 'active' : '' }}">
                             <a href="{{ route('clinica.prestamos.index') }}" class="sidebar-link">
-                                <i class="bi bi-handshake pe-2"></i>
+                                <i class="bi bi-arrow-left-right pe-2"></i>
                                 Prestamos
                             </a>
                         </li>
@@ -118,7 +118,7 @@
                         </li>
                         <li class="sidebar-item {{ Request::is('coordinator/prestamo*') ? 'active' : '' }}">
                             <a href="{{ route('prestamos.index') }}" class="sidebar-link">
-                                <i class="bi bi-handshake pe-2"></i>
+                                <i class="bi bi-arrow-left-right pe-2"></i>
                                 Prestamos
                             </a>
                         </li>
@@ -158,11 +158,11 @@
                     </h5>
                     <div class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav ms-auto">
-                            <li class="nav-item dropdown px-1">
+                            <li class="nav-item dropdown px-1" style="position: relative;">
                                 <a class="nav-link dropdown-toggle white-text" href="#" id="branchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ $edificioActivo ? $edificioActivo->nombre_edi : ($isClinicaContext ? 'Clinica Odontologia' : 'Edificio Principal') }}
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="branchDropdown" id="optio">
+                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="branchDropdown" id="optio">
                                     @if(View::hasSection('dropdown-items'))
                                         @yield('dropdown-items')
                                     @else

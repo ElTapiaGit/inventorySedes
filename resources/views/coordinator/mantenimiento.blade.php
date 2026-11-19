@@ -1,4 +1,4 @@
-﻿@extends('layouts.coordinator')
+@extends('layouts.coordinator')
 
 @section('title', 'Mantenimientos')
 
@@ -6,29 +6,34 @@
     <link rel="stylesheet" href="{{ asset('css/coordinador/mantenimiento.css') }}">
 @endpush
 
+@php
+    $isClinica = request()->is('*clinica*');
+@endphp
+
 @section('content')
 <main class="content px-3 pagMantenimiento">
     <div class="container-fluid">
         <div class="mb-3">
-            <h3 class="text-center fw-bold">MANTENIMIENTOS DE LA SEDE CENTRAL</h3>
+            <h3 class="text-center fw-bold">MANTENIMIENTOS {{ isset($edificioActivo) ? '- ' . strtoupper($edificioActivo->nombre_edi) : '' }}</h3>
         </div>
         <div class="d-flex justify-content-center mb-4">
-            <a href="{{ route('historialmantenimientos.index')}}" class="btn btn-primary mx-2">Historial de mantenimiento</a>
+            <a href="{{ route($isClinica ? 'clinica.historialmantenimientos.index' : 'historialmantenimientos.index') }}" class="btn btn-primary mx-2">Historial de mantenimiento</a>
         </div>
-        <div>
+        <div class="d-flex justify-content-between align-items-center mb-2">
             <h4>Equipos Para Mantenimiento:</h4>
+            <a href="{{ route('print.equipos') }}" target="_blank" class="btn btn-success">Imprimir</a>
         </div>
 
         @if($equipos->isEmpty())
             <div class="alert alert-info text-center">
-                No hay equipos registrados para mantenimiento en el Edificio central.
+                No hay equipos registrados para mantenimiento.
             </div>
         @else
             <div class="table-responsive">
-                <table class="table table-mantenimiento table-borded table-striped">
-                    <thead>
+                <table class="table table-bordered table-striped">
+                    <thead class="tablaMantenimiento">
                         <tr>
-                            <th>Codigo</th>
+                            <th>Código</th>
                             <th>Nombre</th>
                             <th>Observaciones</th>
                             <th>Estado</th>
@@ -38,7 +43,7 @@
                     <tbody class="tbodyMante">
                         @foreach($equipos as $equipo)
                             <tr>
-                                <td>{{ $equipo->Cod_equipo }}</td>
+                                <td>{{ $equipo->cod_equipo ?? $equipo->Cod_equipo }}</td>
                                 <td>{{ $equipo->nombre_equi }}</td>
                                 <td>{{ $equipo->observaciones_equi }}</td>
                                 <td>{{ $equipo->estado_equi }}</td>
@@ -63,33 +68,20 @@
             Swal.fire({
                 icon: 'info',
                 title: 'Sin equipos para mantenimiento',
-                text: 'No hay equipos registrados para mantenimiento en el Edificio central.',
+                text: 'No hay equipos registrados para mantenimiento.',
                 confirmButtonText: 'Entendido'
             });
         </script>
     @endif
 
-    <!-- Mensaje de error de comunicacion con la BD -->
+    <!-- Mensaje de error de comunicación con la BD -->
     @if(session('errordata'))
         <script>
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: '{{ session('error') }}',
+                text: '{{ session('errordata') }}',
             });
         </script>
     @endif
 @endpush
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
-@endsection

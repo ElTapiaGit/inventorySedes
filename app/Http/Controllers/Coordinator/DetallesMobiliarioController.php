@@ -104,7 +104,7 @@ class DetallesMobiliarioController extends Controller
 
             $edificios = $this->scopeService->getEdificiosPermitidos();
 
-            return view('coordinator.clinicas.detallesMobiliarios', [
+            return view('coordinator.detallesMobiliario', [
                 'mobiliario' => $mobiliario,
                 'edificios' => $edificios
             ]);

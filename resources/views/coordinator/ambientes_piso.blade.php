@@ -1,13 +1,12 @@
-@extends('layouts.pagClinica')
+@extends('layouts.coordinator')
 
-@section('title', 'Ambientes-Clínica')
+@section('title', 'Ambientes del Piso')
 
 @section('content')
 <main class="content px-3 ambiente-clinica">
     <div class="container-fluid">
         <div class="mb-3">
-
-            <h3 class="text-center titulo fw-bold">Ambientes de la Clinica &nbsp;-{{ $pisos->numero_piso }}</h3>
+            <h3 class="text-center titulo fw-bold">Ambientes {{ isset($edificioActivo) ? '- ' . $edificioActivo->nombre_edi : '' }} &nbsp;(Piso {{ $piso->numero_piso ?? ($pisos->numero_piso ?? '') }})</h3>
         </div>
         
         <div class="table-responsive">
@@ -43,17 +42,4 @@
         </div>
     </div>
 </main>
-@endsection
-
-<!--Para mostrar el desplegable de edificios de la sede central-->
-@section('dropdown-items')
-    @foreach($edificios as $edificio)
-        @if($edificio->nombre_edi == 'Edificio Central')
-            <li><a class="dropdown-item" href="{{ route('coordinator.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @elseif($edificio->nombre_edi == 'Clinica Odontologia')
-            <li><a class="dropdown-item" href="{{ route('coordinator.clinica.inicio') }}">{{ $edificio->nombre_edi }}</a></li>
-        @else
-            <li><a class="dropdown-item" href="#">{{ $edificio->nombre_edi }}</a></li>
-        @endif
-    @endforeach
 @endsection

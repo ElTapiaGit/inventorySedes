@@ -1,200 +1,276 @@
 @extends('layouts.encargado')
 
-@section('title', 'Gestion Mobiliario')
+@section('title', 'Registro de Mobiliarios')
 
 @section('content')
-<div class="container-fluid">
-    <div class="container mt-2">
-        <h2 class="text-center">Registro de Mobiliarios</h2>
-        
-        <div class="col-md-4">
-            <div class="mb-3 text-center">
-                <button id="showAccessoryForm" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tipoMobiliarioModal">Registrar Tipo Mobiliario</button>
-            </div>
+<div class="container-fluid px-3 px-md-4">
+    <!-- Encabezado de Pagina -->
+    <div class="encargado-page-header">
+        <div>
+            <h2><i class="bi bi-chair text-primary me-2"></i>Registro de Mobiliarios</h2>
+            <p class="text-muted mb-0">Registre el mobiliario institucional asignado a los diferentes ambientes.</p>
         </div>
-        <!-- Modal para Registrar Tipo Mobiliario -->
-        <div class="modal fade" id="tipoMobiliarioModal" tabindex="-1" aria-labelledby="tipoMobiliarioModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="tipoMobiliarioModalLabel">Registrar Tipo Mobiliario</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form method="POST" action="{{ route('tipo_mobiliario.store') }}">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="tipo_mueble" class="form-label">Tipo de Mueble</label>
-                                <input type="text" class="form-control" id="tipo_mueble" name="tipo_mueble" required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#tipoMobiliarioModal">
+                <i class="bi bi-plus-circle me-1"></i> Nuevo Tipo Mobiliario
+            </button>
+            <a href="{{ route('encargado.inicio') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Volver al Inicio
+            </a>
         </div>
+    </div>
 
-        <!-- Formulario para registrar la foto -->
-        <div id="fotoForm" class="card mb-4">
-            <div class="card-header">
-                <h4>Registrar Foto</h4>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('foto.storeMobiliario') }}" method="POST" enctype="multipart/form-data">
+    <!-- Modal para Registrar Tipo Mobiliario -->
+    <div class="modal fade" id="tipoMobiliarioModal" tabindex="-1" aria-labelledby="tipoMobiliarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-light">
+                    <h5 class="modal-title text-primary fw-bold" id="tipoMobiliarioModalLabel">
+                        <i class="bi bi-tag me-1"></i> Registrar Tipo de Mobiliario
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <form method="POST" action="{{ route('tipo_mobiliario.store') }}">
                     @csrf
-                    <div class="mb-3">
-                        <label for="foto" class="form-label">Selecciona una foto (.jpg, .jpeg, .png)</label>
-                        <input type="file" name="foto" id="foto" class="form-control">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label for="tipo_mueble" class="form-label fw-semibold">Nombre del Tipo de Mobiliario <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="tipo_mueble" name="tipo_mueble" maxlength="80" placeholder="Ej. Escritorio, Silla Ergonómica, Estante..." required>
+                            <div class="form-text text-muted">Máximo 80 caracteres.</div>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">Subir Foto</button>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Guardar Tipo
+                        </button>
+                    </div>
                 </form>
             </div>
-            <div class="d-flex justify-content-center">
-                <div id="previewContainer" class="d-none px-5">
-                    <h5>Previsualización:</h5>
-                    <img id="photoPreview" src="" alt="Previsualización de la Foto" class="img-fluid border">
+        </div>
+    </div>
+
+    <!-- Alertas de Validacion del Servidor -->
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 mb-4" role="alert">
+            <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-exclamation-triangle-fill fs-5 me-2"></i>
+                <h6 class="mb-0 fw-bold">Por favor corrija los siguientes errores:</h6>
+            </div>
+            <ul class="mb-0 ps-3">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    @endif
+
+    <!-- Formulario Unificado Atomico -->
+    <form action="{{ route('mobiliario.store') }}" method="POST" enctype="multipart/form-data" novalidate>
+        @csrf
+
+        <div class="row g-4">
+            <!-- Columna Lateral: Fotografia del Mobiliario -->
+            <div class="col-lg-4 col-md-5">
+                <div class="card-articulo">
+                    <div class="card-header">
+                        <i class="bi bi-camera text-primary"></i> Fotografía del Mobiliario
+                    </div>
+                    <div class="card-body p-3">
+                        <!-- Contenedor de Vista Previa -->
+                        <div class="preview-photo-box mb-3" id="previewBox">
+                            <img src="" alt="Vista previa del mobiliario" id="photoPreview" class="preview-photo-img d-none">
+                            <div class="preview-empty-state" id="previewEmpty">
+                                <i class="bi bi-image"></i>
+                                <span>Sin fotografía seleccionada</span>
+                            </div>
+                        </div>
+
+                        <!-- Boton para Limpiar / Descartar Foto -->
+                        <div class="mb-3 text-center">
+                            <button type="button" class="btn btn-sm btn-outline-danger d-none" id="btnLimpiarFoto">
+                                <i class="bi bi-trash3 me-1"></i> Quitar Fotografía
+                            </button>
+                        </div>
+
+                        <!-- Subir Nueva Foto -->
+                        <div class="mb-3">
+                            <label for="foto" class="form-label fw-semibold">Subir Nueva Foto</label>
+                            <input type="file" class="form-control @error('foto') is-invalid @enderror" id="foto" name="foto" accept=".jpg,.jpeg,.png,.webp">
+                            <div class="form-text text-muted">Formatos: JPG, PNG o WEBP (Máx. 5MB).</div>
+                            @error('foto')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <!-- Campo Oculto para Foto Reutilizada -->
+                        <input type="hidden" name="existing_foto_id" id="existing_foto_id" value="{{ old('existing_foto_id') }}">
+                        @error('existing_foto_id')
+                            <div class="text-danger small mt-1 mb-2">{{ $message }}</div>
+                        @enderror
+
+                        <!-- Acceso Rapido a Ultima Foto Registrada -->
+                        @if($ultimaFotoId)
+                            @php
+                                $ultimaFotoObj = $fotosReutilizables->firstWhere('id_foto', $ultimaFotoId);
+                                $urlUltima = $ultimaFotoObj ? (Str::startsWith($ultimaFotoObj->ruta_foto, 'inventario/') ? asset('storage/' . $ultimaFotoObj->ruta_foto) : asset($ultimaFotoObj->ruta_foto)) : '';
+                            @endphp
+                            @if($urlUltima)
+                                <div class="mb-3">
+                                    <button type="button" class="btn btn-sm btn-outline-primary w-100" id="btnUsarUltimaFoto" data-foto-id="{{ $ultimaFotoId }}" data-foto-url="{{ $urlUltima }}">
+                                        <i class="bi bi-clock-history me-1"></i> Usar última foto registrada (#{{ $ultimaFotoId }})
+                                    </button>
+                                </div>
+                            @endif
+                        @endif
+
+                        <!-- Galeria de Fotos de Mobiliarios Existentes -->
+                        @if(isset($fotosReutilizables) && $fotosReutilizables->count() > 0)
+                            <div class="mt-3">
+                                <label class="form-label fw-semibold text-secondary small d-flex justify-content-between align-items-center mb-1">
+                                    <span><i class="bi bi-images me-1"></i> Fotos de mobiliarios existentes</span>
+                                    <span class="badge bg-light text-dark border">{{ $fotosReutilizables->count() }}</span>
+                                </label>
+                                <div class="reusable-gallery-scroll">
+                                    <div class="row g-2">
+                                        @foreach($fotosReutilizables as $fr)
+                                            @php
+                                                $urlFoto = Str::startsWith($fr->ruta_foto, 'inventario/') ? asset('storage/' . $fr->ruta_foto) : asset($fr->ruta_foto);
+                                            @endphp
+                                            <div class="col-4">
+                                                <div class="reusable-thumb-item {{ old('existing_foto_id') == $fr->id_foto ? 'selected' : '' }}" data-foto-id="{{ $fr->id_foto }}" data-foto-url="{{ $urlFoto }}" title="Foto #{{ $fr->id_foto }}">
+                                                    <img src="{{ $urlFoto }}" alt="Foto #{{ $fr->id_foto }}" loading="lazy">
+                                                    <span class="thumb-check-badge"><i class="bi bi-check"></i></span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Formulario para registrar el mobiliario, inicialmente oculto -->
-        <div id="mobiliarioForm" class="card" style="display: none;">
-            <div class="card-header">
-                <h4>Registrar Mobiliario</h4>
-            </div>
-            <div class="card-body">
-                <form action="{{ route('mobiliario.store') }}" method="POST">
-                    @csrf
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="cod_mueble" class="form-label">Código Mobiliario</label>
-                                <input type="text" class="form-control" id="cod_mueble" name="cod_mueble" required>
+
+            <!-- Columna Principal: Datos y Ubicacion -->
+            <div class="col-lg-8 col-md-7">
+                <!-- Seccion 1: Identificacion del Mobiliario -->
+                <div class="card-articulo mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-info-circle text-primary"></i> Identificación del Mobiliario
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="cod_mueble" class="form-label fw-semibold">Código Mobiliario <span class="text-danger">*</span></label>
+                                    <span class="char-counter" data-for="cod_mueble">0 / 50</span>
+                                </div>
+                                <input type="text" class="form-control @error('cod_mueble') is-invalid @enderror" id="cod_mueble" name="cod_mueble" maxlength="50" data-maxlength="50" value="{{ old('cod_mueble') }}" placeholder="Ej. MBL-LAB1-010" required>
+                                @error('cod_mueble')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
-                        </div>  
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="TIPO_MOBILIARIO_id_tipo_mueb" class="form-label">Tipo de Mobiliario</label>
-                                <select class="form-select" id="TIPO_MOBILIARIO_id_tipo_mueb" name="TIPO_MOBILIARIO_id_tipo_mueb" required>
+
+                            <div class="col-md-6">
+                                <label for="TIPO_MOBILIARIO_id_tipo_mueb" class="form-label fw-semibold">Tipo de Mobiliario <span class="text-danger">*</span></label>
+                                <select class="form-select @error('TIPO_MOBILIARIO_id_tipo_mueb') is-invalid @enderror" id="TIPO_MOBILIARIO_id_tipo_mueb" name="TIPO_MOBILIARIO_id_tipo_mueb" required>
+                                    <option value="">-- Seleccionar Tipo --</option>
                                     @foreach($tipos_mobiliario as $tipo)
-                                        <option value="{{ $tipo->id_tipo_mueb }}">{{ $tipo->tipo_mueble }}</option>
+                                        <option value="{{ $tipo->id_tipo_mueb }}" {{ old('TIPO_MOBILIARIO_id_tipo_mueb') == $tipo->id_tipo_mueb ? 'selected' : '' }}>
+                                            {{ $tipo->tipo_mueble }}
+                                        </option>
                                     @endforeach
                                 </select>
+                                @error('TIPO_MOBILIARIO_id_tipo_mueb')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="descripcion_mueb" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcion_mueb" name="descripcion_mueb" rows="3" required></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="observacion" class="form-label">Observaciones</label>
-                                <textarea class="form-control" id="observacion" name="observacion" rows="3"></textarea>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="estado_mueb" class="form-label">Estado del Mobiliario</label>
-                                <input type="text" class="form-control" id="estado_mueb" name="estado_mueb" required>
+                            <div class="col-12">
+                                <label for="descripcion_mueb" class="form-label fw-semibold">Descripción del Mobiliario <span class="text-danger">*</span></label>
+                                <textarea class="form-control @error('descripcion_mueb') is-invalid @enderror" id="descripcion_mueb" name="descripcion_mueb" rows="3" placeholder="Detalle material (madera, metal, melamina), color, dimensiones, etc." required>{{ old('descripcion_mueb') }}</textarea>
+                                @error('descripcion_mueb')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-12">
+                                <label for="observacion" class="form-label fw-semibold">Observaciones</label>
+                                <textarea class="form-control @error('observacion') is-invalid @enderror" id="observacion" name="observacion" rows="2" placeholder="Detalles de estado físico, marcas o anotaciones (opcional)">{{ old('observacion') }}</textarea>
+                                @error('observacion')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="vida_util" class="form-label">Vida Útil</label>
-                                <input type="text" class="form-control" id="vida_util" name="vida_util" required>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="mb-3">
-                                <label for="ambiente" class="form-label">Ambiente</label>
-                                <input list="ambientes" class="form-control" id="ambiente" name="ambiente_nombre" required>
-                                <input type="hidden" id="AMBIENTE_id_ambiente" name="AMBIENTE_id_ambiente">
-                                <datalist id="ambientes">
+                    </div>
+                </div>
+
+                <!-- Seccion 2: Ubicacion y Estado -->
+                <div class="card-articulo mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-geo-alt text-primary"></i> Ubicación y Asignación
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="AMBIENTE_id_ambiente" class="form-label fw-semibold">Ambiente / Laboratorio <span class="text-danger">*</span></label>
+                                <select class="form-select @error('AMBIENTE_id_ambiente') is-invalid @enderror" id="AMBIENTE_id_ambiente" name="AMBIENTE_id_ambiente" required>
+                                    <option value="">-- Seleccionar Ambiente --</option>
                                     @foreach($ambientes as $ambiente)
-                                        <option value="{{ $ambiente->nombre }}" data-id="{{ $ambiente->id_ambiente }}"></option>
+                                        <option value="{{ $ambiente->id_ambiente }}" {{ old('AMBIENTE_id_ambiente') == $ambiente->id_ambiente ? 'selected' : '' }}>
+                                            {{ $ambiente->nombre }}
+                                        </option>
                                     @endforeach
-                                </datalist>
+                                </select>
+                                @error('AMBIENTE_id_ambiente')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="estado_mueb" class="form-label fw-semibold">Estado del Mobiliario <span class="text-danger">*</span></label>
+                                    <span class="char-counter" data-for="estado_mueb">0 / 45</span>
+                                </div>
+                                <input type="text" class="form-control @error('estado_mueb') is-invalid @enderror" id="estado_mueb" name="estado_mueb" maxlength="45" data-maxlength="45" value="{{ old('estado_mueb', 'BUENO') }}" placeholder="Ej. BUENO / REGULAR" required>
+                                @error('estado_mueb')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <label for="vida_util" class="form-label fw-semibold">Vida Útil Estimada <span class="text-danger">*</span></label>
+                                    <span class="char-counter" data-for="vida_util">0 / 50</span>
+                                </div>
+                                <input type="text" class="form-control @error('vida_util') is-invalid @enderror" id="vida_util" name="vida_util" maxlength="50" data-maxlength="50" value="{{ old('vida_util') }}" placeholder="Ej. 10 años / 2034" required>
+                                @error('vida_util')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="FOTO_id_foto" class="form-label">Fotografia del Mueble</label>
-                        <input type="hidden" id="FOTO_id_foto" name="FOTO_id_foto" value="{{ session('foto_id') }}">
-                    </div>
+                </div>
 
-                    <div class="mb-3 d-flex justify-content-center">
-                        <!-- Imagen que se actualiza según la selección -->
-                        <img id="fotoPreview" src="{{ asset(session('ruta_foto') ?? 'img/mobiliarios-img/default.jpg') }}" alt="Vista previa de la foto" style="max-width: 100%; height: auto;">
-                    </div>
-
-                    <button type="submit" class="btn btn-success">Registrar Mobiliario</button>
-                </form>
+                <!-- Botones de Accion -->
+                <div class="d-flex justify-content-end gap-2 mb-4">
+                    <a href="{{ route('encargado.inicio') }}" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle me-1"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save me-1"></i> Registrar Mobiliario
+                    </button>
+                </div>
             </div>
         </div>
-        
-    </div>
+    </form>
 </div>
 @endsection
 
 @push('scripts')
-<script>
-    const fotoInput = document.getElementById('foto');
-    if (fotoInput) {
-        fotoInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const photoPreview = document.getElementById('photoPreview');
-                    const previewContainer = document.getElementById('previewContainer');
-                    
-                    photoPreview.src = e.target.result;
-                    previewContainer.classList.remove('d-none');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    }
-
-    const ambienteInput = document.getElementById('ambiente');
-    if (ambienteInput) {
-        ambienteInput.addEventListener('input', function() {
-            var input = this;
-            var selectedOption = Array.from(document.getElementById('ambientes').options)
-                .find(option => option.value === input.value);
-    
-            if (selectedOption) {
-                document.getElementById('AMBIENTE_id_ambiente').value = selectedOption.getAttribute('data-id');
-            } else {
-                document.getElementById('AMBIENTE_id_ambiente').value = '';
-            }
-        });
-    }
-
-    function mostrarFotoSeleccionada() {
-        var rutaFoto = document.getElementById('FOTO_id_foto').value;
-        document.getElementById('fotoPreview').src = '{{ asset('') }}' + rutaFoto;
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        @if(session('foto_id'))
-            document.getElementById('fotoForm').style.display = 'none';
-            document.getElementById('mobiliarioForm').style.display = 'block';
-        @endif
-    });
-</script>
+<script src="{{ asset('js/encargado/registro-articulo.js') }}"></script>
 
 @if(session('aviso'))
     <script>
@@ -202,7 +278,7 @@
             icon: 'info',
             text: '{{ session('aviso') }}',
             showConfirmButton: false,
-            timer: 1500,
+            timer: 1800
         });
     </script>
 @endif
@@ -211,8 +287,8 @@
     <script>
         Swal.fire({
             icon: 'info',
-            title: 'Registro No Valido',
-            text: '{{ session('info') }}',
+            title: 'Atención',
+            text: '{{ session('info') }}'
         });
     </script>
 @endif
@@ -222,7 +298,7 @@
         Swal.fire({
             icon: 'success',
             title: 'Éxito',
-            text: '{{ session('success') }}',
+            text: '{{ session('success') }}'
         });
     </script>
 @endif
@@ -232,10 +308,8 @@
         Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: '{{ session('errordata') }}',
+            text: '{{ session('errordata') }}'
         });
     </script>
 @endif
 @endpush
-
-

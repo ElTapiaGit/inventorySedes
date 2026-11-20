@@ -1,5 +1,9 @@
 
 
+:root {
+    --sidebar-width: 255px;
+}
+
 body, html {
     height: 100%;
     margin: 0;
@@ -20,11 +24,29 @@ body{
     display: flex;
     height: 100vh;
     overflow: hidden;
+    position: relative;
+}
+
+/* Backdrop para drawer lateral movil */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(14, 13, 57, 0.45);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.sidebar-backdrop.show {
+    opacity: 1;
+    visibility: visible;
 }
 
 /*seccion para el menu de navegacion*/
 #sidebar{
-    width: 255px;
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
     height: 100vh;
     box-shadow: 0 0 35px 0 rgba(49, 57, 66, 0.5);
     z-index: 1000;
@@ -33,11 +55,11 @@ body{
     top: 0;
     left: 0;
     overflow-y: auto;
-    transition: margin-left 0.2s ease;
+    transition: margin-left 0.2s ease, transform 0.25s ease;
 }
-/*para esconder el menu de navegacion*/
+/*para esconder el menu de navegacion en desktop*/
 #sidebar.hidden {
-    margin-left: -255px;
+    margin-left: calc(var(--sidebar-width) * -1);
 }
 
 .sidebar-logo{
@@ -87,9 +109,9 @@ body{
     display: flex;
     flex-direction: column;
     height: 100vh;
-    margin-left: 250px;
-    width: calc(100% - 250px);
-    max-width: calc(100% - 250px);
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    max-width: calc(100% - var(--sidebar-width));
     min-width: 0;
     overflow-y: auto;
     overflow-x: hidden;
@@ -151,7 +173,7 @@ body{
     border-radius: 8px;
     border: none;
     min-width: 220px;
-    max-width: 320px;
+    max-width: calc(100vw - 24px);
     z-index: 1030;
 }
 #optio .dropdown-item {
@@ -178,25 +200,33 @@ body{
     background-size: cover;
     background-color: #C6D7F1;
 }
-/* Ocultar el sidebar en pantallas pequeñas */
+
+/* Drawer lateral movil y ajuste a 100% de pantalla sin franja blanca */
 @media (max-width: 768px) {
     #sidebar {
-        margin-left: -250px; /* Ocultar el sidebar */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 260px;
+        max-width: 82vw;
+        margin-left: 0 !important;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 1045;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
     }
 
-    /* Ajustar el contenedor principal para que ocupe toda la pantalla */
-    .main {
-        margin-left: 0;
-        width: 100%;
+    #sidebar.mobile-open {
+        transform: translateX(0);
     }
 
-    /* Mostrar el sidebar cuando esté visible */
-    #sidebar.active {
-        margin-left: 0;
-    }
-
-    .navbar.active {
-        margin-right: 250px;
+    /* Contenedor principal ocupa el 100% real sin franja blanca */
+    .main,
+    .main.expanded {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 
@@ -208,6 +238,9 @@ body{
 }
 
 /* Tabla Institucional ULAT */
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+}
 .table-ulat {
     margin-bottom: 0;
     vertical-align: middle;

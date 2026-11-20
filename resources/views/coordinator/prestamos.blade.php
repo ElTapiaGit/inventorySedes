@@ -15,7 +15,7 @@
     <div class="container-fluid">
         <!-- Titulo de pagina institucional -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
-            <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+            <h4 class="mb-0 fw-bold fs-5 fs-sm-4" style="color: #0E0D39;">
                 <i class="bi bi-arrow-left-right me-2 text-primary"></i>Prestamos Realizados {{ isset($edificioActivo) ? '- ' . $edificioActivo->nombre_edi : '' }}
             </h4>
         </div>
@@ -24,7 +24,7 @@
         <div class="card border-0 shadow-sm rounded-3 p-3 mb-4">
             <div class="row g-3 align-items-center">
                 <!-- Buscador por solicitante -->
-                <div class="col-lg-5 col-md-6">
+                <div class="col-12 col-md-6 col-lg-5">
                     <form method="GET" action="{{ route($isClinica ? 'clinica.prestamos.buscar' : 'prestamos.buscar') }}">
                         <label for="usuario_prestamo" class="form-label text-muted small fw-semibold">Buscar por Prestatario / Solicitante</label>
                         <div class="input-group">
@@ -43,7 +43,7 @@
                 </div>
 
                 <!-- Buscador por rango de fechas -->
-                <div class="col-lg-7 col-md-6">
+                <div class="col-12 col-md-6 col-lg-7">
                     <form method="GET" action="{{ route($isClinica ? 'clinica.prestamos.buscar' : 'prestamos.buscar') }}">
                         <label class="form-label text-muted small fw-semibold">Filtrar por Rango de Fechas</label>
                         <div class="input-group">

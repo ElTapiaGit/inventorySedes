@@ -24,9 +24,9 @@
 <main class="content px-3 py-3">
     <div class="container-fluid">
         <!-- Cabecera de Ficha -->
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4 bg-white p-3 rounded-3 shadow-sm border">
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+                <h4 class="mb-0 fw-bold fs-5 fs-sm-4" style="color: #0E0D39;">
                     <i class="bi bi-boxes me-2 text-primary"></i>Ficha Tecnica: {{ $material->cod_mate }}
                 </h4>
                 <span class="badge {{ $badgeClass }} px-3 py-2 fs-6 rounded-pill">
@@ -57,7 +57,7 @@
                                  style="max-height: 290px; object-fit: contain;"
                                  onerror="this.onerror=null;this.src='{{ asset('img/placeholder-articulo.svg') }}';">
                         </div>
-                        <div class="small text-muted mb-1 d-flex justify-content-between px-2">
+                        <div class="small text-muted mb-1 d-flex flex-wrap justify-content-between gap-2 px-2">
                             <span><i class="bi bi-hash me-1"></i> Codigo: <strong>{{ $material->cod_mate }}</strong></span>
                             <span><i class="bi bi-tag me-1"></i> Material</span>
                         </div>

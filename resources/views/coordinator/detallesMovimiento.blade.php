@@ -18,7 +18,7 @@
         <!-- Cabecera de Ficha -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+                <h4 class="mb-0 fw-bold fs-5 fs-sm-4" style="color: #0E0D39;">
                     <i class="bi bi-door-open me-2 text-primary"></i>Uso de Ambiente: {{ $movimiento->nombre_ambiente }}
                 </h4>
                 @if($finalizado)

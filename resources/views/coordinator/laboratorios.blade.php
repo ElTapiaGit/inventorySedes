@@ -11,14 +11,14 @@
     <div class="container-fluid">
         <!-- Titulo de pagina institucional -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
-            <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+            <h4 class="mb-0 fw-bold fs-5 fs-sm-4" style="color: #0E0D39;">
                 <i class="bi bi-funnel me-2 text-primary"></i>Laboratorios {{ isset($carreraCoordinada) ? 'de ' . $carreraCoordinada : (isset($edificioActivo) ? '- ' . $edificioActivo->nombre_edi : '') }}
             </h4>
         </div>
 
         <!-- Tarjeta de Busqueda -->
         <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8">
+            <div class="col-12 col-md-8 col-lg-6">
                 <div class="card border-0 shadow-sm rounded-3 p-4">
                     <form class="d-flex flex-column gap-3" action="{{ route('laboratorios.buscar') }}" method="POST">
                         @csrf

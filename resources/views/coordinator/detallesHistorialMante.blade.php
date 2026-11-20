@@ -18,7 +18,7 @@
         <!-- Cabecera de Ficha -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
             <div class="d-flex align-items-center gap-2 flex-wrap">
-                <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+                <h4 class="mb-0 fw-bold fs-5 fs-sm-4" style="color: #0E0D39;">
                     <i class="bi bi-wrench me-2 text-primary"></i>Ficha de Mantenimiento: {{ $articulo->codigo }}
                 </h4>
                 @if($finalizado)
@@ -56,7 +56,7 @@
                                  style="max-height: 270px; object-fit: contain;"
                                  onerror="this.onerror=null;this.src='{{ asset('img/placeholder-articulo.svg') }}';">
                         </div>
-                        <div class="small text-muted d-flex justify-content-between px-2">
+                        <div class="small text-muted d-flex flex-wrap justify-content-between gap-1 px-2">
                             <span>Codigo: <strong>{{ $articulo->codigo }}</strong></span>
                             <span>Articulo: <strong>{{ $articulo->nombre }}</strong></span>
                         </div>

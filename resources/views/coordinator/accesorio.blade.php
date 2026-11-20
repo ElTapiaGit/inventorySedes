@@ -15,11 +15,11 @@
     <div class="container-fluid">
         <!-- Titulo de pagina institucional -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
-            <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+            <h4 class="mb-0 fw-bold fs-5 fs-sm-4" style="color: #0E0D39;">
                 <i class="bi bi-plug me-2 text-primary"></i>Lista de Accesorios {{ isset($edificioActivo) ? '- ' . $edificioActivo->nombre_edi : '' }}
             </h4>
             <!-- Botones de navegacion -->
-            <div class="d-flex gap-2">
+            <div class="d-flex flex-wrap gap-2">
                 <a href="{{ route($isClinica ? 'clinica.accesorios.equipo' : 'accesorios.equipo') }}" class="btn btn-outline-primary btn-sm d-flex align-items-center">
                     <i class="bi bi-pc-display me-1"></i> Equipos con Accesorios
                 </a>
@@ -33,7 +33,7 @@
         <div class="card border-0 shadow-sm rounded-3 p-3 mb-4">
             <div class="row g-3 align-items-center">
                 <!-- Buscador por codigo -->
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                     <form method="GET" action="{{ route($isClinica ? 'clinica.accesorios.buscarCodigo' : 'accesorios.buscarCodigo') }}">
                         <label for="buscar_accesorio_codigo" class="form-label text-muted small fw-semibold">Buscar por Codigo de Accesorio</label>
                         <div class="input-group">
@@ -52,7 +52,7 @@
                 </div>
 
                 <!-- Buscador por nombre -->
-                <div class="col-md-6">
+                <div class="col-12 col-md-6">
                     <form method="GET" action="{{ route($isClinica ? 'clinica.accesorios.buscarNombre' : 'accesorios.buscarNombre') }}">
                         <label for="buscar_accesorio_nombre" class="form-label text-muted small fw-semibold">Buscar por Nombre de Accesorio</label>
                         <div class="input-group">

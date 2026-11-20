@@ -7,14 +7,14 @@
     <div class="container-fluid">
         <!-- Titulo de pagina institucional -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
-            <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+            <h4 class="mb-0 fw-bold fs-5 fs-sm-4" style="color: #0E0D39;">
                 <i class="bi bi-search me-2 text-primary"></i>Busquedas Rapidas de Articulos
             </h4>
         </div>
 
         <div class="row g-4 justify-content-center">
             <!-- Buscar Equipo -->
-            <div class="col-md-6 col-lg-5">
+            <div class="col-12 col-md-6 col-lg-5">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-header bg-white py-3 border-bottom">
                         <h5 class="card-title mb-0 fw-bold text-dark fs-6">
@@ -38,7 +38,7 @@
             </div>
 
             <!-- Buscar Mobiliario -->
-            <div class="col-md-6 col-lg-5">
+            <div class="col-12 col-md-6 col-lg-5">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-header bg-white py-3 border-bottom">
                         <h5 class="card-title mb-0 fw-bold text-dark fs-6">
@@ -62,7 +62,7 @@
             </div>
 
             <!-- Buscar Material -->
-            <div class="col-md-6 col-lg-5">
+            <div class="col-12 col-md-6 col-lg-5">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-header bg-white py-3 border-bottom">
                         <h5 class="card-title mb-0 fw-bold text-dark fs-6">
@@ -86,7 +86,7 @@
             </div>
 
             <!-- Buscar Accesorio -->
-            <div class="col-md-6 col-lg-5">
+            <div class="col-12 col-md-6 col-lg-5">
                 <div class="card border-0 shadow-sm rounded-3 h-100">
                     <div class="card-header bg-white py-3 border-bottom">
                         <h5 class="card-title mb-0 fw-bold text-dark fs-6">

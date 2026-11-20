@@ -37,6 +37,7 @@
 </head>
 <body>
     <div class="wrapper">
+        <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
         <aside id="sidebar">
             <div class="h-100">
                 <div class="sidebar-logo">
@@ -147,39 +148,41 @@
         <div class="main">
             <!-- Barra superior / Cabecera -->
             <header>
-                <nav class="navbar navbar-expand px-3 border-bottom">
-                    <button id="toggleSidebar" type="button" class="btn btn-outline-secondary">
+                <nav class="navbar navbar-expand px-2 px-sm-3 border-bottom d-flex flex-nowrap align-items-center">
+                    <button id="toggleSidebar" type="button" class="btn btn-outline-secondary flex-shrink-0" aria-label="Alternar menu lateral">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <h5 class="namaAdmin">
-                        @auth
-                            {{ Auth::user()->nombre_completo }}
-                        @endauth
-                    </h5>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item dropdown px-1" style="position: relative;">
-                                <a class="nav-link dropdown-toggle white-text" href="#" id="branchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{ $edificioActivo ? $edificioActivo->nombre_edi : ($isClinicaContext ? 'Clinica Odontologia' : 'Edificio Principal') }}
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="branchDropdown" id="optio">
-                                    @if(View::hasSection('dropdown-items'))
-                                        @yield('dropdown-items')
-                                    @else
-                                        @if(isset($edificios) && count($edificios) > 0)
-                                            @foreach($edificios as $edificioItem)
-                                                <li>
-                                                    <a class="dropdown-item {{ (isset($edificioActivoId) && $edificioActivoId == $edificioItem->id_edificio) ? 'active' : '' }}" 
-                                                       href="{{ route('coordinator.edificio.seleccionar', ['id' => $edificioItem->id_edificio]) }}">
-                                                        <i class="bi bi-building pe-1"></i> {{ $edificioItem->nombre_edi }}
-                                                    </a>
-                                                </li>
-                                            @endforeach
-                                        @endif
+                    <div class="namaAdmin-container flex-grow-1 min-w-0 px-2 overflow-hidden">
+                        <h5 class="namaAdmin mb-0 text-truncate fs-6 fw-semibold">
+                            @auth
+                                {{ Auth::user()->nombre_completo }}
+                            @endauth
+                        </h5>
+                    </div>
+                    <div class="ms-auto flex-shrink-0">
+                        <div class="dropdown px-1 position-relative">
+                            <a class="nav-link dropdown-toggle white-text text-truncate d-inline-block" href="#" id="branchDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="max-width: 170px;">
+                                <i class="bi bi-building me-1"></i>
+                                <span class="d-none d-sm-inline">{{ $edificioActivo ? $edificioActivo->nombre_edi : ($isClinicaContext ? 'Clinica Odontologia' : 'Edificio Principal') }}</span>
+                                <span class="d-inline d-sm-none">{{ Str::limit($edificioActivo ? $edificioActivo->nombre_edi : ($isClinicaContext ? 'Clinica' : 'Principal'), 12) }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="branchDropdown" id="optio">
+                                @if(View::hasSection('dropdown-items'))
+                                    @yield('dropdown-items')
+                                @else
+                                    @if(isset($edificios) && count($edificios) > 0)
+                                        @foreach($edificios as $edificioItem)
+                                            <li>
+                                                <a class="dropdown-item {{ (isset($edificioActivoId) && $edificioActivoId == $edificioItem->id_edificio) ? 'active' : '' }}" 
+                                                   href="{{ route('coordinator.edificio.seleccionar', ['id' => $edificioItem->id_edificio]) }}">
+                                                    <i class="bi bi-building pe-1"></i> {{ $edificioItem->nombre_edi }}
+                                                </a>
+                                            </li>
+                                        @endforeach
                                     @endif
-                                </ul>
-                            </li>
-                        </ul>
+                                @endif
+                            </ul>
+                        </div>
                     </div>
                 </nav>
             </header>

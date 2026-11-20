@@ -15,7 +15,7 @@
     <div class="container-fluid">
         <!-- Titulo de pagina institucional -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 bg-white p-3 rounded-3 shadow-sm border">
-            <h4 class="mb-0 fw-bold" style="color: #0E0D39;">
+            <h4 class="mb-0 fw-bold fs-5 fs-sm-4" style="color: #0E0D39;">
                 <i class="bi bi-door-open me-2 text-primary"></i>Uso de Ambientes {{ isset($edificioActivo) ? '- ' . $edificioActivo->nombre_edi : '' }}
             </h4>
         </div>
@@ -25,7 +25,7 @@
             <form method="POST" action="{{ route($isClinica ? 'clinica.movimientos.buscar' : 'movimientos.buscar') }}">
                 @csrf
                 <div class="row g-2 align-items-end">
-                    <div class="col-md-5">
+                    <div class="col-12 col-md-5">
                         <label for="usuario" class="form-label text-muted small fw-semibold">Nombre del Docente</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light text-primary"><i class="bi bi-person"></i></span>
@@ -38,7 +38,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4">
                         <label for="fecha" class="form-label text-muted small fw-semibold">Fecha (dd/mm/yyyy)</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light text-primary"><i class="bi bi-calendar3"></i></span>
@@ -46,7 +46,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-3 d-flex gap-2">
+                    <div class="col-12 col-md-3 d-flex gap-2">
                         <button class="btn btn-primary d-flex align-items-center flex-grow-1 justify-content-center" type="submit">
                             <i class="bi bi-search me-1"></i> Buscar
                         </button>

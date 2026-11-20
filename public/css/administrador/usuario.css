@@ -1,21 +1,13 @@
-/***************** PARA LA PAGIANA USUARIOS **********************/
-
-.pagUsuario table thead th{ /*para cabecera de tabla de ambientes*/
-    background-color: #acf068; 
+/* Estilos institucionales para usuarios */
+.pagUsuario table thead th {
+    background-color: #1B4B82 !important;
+    color: #ffffff !important;
+    text-align: center;
+    vertical-align: middle;
 }
 
-/*para centrar y poner bordes en la tabla*/
 .pagUsuario .table td,
 .pagUsuario .table th {
     text-align: center;
-    vertical-align: middle;/* Centrar el contenido verticalmente */
-    border-left: 1px solid black; 
-    border-right: 1px solid black; 
-    padding: 8px; /* Espaciado interno de las celdas */
-}
-
-/*para centrar y poner bordes en la tabla*/
-.pagUsuario table tbody tr:hover {
-    border: 2px solid #007bff; /* Resaltar borde de la fila */
-    border-top: 2px solid #007bff;
+    vertical-align: middle;
 }

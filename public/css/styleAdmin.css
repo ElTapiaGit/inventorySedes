@@ -1,3 +1,6 @@
+:root {
+    --sidebar-width: 250px;
+}
 
 body, html {
     height: 100%;
@@ -6,7 +9,7 @@ body, html {
 }
 
 /* Global Styles */
-body{
+body {
     font-family: 'Poppins', sans-serif;
     margin: 0;
     background-repeat: no-repeat;
@@ -14,59 +17,80 @@ body{
     background-size: cover;
 }
 
-/*para el dasboar*/
-.wrapper{/*contenedor de la estructura de la pagina*/
+/* Estructura del dashboard */
+.wrapper {
     display: flex;
-    height: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
 }
 
-/*seccion para el menu de navegacion*/
-#sidebar{
-    width: 250px;
-    height: 100%;
-    z-index: 1;
+/* Backdrop para drawer lateral movil */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(14, 13, 57, 0.45);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.sidebar-backdrop.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Seccion para el menu de navegacion */
+#sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    height: 100vh;
     box-shadow: 0 0 35px 0 rgba(49, 57, 66, 0.5);
+    z-index: 1000;
     background-image: linear-gradient(to bottom, #0E0D39, #1E1C7B, #27249F);
     position: fixed;
+    top: 0;
+    left: 0;
     overflow-y: auto;
-    transition: margin-left .2s ease; /* Transición de ancho */
-}
-/*para esconder el menu de navegacion*/
-#sidebar.hidden {
-    margin-left: -250px; /* Reducción del ancho a 0 */
+    transition: margin-left 0.2s ease, transform 0.25s ease;
 }
 
-.sidebar-logo{
+/* Para esconder el menu de navegacion en desktop */
+#sidebar.hidden {
+    margin-left: calc(var(--sidebar-width) * -1);
+}
+
+.sidebar-logo {
     padding: 1rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
-.sidebar-logo img{
+.sidebar-logo img {
     width: 100px;
     height: 100px;
     border-radius: 50%;
     border: none;
     padding: 0;
 }
-.sidebar-logo a{
+.sidebar-logo a {
     text-decoration: none;
     color: #e9ecef;
     font-size: 1.25rem;
-    font-weight: 600px;
+    font-weight: 600;
 }
 
-/*para las opciones del  menu*/
-.sidebar-nav{
+/* Opciones del menu */
+.sidebar-nav {
     padding: 0;
     flex: auto;
 }
 
 .sidebar-item {
-    padding: 0 0px 7px 0px;
-
+    padding: 0 0 7px 0;
 }
-.sidebar-link{
+.sidebar-link {
     align-items: center;
     padding: 10px 30px;
     text-decoration: none;
@@ -81,98 +105,156 @@ body{
     border-radius: 30px;
 }
 
-/*para la estructura del contenido de la pagnas*/
-.main{
+/* Contenido de la pagina con container-scroll */
+.main {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    margin-left: 250px;
-    width: calc(100% - 250px);
-    transition: margin-left .2s ease, width .2s ease; /* Transición de margen y ancho */
+    height: 100vh;
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    max-width: calc(100% - var(--sidebar-width));
+    min-width: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition: margin-left 0.2s ease, width 0.2s ease, max-width 0.2s ease;
 }
-/*para ajustar la cabecera cuando se oculte el dasboar*/
+
+/* Ajuste cuando se oculta el sidebar en desktop */
 .main.expanded {
     margin-left: 0;
     width: 100%;
+    max-width: 100%;
 }
 
-/*para la cabecera*/
-.navbar{
+/* Cabecera fija con container-scroll */
+.main header {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
     width: 100%;
-    z-index: 2;
-    background-image: linear-gradient(to bottom, #1B4B82, #2462AB, #3185E8);
+    flex-shrink: 0;
 }
-.namaAdmin{ /*para el estilo del nombre de usuario*/
+
+.navbar {
+    width: 100%;
+    background-image: linear-gradient(to bottom, #1B4B82, #2462AB, #3185E8);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.namaAdmin {
     color: #fff;
     margin-right: auto;
 }
-/*estilos para el boton de ocultar de la cabecera*/
-#toggleSidebar{
+#toggleSidebar {
     margin-left: 10px;
     margin-right: 10px;
     border-color: #a4a4c9;
     color: #fff;
 }
-#toggleSidebar:hover{
+#toggleSidebar:hover {
     background-color: #c6c5ec;
 }
 
-/*para las opciones de cabecera*/
-.nav-item{
+/* Opciones de cabecera */
+.nav-item {
     border-radius: 5px;
     margin-right: 10px;
 }
 .nav-link.white-text {
     color: white !important;
 }
-.nav-item:hover{
+.nav-item:hover {
     background-color: #1B4B82;
 }
 
-/*para el contenido de la paginia*/
-.contentini{
+.nav-item.dropdown {
+    position: relative;
+}
+.navbar .dropdown-menu {
+    border-radius: 8px;
+    border: none;
+    min-width: 220px;
+    max-width: calc(100vw - 24px);
+    z-index: 1030;
+}
+.navbar .dropdown-item {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Contenido de la pagina */
+.contentini {
     flex: 1;
-    max-width: 100vw;
+    min-width: 0;
+    max-width: 100%;
     width: 100%;
     background-size: cover;
     background-image: url(../img/admin/fondo_Admin.webp);
-    background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
 }
-.content{
+.content {
     flex: 1;
-    max-width: 100vw;
+    min-width: 0;
+    max-width: 100%;
     width: 100%;
     background-size: cover;
     background: #becbcfae;
-    /*background-image: linear-gradient(to bottom right, #d1d8e0, #c2cbe0, #b0b9d8);*/
 }
 
-/* Ocultar el sidebar en pantallas pequeñas */
+/* Drawer lateral movil y ajuste a 100% de pantalla sin franja blanca */
 @media (max-width: 768px) {
     #sidebar {
-        margin-left: -250px; /* Ocultar el sidebar */
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 260px;
+        max-width: 82vw;
+        margin-left: 0 !important;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        z-index: 1045;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
     }
 
-    /* Ajustar el contenedor principal para que ocupe toda la pantalla */
-    .main {
-        margin-left: 0;
-        width: 100%;
+    #sidebar.mobile-open {
+        transform: translateX(0);
     }
 
-    /* Mostrar el sidebar cuando esté visible */
-    #sidebar.active {
-        margin-left: 0;
-    }
-
-    .navbar.active {
-        margin-right: 250px;
+    .main,
+    .main.expanded {
+        margin-left: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 
-/* Para resaltar el item activo del menú lateral */
+/* Para resaltar el item activo del menu lateral */
 .sidebar-item.active .sidebar-link {
-    background-color: #B9F4E6; /* Mismo que el hover */
+    background-color: #B9F4E6;
     color: black;
     border-radius: 30px;
+}
+
+/* Tabla Institucional ULAT */
+.table-responsive {
+    -webkit-overflow-scrolling: touch;
+}
+.table-ulat {
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+.table-ulat thead th,
+.table-ulat-header th {
+    background-color: #1B4B82 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+    border-color: #163d6b;
+    white-space: nowrap;
+}
+.table-ulat td {
+    border-color: #dee2e6;
+    vertical-align: middle;
 }

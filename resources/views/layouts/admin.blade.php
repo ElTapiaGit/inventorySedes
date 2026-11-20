@@ -10,8 +10,7 @@
     <link rel="stylesheet" href="{{ asset('css/styleAdmin.css') }}"> <!--principal-->
 
     <!-- Bootstrap Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.min.css" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/989bcc080d.js" crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.5/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -20,6 +19,7 @@
 </head>
 <body>
     <div class="wrapper"><!--envoltura-->
+        <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
         <aside id="sidebar">
             <div class="h-100">
                 <div class="sidebar-logo">
@@ -39,68 +39,68 @@
 
                     <li class="sidebar-item {{ Request::is('administrator/sedes*') ? 'active' : '' }}">
                         <a href="{{route('sedes.index')}}" class="sidebar-link">
-                            <i class="fas fa-building pe-2"></i>
+                            <i class="bi bi-building pe-2"></i>
                             Sedes
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ Request::is('administrator/ambiente*') ? 'active' : '' }}">
                         <a href="{{route('ambiente.index')}}" class="sidebar-link">
-                            <i class="fas fa-door-open pe-2"></i>
+                            <i class="bi bi-door-open pe-2"></i>
                             Ambientes
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ Request::is('administrator/personal*') ? 'active' : '' }}">
                         <a href="{{route('personal.index')}}" class="sidebar-link">
-                            <i class="fas fa-user-tie pe-2"></i>
+                            <i class="bi bi-person-badge pe-2"></i>
                             Personal
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ Request::is('administrator/usuarios*') ? 'active' : '' }}">
                         <a href="{{route('usuario.index')}}" class="sidebar-link">
-                            <i class="fas fa-users-cog pe-2"></i>
+                            <i class="bi bi-people pe-2"></i>
                             Usuarios
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ Request::is('administrator/mantenimiento*') ? 'active' : '' }}">
                         <a href="{{route('mantenimientosAdmin.index')}}" class="sidebar-link">
-                            <i class="fa-solid fa-tools pe-2"></i>
+                            <i class="bi bi-wrench-adjustable pe-2"></i>
                             Mantenimientos
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ Request::is('administrator/movimientos*') ? 'active' : '' }}">
                         <a href="{{route('movimientosAdmin.index')}}" class="sidebar-link">
-                            <i class="fa-solid fa-arrows-alt pe-2"></i>
+                            <i class="bi bi-arrow-left-right pe-2"></i>
                             Movimientos
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ Request::is('administrator/accesorios*') ? 'active' : '' }}">
                         <a href="{{route('accesoriosadmin.index')}}" class="sidebar-link">
-                            <i class="fa-solid fa-toolbox pe-2"></i>
+                            <i class="bi bi-cpu pe-2"></i>
                             Accesorios
                         </a>
                     </li>
 
                     <li class="sidebar-item {{ Request::is('administrator/prestamos*') ? 'active' : '' }}">
                         <a href="{{route('prestamosAdmin.index')}}" class="sidebar-link">
-                            <i class="fa-solid fa-handshake pe-2"></i>
+                            <i class="bi bi-journal-arrow-up pe-2"></i>
                             Prestamos
                         </a>
                     </li>
 
-                    <li class="sidebar-item">
+                    <li class="sidebar-item {{ Request::is('administrator/reportes*') ? 'active' : '' }}">
                         <a href="{{ route('reportes.index') }}" class="sidebar-link">
-                            <i class="fa-solid fa-chart-line pe-2"></i>
+                            <i class="bi bi-bar-chart-line pe-2"></i>
                             Reportes
                         </a>
                     </li>  
 
-                    <li class="sidebar-item {{ Request::is('administrator/reportes*') ? 'active' : '' }}">
+                    <li class="sidebar-item {{ Request::is('administrator/descartes*') ? 'active' : '' }}">
                         <a href="{{ route('descartes.index') }}" class="sidebar-link">
                             <i class="bi bi-trash pe-2"></i>
                             Descartes
@@ -112,7 +112,7 @@
                             @csrf
                         </form>
                         <a href="#" class="sidebar-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="fa-solid fa-sign-out-alt pe-2"></i>
+                            <i class="bi bi-box-arrow-right pe-2"></i>
                             Salir
                         </a>
                     </li>
@@ -122,22 +122,23 @@
 
         <!--Componentes para el contenido para cada pagina-->
         <div class="main">
-            <!--Cabecera-->
+            <!--Cabecera fija con container-scroll-->
             <header>
-                <nav class="navbar navbar-expand px-3 border-bottom">
-                    <button id="toggleSidebar" type="button" class="btn btn-outline-secondary">
+                <nav class="navbar navbar-expand px-2 px-sm-3 border-bottom d-flex flex-nowrap align-items-center">
+                    <button id="toggleSidebar" type="button" class="btn btn-outline-secondary flex-shrink-0" aria-label="Alternar menu lateral">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <h5 class="namaAdmin">
-                        @auth
-                            {{ Auth::user()->nombre_completo }}
-                        @endauth
-                    </h5>
+                    <div class="namaAdmin-container flex-grow-1 min-w-0 px-2 overflow-hidden">
+                        <h5 class="namaAdmin mb-0 text-truncate fs-6 fw-semibold text-white">
+                            @auth
+                                {{ Auth::user()->nombre_completo }}
+                            @endauth
+                        </h5>
+                    </div>
 
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav ms-auto">
-
-                            <!--contenido de los menus desplecables-->
+                    <div class="ms-auto flex-shrink-0 d-flex align-items-center gap-1">
+                        <ul class="navbar-nav d-flex flex-row align-items-center gap-1 mb-0">
+                            <!--contenido de los menus desplegables-->
                             @yield('sede-dropdown')
                             @yield('edificio-dropdown')
                         </ul>
@@ -155,6 +156,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="{{asset('js/dashboarNone.js')}}"></script>
     <script src="{{ asset('js/core/form-protection.js') }}"></script>
+
+    <!-- Listener global de accesibilidad para modales Bootstrap 5 -->
+    <script>
+        document.addEventListener('hide.bs.modal', function (event) {
+            if (document.activeElement && event.target.contains(document.activeElement)) {
+                document.activeElement.blur();
+            }
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

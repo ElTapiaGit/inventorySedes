@@ -1,16 +1,18 @@
-/***** PAGINA DETALLES EQUIPOS *****/
-.detallesEquipo .card-header{
-    background-color: #8eb4d5;
+/* Estilos para detalles de articulos en Administrador */
+.detallesEquipo .card-header {
+    background-color: #1B4B82;
+    color: #ffffff;
+    font-weight: 600;
 }
 
-.detallesEquipo table thead th{ 
-    background-color: #e7cbbe; 
+.detallesEquipo table thead th { 
+    background-color: #1B4B82; 
+    color: #ffffff;
 }
-/*para centrar y poner bordes en la tabla*/
+
+/* Alineacion y estilo limpio de tablas de detalles */
 .detallesEquipo table td,
 .detallesEquipo table th {
     text-align: center;
-    vertical-align: middle;/* Centrar el contenido verticalmente */
-    border-left: 1px solid black; 
-    border-right: 1px solid black; 
+    vertical-align: middle;
 }

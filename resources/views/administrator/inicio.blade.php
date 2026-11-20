@@ -1,20 +1,16 @@
-
 @extends('layouts.admin')
 
-@section('title', 'Inicio')
+@section('title', 'Inicio - Panel Administrador')
 
 @section('content')
-    <main class="contentini p-3">  
-        <div class="container-fluid">
-            <div class="mb-3">
-                <!-- Contenido principal -->
-            </div>
-        </div>
-    </main>
+<main class="contentini p-3 d-flex flex-column justify-content-between">  
+    <div class="container-fluid">
+        <!-- Panel de bienvenida institucional -->
+    </div>
+</main>
 @endsection
 
 @push('scripts')
-    <!-- Mensaje de error de conexion de la BD -->    
     @if(session('errordata'))
         <script>
             Swal.fire({
@@ -25,4 +21,3 @@
         </script>
     @endif
 @endpush
-

@@ -97,6 +97,49 @@
                         </a>
                     </li>
 
+                    <!-- Selector de Edificio / Badge Edificio Asignado -->
+                    @auth
+                        @php
+                            $user = Auth::user();
+                            $edificiosAsignados = $user->edificiosAsignados ?? collect();
+                            if ($edificiosAsignados->isEmpty() && $user->edificio_activo) {
+                                $edificiosAsignados = collect([$user->edificio_activo]);
+                            }
+                            $edificioActivo = $user->edificio_activo;
+                            $tieneMultiplesEdificios = $edificiosAsignados->count() > 1;
+                        @endphp
+
+                        @if($tieneMultiplesEdificios)
+                            <li class="nav-item dropdown px-lg-2 my-1 my-lg-0">
+                                <a class="nav-link dropdown-toggle text-white d-inline-flex align-items-center bg-white bg-opacity-10 rounded-pill px-3 py-1 text-truncate" href="#" id="edificioDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="max-width: 220px;" title="Cambiar Edificio">
+                                    <i class="bi bi-building me-1 text-warning"></i>
+                                    <span class="text-truncate">{{ $edificioActivo ? $edificioActivo->nombre_edi : 'Edificio' }}</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="edificioDropdown" style="max-width: calc(100vw - 24px); min-width: 200px;">
+                                    <li class="dropdown-header text-muted small fw-semibold text-uppercase">Edificios Asignados</li>
+                                    @foreach($edificiosAsignados as $edi)
+                                        <li>
+                                            <a class="dropdown-item d-flex align-items-center justify-content-between {{ $edificioActivo && $edificioActivo->id_edificio == $edi->id_edificio ? 'active bg-primary' : '' }}" 
+                                               href="{{ route('encargado.edificio.seleccionar', $edi->id_edificio) }}">
+                                                <span class="text-truncate"><i class="bi bi-building me-2"></i>{{ $edi->nombre_edi }}</span>
+                                                @if($edificioActivo && $edificioActivo->id_edificio == $edi->id_edificio)
+                                                    <i class="bi bi-check-lg ms-2"></i>
+                                                @endif
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        @elseif($edificioActivo)
+                            <li class="nav-item px-lg-2 my-1 my-lg-0">
+                                <span class="badge bg-white bg-opacity-10 text-white border border-white border-opacity-25 px-3 py-2 rounded-pill d-inline-flex align-items-center" title="Edificio Asignado">
+                                    <i class="bi bi-building me-1 text-warning"></i>
+                                    <span class="text-truncate" style="max-width: 180px;">{{ $edificioActivo->nombre_edi }}</span>
+                                </span>
+                            </li>
+                        @endif
+                    @endauth
+
                     <!-- Salir -->
                     <li class="nav-item ms-lg-2">
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

@@ -23,8 +23,7 @@ class MaterialController extends Controller
 
     public function create()
     {
-        $userId = auth()->user()->id_personal;
-        $edificioId = Personal::where('id_personal', $userId)->value('EDIFICIO_id_edificio');
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $ambientes = Ambiente::whereHas('piso', function ($query) use ($edificioId) {
             $query->where('Edificio_id_edificio', $edificioId);
@@ -39,7 +38,7 @@ class MaterialController extends Controller
 
     public function storeMaterial(Request $request)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $request->validate([
             'cod_mate' => 'required|string|max:50|unique:material,cod_mate',
@@ -126,7 +125,7 @@ class MaterialController extends Controller
         ]);
 
         try {
-            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+            $edificioId = Auth::user()->edificio_activo_id;
 
             $material = Material::where('cod_mate', $cod_mate)
                 ->whereHas('ambiente.piso', function ($q) use ($edificioId) {

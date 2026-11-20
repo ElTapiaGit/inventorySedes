@@ -81,6 +81,8 @@ class Personal extends Model implements AuthenticatableContract
     }
 
 
+    protected ?Edificio $memoEdificioActivo = null;
+
     // Relación con el modelo TipoPersonal
     public function tipoPersonal()
     {
@@ -90,6 +92,72 @@ class Personal extends Model implements AuthenticatableContract
     public function edificio()
     {
         return $this->belongsTo(Edificio::class, 'EDIFICIO_id_edificio', 'id_edificio');
+    }
+
+    // Relación con edificios asignados mediante la tabla pivote personal_edificio
+    public function edificiosAsignados()
+    {
+        return $this->belongsToMany(
+            Edificio::class,
+            'personal_edificio',
+            'PERSONAL_id_personal',
+            'EDIFICIO_id_edificio'
+        )->withPivot('es_principal');
+    }
+
+    // Retorna array de enteros con los IDs de edificios permitidos
+    public function edificiosPermitidosIds(): array
+    {
+        if ($this->relationLoaded('edificiosAsignados')) {
+            $ids = $this->edificiosAsignados->pluck('id_edificio')->toArray();
+        } else {
+            $ids = $this->edificiosAsignados()->pluck('edificio.id_edificio')->toArray();
+        }
+
+        if (empty($ids) && !is_null($this->EDIFICIO_id_edificio)) {
+            $ids = [(int) $this->EDIFICIO_id_edificio];
+        }
+
+        return array_map('intval', $ids);
+    }
+
+    // Accesor del ID del edificio activo en sesión con blindaje IDOR
+    public function getEdificioActivoIdAttribute(): int
+    {
+        $permitidos = $this->edificiosPermitidosIds();
+        $sessionEdificioId = session('encargado_edificio_id');
+
+        if ($sessionEdificioId !== null && in_array((int) $sessionEdificioId, $permitidos, true)) {
+            return (int) $sessionEdificioId;
+        }
+
+        return (int) ($this->EDIFICIO_id_edificio ?? ($permitidos[0] ?? 0));
+    }
+
+    // Accesor del modelo Edificio activo con memoización ligera
+    public function getEdificioActivoAttribute(): ?Edificio
+    {
+        $activoId = $this->edificio_activo_id;
+
+        if ($this->memoEdificioActivo && $this->memoEdificioActivo->id_edificio === $activoId) {
+            return $this->memoEdificioActivo;
+        }
+
+        if ($this->relationLoaded('edificiosAsignados')) {
+            $encontrado = $this->edificiosAsignados->firstWhere('id_edificio', $activoId);
+            if ($encontrado) {
+                $this->memoEdificioActivo = $encontrado;
+                return $this->memoEdificioActivo;
+            }
+        }
+
+        if ($this->relationLoaded('edificio') && $this->edificio && $this->edificio->id_edificio === $activoId) {
+            $this->memoEdificioActivo = $this->edificio;
+            return $this->memoEdificioActivo;
+        }
+
+        $this->memoEdificioActivo = Edificio::with('sede')->find($activoId);
+        return $this->memoEdificioActivo;
     }
     public function prestamos()
     {

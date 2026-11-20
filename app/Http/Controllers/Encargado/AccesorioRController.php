@@ -104,7 +104,7 @@ class AccesorioRController extends Controller
             'foto.max' => 'La imagen no debe superar los 5MB.',
         ]);
 
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $accesorio = Accesorio::with('equipos.ambiente.piso')->where('cod_accesorio', $cod_accesorio)->firstOrFail();
 

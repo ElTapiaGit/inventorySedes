@@ -22,7 +22,7 @@ class InventarioConsultaController extends Controller
      */
     public function index(Request $request)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
         $edificio = Edificio::with('sede')->find($edificioId);
 
         $tab = $request->input('tab', 'equipos');
@@ -186,7 +186,7 @@ class InventarioConsultaController extends Controller
      */
     public function show(string $tipo, string $codigo)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
         $edificio = Edificio::with('sede')->find($edificioId);
 
         if (!in_array($tipo, ['equipo', 'mobiliario', 'material', 'accesorio'])) {

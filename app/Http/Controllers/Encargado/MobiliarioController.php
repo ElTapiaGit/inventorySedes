@@ -24,8 +24,7 @@ class MobiliarioController extends Controller
 
     public function create()
     {
-        $userId = auth()->user()->id_personal;
-        $edificioId = Personal::where('id_personal', $userId)->value('EDIFICIO_id_edificio');
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $ambientes = Ambiente::whereHas('piso', function ($query) use ($edificioId) {
             $query->where('Edificio_id_edificio', $edificioId);
@@ -57,7 +56,7 @@ class MobiliarioController extends Controller
 
     public function storeMobiliario(Request $request)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $request->validate([
             'cod_mueble' => 'required|string|max:50|unique:mobiliario,cod_mueble',
@@ -151,7 +150,7 @@ class MobiliarioController extends Controller
         ]);
 
         try {
-            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+            $edificioId = Auth::user()->edificio_activo_id;
 
             $mobiliario = Mobiliario::where('cod_mueble', $cod_mueble)
                 ->whereHas('ambiente.piso', function ($q) use ($edificioId) {

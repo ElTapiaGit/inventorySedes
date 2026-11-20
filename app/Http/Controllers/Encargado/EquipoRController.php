@@ -26,8 +26,7 @@ class EquipoRController extends Controller
 
     public function create()
     {
-        $userId = auth()->user()->id_personal;
-        $edificioId = Personal::where('id_personal', $userId)->value('EDIFICIO_id_edificio');
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $ambientes = Ambiente::whereHas('piso', function ($query) use ($edificioId) {
             $query->where('Edificio_id_edificio', $edificioId);
@@ -42,7 +41,7 @@ class EquipoRController extends Controller
 
     public function storeEquipo(Request $request)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $request->validate([
             'cod_equipo' => 'required|string|max:50|unique:equipo,cod_equipo',
@@ -132,7 +131,7 @@ class EquipoRController extends Controller
 
     public function show($cod_equipo)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $equipo = Equipo::with('accesorios')
             ->where('cod_equipo', $cod_equipo)
@@ -157,7 +156,7 @@ class EquipoRController extends Controller
 
     public function storeComponente(Request $request)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $request->validate([
             'cod_equipo' => [
@@ -208,7 +207,7 @@ class EquipoRController extends Controller
 
     public function storeAccesorioEquipo(Request $request)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $request->validate([
             'cod_accesorio' => 'required|string|max:50|unique:accesorio,cod_accesorio',
@@ -307,7 +306,7 @@ class EquipoRController extends Controller
         ]);
 
         try {
-            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+            $edificioId = Auth::user()->edificio_activo_id;
 
             $equipo = Equipo::where('cod_equipo', $cod_equipo)
                 ->whereHas('ambiente.piso', function ($q) use ($edificioId) {

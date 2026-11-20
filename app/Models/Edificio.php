@@ -40,4 +40,15 @@ class Edificio extends Model
     {
         return $this->hasMany(Personal::class, 'EDIFICIO_id_edificio');
     }
+
+    // Relación inversa mediante la tabla pivote personal_edificio
+    public function personalAsignado()
+    {
+        return $this->belongsToMany(
+            Personal::class,
+            'personal_edificio',
+            'EDIFICIO_id_edificio',
+            'PERSONAL_id_personal'
+        )->withPivot('es_principal');
+    }
 }

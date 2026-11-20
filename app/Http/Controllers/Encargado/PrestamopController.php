@@ -22,23 +22,29 @@ class PrestamopController extends Controller
 {
     public function index()
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $prestamos = Prestamo::with(['personal', 'devolucion'])
             ->whereHas('personal', function ($q) use ($edificioId) {
-                $q->where('EDIFICIO_id_edificio', $edificioId);
+                $q->where('EDIFICIO_id_edificio', $edificioId)
+                  ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
+                      $sub->where('edificio.id_edificio', $edificioId);
+                  });
             })
             ->latest('id_prestamo')
             ->paginate(10);
 
-        $personales = Personal::where('EDIFICIO_id_edificio', $edificioId)->get();
+        $personales = Personal::where('EDIFICIO_id_edificio', $edificioId)
+            ->orWhereHas('edificiosAsignados', function ($q) use ($edificioId) {
+                $q->where('edificio.id_edificio', $edificioId);
+            })->get();
 
         return view('encargados.prestamoPag', compact('prestamos', 'personales'));
     }
 
     public function store(Request $request)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         // Validacion estricta fuera de bloques try-catch
         $request->validate([
@@ -86,12 +92,15 @@ class PrestamopController extends Controller
     public function show($id)
     {
         $idDesencriptado = Crypt::decrypt($id);
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         $prestamo = Prestamo::with(['detallePrestamos', 'personal', 'devolucion'])
             ->where('id_prestamo', $idDesencriptado)
             ->whereHas('personal', function ($q) use ($edificioId) {
-                $q->where('EDIFICIO_id_edificio', $edificioId);
+                $q->where('EDIFICIO_id_edificio', $edificioId)
+                  ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
+                      $sub->where('edificio.id_edificio', $edificioId);
+                  });
             })
             ->firstOrFail();
 
@@ -108,12 +117,15 @@ class PrestamopController extends Controller
         ]);
 
         try {
-            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+            $edificioId = Auth::user()->edificio_activo_id;
 
             // Validar que el prestamo pertenezca a un personal del mismo edificio
             $prestamo = Prestamo::where('id_prestamo', $id)
                 ->whereHas('personal', function ($q) use ($edificioId) {
-                    $q->where('EDIFICIO_id_edificio', $edificioId);
+                    $q->where('EDIFICIO_id_edificio', $edificioId)
+                      ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
+                          $sub->where('edificio.id_edificio', $edificioId);
+                      });
                 })
                 ->firstOrFail();
 

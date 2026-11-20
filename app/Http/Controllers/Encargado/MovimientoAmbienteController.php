@@ -30,11 +30,8 @@ class MovimientoAmbienteController extends Controller
             $currentDate = now()->format('d-m-Y'); // Fecha en formato DD-MM-YY
             $currentTime = now()->format('H:i:s');   // Hora en formato HH:MM:SS
 
-            // Obtén el ID del usuario actualmente autenticado
-            $userId = auth()->user()->id_personal;
-
-            // Obtener el id del edificio donde el personal trabaja
-            $edificio_id = Personal::where('id_personal', $userId)->value('EDIFICIO_id_edificio');
+            // Obtener el edificio activo del personal
+            $edificio_id = Auth::user()->edificio_activo_id;
 
             // Verificar el tipo de edificio
             $edificio = Edificio::where('id_edificio', $edificio_id)->first();
@@ -116,7 +113,7 @@ class MovimientoAmbienteController extends Controller
 
     public function registrarUso(Request $request)
     {
-        $edificioId = Auth::user()->EDIFICIO_id_edificio;
+        $edificioId = Auth::user()->edificio_activo_id;
 
         // Validar los datos del formulario fuera de try-catch
         $request->validate([
@@ -176,7 +173,7 @@ class MovimientoAmbienteController extends Controller
         ]);
 
         try {
-            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+            $edificioId = Auth::user()->edificio_activo_id;
 
             // Verificar aislamiento territorial del uso antes de finalizar
             $usoAmbiente = UsoAmbiente::where('id_uso_ambiente', $request->input('uso_ambiente_id'))
@@ -215,7 +212,7 @@ class MovimientoAmbienteController extends Controller
         }
 
         try {
-            $edificioId = Auth::user()->EDIFICIO_id_edificio;
+            $edificioId = Auth::user()->edificio_activo_id;
 
             // Obtener el movimiento verificando aislamiento territorial por edificio
             $movimiento = UsoAmbiente::with(['personalInicio', 'personalFin'])

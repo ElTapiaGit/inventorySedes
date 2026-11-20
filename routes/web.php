@@ -335,6 +335,7 @@ Route::prefix('encargado')->middleware(['auth', 'role:Encargado'])->group(functi
 
 
     Route::get('/principal', [PrincipalController::class, 'principal'])->name('encargado.inicio');
+    Route::get('/seleccionar-edificio/{id}', [PrincipalController::class, 'seleccionarEdificio'])->name('encargado.edificio.seleccionar');
 
     // Equipos
     Route::get('/registro/equipo', [EquipoRController::class, 'create'])->name('equipo.create');

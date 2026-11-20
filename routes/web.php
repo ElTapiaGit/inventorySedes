@@ -205,7 +205,7 @@ Route::prefix('administrator')->middleware(['auth', 'role:Administrador'])->grou
     Route::get('/reportes/personal', [ReportesController::class, 'reportePersonal'])->name('reportes.personal');
     Route::get('/reportes/articulos-descartados', [ReportesController::class, 'reportArticulosDescartados'])->name('reportes.articulosDescartados');
     Route::get('/reportes/estado-equipos', [ReportesController::class, 'estadoequipos'])->name('reportes.estado.equipos');
-    Route::get('/reportes/mantenimientos', [ReportesController::class, 'reportMantenimiento'])->name('reportes.mantenimeinotos');
+    Route::get('/reportes/mantenimientos', [ReportesController::class, 'reportMantenimiento'])->name('reportes.mantenimientos');
 
     //PARA LA PAGINA DE DESCARTES
     Route::get('/descartes', [DescartesController::class, 'index'])->name('descartes.index');

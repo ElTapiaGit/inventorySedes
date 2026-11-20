@@ -59,7 +59,7 @@ class PrestamosAdminController extends Controller
                 $prestamos = Prestamo::whereRaw('1 = 0')->paginate(10);
             }
 
-            return view('Administrator.prestamosAdmin', compact(
+            return view('administrator.prestamosAdmin', compact(
                 'prestamos',
                 'sedes',
                 'nombreSedeSeleccionada',
@@ -132,7 +132,7 @@ class PrestamosAdminController extends Controller
                 return redirect()->back()->with('errorbuscar', 'No se encontraron resultados.');
             }
 
-            return view('Administrator.prestamosAdmin', compact(
+            return view('administrator.prestamosAdmin', compact(
                 'prestamos',
                 'nombreSedeSeleccionada',
                 'nombreEdificioSeleccionada',

@@ -178,17 +178,17 @@ class SedesController extends Controller
     // Metodo para guardar nuevos pisos
     public function storePisos(Request $request)
     {
+        $request->validate([
+            'numero_piso.*' => 'required|string|max:50',
+            'Edificio_id_edificio.*' => 'required|integer|exists:edificio,id_edificio',
+        ]);
+
+        // Verificar que ambos arrays tengan la misma longitud
+        if (count($request->numero_piso) !== count($request->Edificio_id_edificio)) {
+            return redirect()->back()->with('errordata', 'Datos de pisos inconsistentes: la cantidad de pisos no coincide con la cantidad de edificios.');
+        }
+
         try {
-            $request->validate([
-                'numero_piso.*' => 'required|string|max:50',
-                'Edificio_id_edificio.*' => 'required|integer|exists:edificio,id_edificio',
-            ]);
-
-            // Verificar que ambos arrays tengan la misma longitud
-            if (count($request->numero_piso) !== count($request->Edificio_id_edificio)) {
-                return redirect()->back()->with('errordata', 'Datos de pisos inconsistentes: la cantidad de pisos no coincide con la cantidad de edificios.');
-            }
-
             foreach ($request->numero_piso as $index => $numero_piso) {
                 Piso::create([
                     'numero_piso' => $numero_piso,
@@ -199,7 +199,7 @@ class SedesController extends Controller
             return redirect()->route('sedes.index')->with('success', 'Pisos agregados exitosamente.');
 
         } catch (\Exception $e) {
-            return redirect()->route('sedes.index')->with('errordata', 'Problema al agregar pisos: ');
+            return redirect()->route('sedes.index')->with('errordata', 'Problema al agregar pisos: ' . $e->getMessage());
         }
     }
 }

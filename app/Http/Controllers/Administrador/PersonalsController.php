@@ -10,6 +10,8 @@ use App\Models\TipoPersonal;
 use App\Models\Login;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class PersonalsController extends Controller
 {
@@ -143,28 +145,10 @@ class PersonalsController extends Controller
         }
     }
 
-    // Mostrar el formulario para editar un personal
+    // Redirigir al listado de personal (la edicion se realiza mediante modal en el listado)
     public function edit($id)
     {
-        try {
-            $personal = Personal::with(['tipoPersonal', 'edificio', 'edificiosAsignados', 'carrera'])->find($id);
-            if (!$personal) {
-                return redirect()->route('personal.index')->with('error', 'Personal no encontrado.');
-            }
-
-            $tiposPersonal = TipoPersonal::all();
-            $edificios = Edificio::orderBy('nombre_edi')->get();
-            $carreras = Carrera::orderBy('nombre_carrera')->get();
-
-            return view('personal_edit', [
-                'personal' => $personal,
-                'tiposPersonal' => $tiposPersonal,
-                'edificios' => $edificios,
-                'carreras' => $carreras,
-            ]);
-        } catch (\Exception $e) {
-            return redirect()->route('personal.index')->with('errordata', 'Error al encontrar registro del personal.');
-        }
+        return redirect()->route('personal.index');
     }
 
     // Actualizar un personal existente
@@ -263,10 +247,15 @@ class PersonalsController extends Controller
     // Inhabilitar un personal
     public function destroy($id)
     {
-        try{
+        try {
             $personal = Personal::find($id);
             if (!$personal) {
                 return redirect()->route('personal.index')->with('errordata', 'Personal no encontrado.');
+            }
+
+            // Proteccion contra auto-inhabilitacion del administrador autenticado
+            if ((int) $personal->id_personal === (int) Auth::id()) {
+                return redirect()->route('personal.index')->with('errordata', 'No puedes inhabilitar tu propia cuenta de administrador');
             }
     
             // Cambiar el estado del personal a inactivo (0)
@@ -275,31 +264,50 @@ class PersonalsController extends Controller
     
             return redirect()->route('personal.index')->with('success', 'Personal inactivo exitosamente.');
 
-        }catch (\Exception $e) {
-            return redirect()->route('personal.index')->with('errordata', 'Error al Inhabilitar al personal: ');
+        } catch (\Exception $e) {
+            return redirect()->route('personal.index')->with('errordata', 'Error al Inhabilitar al personal: ' . $e->getMessage());
         }
     }
 
-    //para guardar el login de acceso del personal
+    // Para guardar o actualizar el login de acceso del personal
     public function asignarAcceso(Request $request)
     {
-        try{
-            $request->validate([
-                'nombre_completo' => 'required|exists:personal,id_personal',
-                'nombre_acceso' => 'required|string|max:50',
-                'password' => 'required|string|min:6|confirmed',
-            ]);
-    
-            $login = new Login();
-            $login->nombre = $request->nombre_acceso;
-            $login->contrasena = bcrypt($request->password);
-            $login->PERSONAL_id_personal = $request->nombre_completo;
-            $login->save();
-    
-            return redirect()->route('personal.index')->with('success', 'Acceso asignado correctamente');
+        $existingLogin = Login::where('PERSONAL_id_personal', $request->input('nombre_completo'))->first();
+        $ignoreId = $existingLogin ? $existingLogin->id_acceso : null;
 
-        }catch (\Exception $e) {
-            return redirect()->route('personal.index')->with('errordata', 'Error al dar Accesos al Personal: ');
+        $request->validate([
+            'nombre_completo' => 'required|exists:personal,id_personal',
+            'nombre_acceso' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('login', 'nombre')->ignore($ignoreId, 'id_acceso'),
+            ],
+            'password' => 'required|string|min:6|confirmed',
+        ], [
+            'nombre_completo.required' => 'Debe seleccionar un personal.',
+            'nombre_completo.exists' => 'El personal seleccionado no existe.',
+            'nombre_acceso.required' => 'El nombre de acceso es obligatorio.',
+            'nombre_acceso.max' => 'El nombre de acceso no debe superar los 50 caracteres.',
+            'nombre_acceso.unique' => 'El nombre de usuario ya se encuentra registrado por otro personal.',
+            'password.required' => 'La contrasena es obligatoria.',
+            'password.min' => 'La contrasena debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'La confirmacion de la contrasena no coincide.',
+        ]);
+
+        try {
+            Login::updateOrCreate(
+                ['PERSONAL_id_personal' => (int) $request->nombre_completo],
+                [
+                    'nombre' => trim($request->nombre_acceso),
+                    'contrasena' => bcrypt($request->password),
+                ]
+            );
+
+            return redirect()->route('personal.index')->with('success', 'Acceso asignado correctamente.');
+
+        } catch (\Exception $e) {
+            return redirect()->route('personal.index')->with('errordata', 'Error al dar Accesos al Personal: ' . $e->getMessage());
         }
     }
 }

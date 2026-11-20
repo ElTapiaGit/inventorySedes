@@ -14,23 +14,25 @@ class AccesoriosController extends Controller
     public function index(Request $request)
     {
         try{
-            // Obtener accesorios que están 'para reponer' o 'para cambiar'
-            $accesorios = Accesorio::whereIn('estado_acce', ['para reponer', 'para cambiar'])->paginate(10);
+            // Obtener accesorios que están 'para reponer' o 'para cambiar' con carga anticipada (elimina N+1)
+            $accesorios = Accesorio::whereIn('estado_acce', ['para reponer', 'para cambiar'])
+                ->with([
+                    'equipos',
+                    'historial' => function ($q) {
+                        $q->orderBy('fch_cambio', 'desc');
+                    }
+                ])
+                ->paginate(10);
 
             // Recorrer cada accesorio para agregar información adicional
             foreach ($accesorios as $accesorio) {
-                // Obtener el último cambio del accesorio
-                $ultimoCambio = HistorialAccesorio::where('ACCESORIO_cod_accesorio', $accesorio->cod_accesorio)
-                                                ->orderBy('fch_cambio', 'desc')
-                                                ->first();
+                // Obtener el último cambio del accesorio desde la relación precargada
+                $ultimoCambio = $accesorio->historial->first();
                 // Asignar fecha de último cambio o "Sin cambios"
                 $accesorio->fecha_ultimo_cambio = $ultimoCambio ? $ultimoCambio->fch_cambio : 'Sin cambios';
 
-                // Verificar si el accesorio pertenece a un equipo
-                // Obtener equipos asociados al accesorio
+                // Asignar código del equipo o "Sin equipo" desde la relación precargada
                 $equipos = $accesorio->equipos;
-
-                // Asignar código del equipo o "Sin equipo"
                 $accesorio->equipo_codigo = $equipos->isEmpty() ? 'Sin equipo' : $equipos->pluck('cod_equipo')->implode(', ');
             }
 
@@ -126,7 +128,7 @@ class AccesoriosController extends Controller
             return view('administrator.detallesAccesorio', compact('accesorio', 'historial', 'equipo'));
         } catch (\Exception $e) {
             // Manejo de excepciones
-            return redirect()->route('administrator.accesoriosUnicos')->with('error', 'Accesorio no encontrado o código inválido.');
+            return redirect()->route('accesoriosadmin.unicos')->with('error', 'Accesorio no encontrado o codigo invalido.');
         }
     }
 }

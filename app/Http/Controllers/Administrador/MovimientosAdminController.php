@@ -69,7 +69,7 @@ class MovimientosAdminController extends Controller
             $nombresUsuarios = Personal::select('nombre')->distinct()->get();
             $fechas = UsoAmbiente::select('fch_uso')->distinct()->get();
 
-            return view('Administrator.movimientosAdmin', compact(
+            return view('administrator.movimientosAdmin', compact(
                 'sedes', 
                 'nombreSedeSeleccionada', 
                 'sedeSeleccionada', 
@@ -157,7 +157,7 @@ class MovimientosAdminController extends Controller
             $edificioEncontrado = Edificio::find($edificioSeleccionado);
             $nombreEdificioSeleccionada = $edificioEncontrado?->nombre_edi ?? $nombreEdificioSeleccionada;
 
-            return view('Administrator.movimientosAdmin', compact(
+            return view('administrator.movimientosAdmin', compact(
                 'movimientos',
                 'sedes',
                 'edificios',

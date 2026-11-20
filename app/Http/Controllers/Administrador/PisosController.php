@@ -41,19 +41,19 @@ class PisosController extends Controller
 
     public function edit(Request $request)
     {
-        try{
-            $request->validate([
-                'piso_id' => 'required|exists:piso,id_piso',
-                'numero_piso' => 'required|string|max:50',
-            ]);
-    
+        $request->validate([
+            'piso_id' => 'required|exists:piso,id_piso',
+            'numero_piso' => 'required|string|max:50',
+        ]);
+
+        try {
             $piso = Piso::findOrFail($request->input('piso_id'));
             $piso->numero_piso = $request->input('numero_piso');
             $piso->save();
     
             return redirect()->back()->with('successregister', 'Piso actualizado exitosamente.');
-        }catch(\Exception $e){
-            return redirect()->back()->with('error', 'No se pudo editar el piso.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'No se pudo editar el piso: ' . $e->getMessage());
         }
     }
 

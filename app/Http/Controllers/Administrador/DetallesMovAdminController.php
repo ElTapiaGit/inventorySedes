@@ -33,7 +33,7 @@ class DetallesMovAdminController extends Controller
             $personal_inicio = $movimiento->personalInicio;
             $personal_fin = $movimiento->fch_fin ? $movimiento->personalFin : null;
 
-            return view('Administrator.detallesMoviAdmin', compact('movimiento', 'personal_inicio', 'personal_fin', 'finalUso'));
+            return view('administrator.detallesMoviAdmin', compact('movimiento', 'personal_inicio', 'personal_fin', 'finalUso'));
 
         } catch(\Exception $e) {
             // Manejo de errores

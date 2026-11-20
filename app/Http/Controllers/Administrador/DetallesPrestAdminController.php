@@ -72,7 +72,7 @@ class DetallesPrestAdminController extends Controller
             });
 
 
-            return view('Administrator.detallesPrestamoAdmin', compact('prestamo', 'detalle_prestamos', 'detalles_prestamos'));
+            return view('administrator.detallesPrestamoAdmin', compact('prestamo', 'detalle_prestamos', 'detalles_prestamos'));
 
         } catch (\Exception $e) {
             return redirect()->route('prestamosAdmin.index')->with('errordata', 'Error al obtener los detalles del préstamo: ');

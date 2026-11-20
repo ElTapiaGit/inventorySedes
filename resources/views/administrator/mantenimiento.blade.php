@@ -97,11 +97,26 @@
                     </tbody>
                 </table>
             </div>
-            <!--para las paginaciones-->
-            <div class="d-flex justify-content-center">
-                {{ $equipos->links() }}
-                {{ $mobiliarios->links() }}
-                {{ $materiales->links() }}
+            <!-- Paginacion independiente para evitar colisiones -->
+            <div class="d-flex flex-wrap justify-content-center gap-3 mt-3">
+                @if($equipos->hasPages())
+                    <div class="text-center">
+                        <small class="text-muted d-block mb-1">Equipos (Página {{ $equipos->currentPage() }} de {{ $equipos->lastPage() }})</small>
+                        {{ $equipos->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
+                @if($mobiliarios->hasPages())
+                    <div class="text-center">
+                        <small class="text-muted d-block mb-1">Mobiliarios (Página {{ $mobiliarios->currentPage() }} de {{ $mobiliarios->lastPage() }})</small>
+                        {{ $mobiliarios->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
+                @if($materiales->hasPages())
+                    <div class="text-center">
+                        <small class="text-muted d-block mb-1">Materiales (Página {{ $materiales->currentPage() }} de {{ $materiales->lastPage() }})</small>
+                        {{ $materiales->links('pagination::bootstrap-5') }}
+                    </div>
+                @endif
             </div>
         @endif
     </div>

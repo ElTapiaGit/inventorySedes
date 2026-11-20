@@ -66,11 +66,11 @@ class TipoAmbientesController extends Controller
     // Para editar los datos de tipo de ambiente
     public function update(Request $request, $id)
     {
-        try {
-            $request->validate([
-                'tipo' => 'required|string|max:60',
-            ]);
+        $request->validate([
+            'tipo' => 'required|string|max:60',
+        ]);
 
+        try {
             $tipoAmbiente = TipoAmbiente::findOrFail($id);
             $tipoAmbiente->update([
                 'nombre_amb' => $request->input('tipo'),
@@ -78,7 +78,7 @@ class TipoAmbientesController extends Controller
 
             return redirect()->route('tipoambiente.index')->with('success', 'Tipo de ambiente actualizado exitosamente.');
         } catch (\Exception $e) {
-            return redirect()->route('tipoambiente.index')->with('error', 'Error al actualizar el tipo de ambiente.');
+            return redirect()->route('tipoambiente.index')->with('error', 'Error al actualizar el tipo de ambiente: ' . $e->getMessage());
         }
     }
 

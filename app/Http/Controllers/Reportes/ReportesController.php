@@ -232,4 +232,22 @@ class ReportesController extends Controller
         return view('Reportes.reportEstadoEquipo', compact('equipos', 'estados_equipos', 'edificios'));
     }
 
+    // Reporte de equipos para mantenimiento
+    public function reportMantenimiento(Request $request)
+    {
+        $equipos = DB::table('equipo')
+            ->join('ambiente', 'equipo.AMBIENTE_id_ambiente', '=', 'ambiente.id_ambiente')
+            ->whereIn('equipo.estado_equi', ['Para reparar', 'Para mantenimiento'])
+            ->select(
+                'equipo.Cod_equipo',
+                'equipo.nombre_equi',
+                'equipo.observaciones_equi',
+                'equipo.estado_equi',
+                'ambiente.nombre as nombre_ambiente'
+            )
+            ->orderBy('equipo.Cod_equipo')
+            ->get();
+
+        return view('coordinator.reportes.ParaMantenientos', compact('equipos'));
+    }
 }

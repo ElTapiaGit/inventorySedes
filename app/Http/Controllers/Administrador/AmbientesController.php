@@ -68,7 +68,7 @@ class AmbientesController extends Controller
             $noHayAmbientes = $ambientes->isEmpty();
             $noAmbientesEncontrados = $search && $ambientes->isEmpty();
 
-            return view('Administrator.ambiente', compact(
+            return view('administrator.ambiente', compact(
                 'sedes', 
                 'nombreSedeSeleccionada', 
                 'sedeSeleccionada', 

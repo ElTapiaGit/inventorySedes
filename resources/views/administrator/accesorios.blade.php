@@ -48,8 +48,20 @@
                                 <td>{{ $accesorio->estado_acce }}</td>
                                 <td>{{ $accesorio->vida_util }}</td>
                                 <td>{{ $accesorio->ubicacion }}</td>
-                                <td>{{ \Carbon\Carbon::parse($accesorio->fch_registro_acce)->format('d/m/Y') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($accesorio->fecha_ultimo_cambio)->format('d/m/Y') }}</td>
+                                <td>
+                                    @if(!empty($accesorio->fch_registro_acce))
+                                        {{ \Carbon\Carbon::parse($accesorio->fch_registro_acce)->format('d/m/Y') }}
+                                    @else
+                                        Sin fecha
+                                    @endif
+                                </td>
+                                <td>
+                                    @if(!empty($accesorio->fecha_ultimo_cambio) && $accesorio->fecha_ultimo_cambio !== 'Sin cambios')
+                                        {{ \Carbon\Carbon::parse($accesorio->fecha_ultimo_cambio)->format('d/m/Y') }}
+                                    @else
+                                        Sin cambios
+                                    @endif
+                                </td>
                                 <td>{{ $accesorio->equipo_codigo }}</td>
                             </tr>
                         @endforeach

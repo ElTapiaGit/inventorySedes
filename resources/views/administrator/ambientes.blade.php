@@ -95,6 +95,16 @@
                                 </select>
                             </div>
                             <div class="mb-3">
+                                <label for="carrera_ambiente" class="form-label">Carrera Asignada</label>
+                                <select class="form-control" id="carrera_ambiente" name="CARRERA_id_carrera">
+                                    <option value="">Uso General / Sin carrera especifica</option>
+                                    @foreach($carreras as $carrera)
+                                        <option value="{{ $carrera->id_carrera }}">{{ $carrera->nombre_carrera }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="form-text">Si el ambiente es de uso exclusivo para una carrera, seleccionela; de lo contrario, dejelo en Uso General.</div>
+                            </div>
+                            <div class="mb-3">
                                 <label for="piso" class="form-label">Piso de {{$nombreEdificioSeleccionada}}</label>
                                 <select class="form-control" id="piso" name="piso" required>
                                     <option value="">Seleccione un piso</option>
@@ -117,12 +127,13 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped align-middle">
                         <thead>
                             <tr>
                                 <th>Nros.</th>
                                 <th>Tipo de Ambiente</th>
                                 <th>Nombre</th>
+                                <th>Carrera Asignada</th>
                                 <th>Descripción</th>
                                 <th>Piso</th>
                                 <th>Acciones</th>
@@ -136,11 +147,18 @@
                                 <tr>
                                     <td>{{ $contador++ }}</td>
                                     <td>{{ $ambiente->tipo_ambiente }}</td>
-                                    <td>{{ $ambiente->nombre }}</td>
+                                    <td class="fw-semibold">{{ $ambiente->nombre }}</td>
+                                    <td>
+                                        @if($ambiente->carrera)
+                                            <span class="badge bg-primary text-white"><i class="bi bi-mortarboard me-1"></i>{{ $ambiente->carrera->nombre_carrera }}</span>
+                                        @else
+                                            <span class="badge bg-secondary text-white"><i class="bi bi-diagram-3 me-1"></i>Uso General</span>
+                                        @endif
+                                    </td>
                                     <td style="text-align: justify;">{{ $ambiente->descripcion_amb }}</td>
                                     <td>{{ $ambiente->numero_piso }}</td>
                                     <td>
-                                        <button class="btn btn-sm btn-primary me-2 btn-editar" title="Editar" data-id="{{ $ambiente->id_ambiente }}" data-nombre="{{ $ambiente->nombre }}" data-descripcion="{{ $ambiente->descripcion_amb }}" data-tipo="{{ $ambiente->TIPO_AMBIENTE_id_ambiente }}" data-piso="{{ $ambiente->PISO_id_piso }}">
+                                        <button class="btn btn-sm btn-primary me-2 btn-editar" title="Editar" data-id="{{ $ambiente->id_ambiente }}" data-nombre="{{ $ambiente->nombre }}" data-descripcion="{{ $ambiente->descripcion_amb }}" data-tipo="{{ $ambiente->TIPO_AMBIENTE_id_ambiente }}" data-piso="{{ $ambiente->PISO_id_piso }}" data-carrera="{{ $ambiente->CARRERA_id_carrera ?? '' }}">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <!-- Formulario para eliminar -->
@@ -185,6 +203,15 @@
                                     <option value="">Seleccione un tipo de ambiente</option>
                                     @foreach($tiposAmbiente as $tipo)
                                         <option value="{{ $tipo->id_tipoambiente }}">{{ $tipo->nombre_amb }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editar_carrera" class="form-label">Carrera Asignada</label>
+                                <select class="form-control" id="editar_carrera" name="CARRERA_id_carrera">
+                                    <option value="">Uso General / Sin carrera especifica</option>
+                                    @foreach($carreras as $carrera)
+                                        <option value="{{ $carrera->id_carrera }}">{{ $carrera->nombre_carrera }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -234,12 +261,14 @@
                     const descripcion = this.getAttribute('data-descripcion');
                     const tipo = this.getAttribute('data-tipo');
                     const piso = this.getAttribute('data-piso');
+                    const carrera = this.getAttribute('data-carrera');
                     
                     document.getElementById('editar_id').value = id;
                     document.getElementById('editar_nombre').value = nombre;
                     document.getElementById('editar_descripcion').value = descripcion;
                     document.getElementById('editar_tipo_ambiente').value = tipo;
                     document.getElementById('editar_piso').value = piso;
+                    document.getElementById('editar_carrera').value = carrera || '';
                     
                     new bootstrap.Modal(document.getElementById('editarAmbienteModal')).show();
                 });

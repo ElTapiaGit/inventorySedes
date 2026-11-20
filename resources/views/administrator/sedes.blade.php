@@ -85,10 +85,11 @@
                 <div class="row">
                     <div class="col-md-8">
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped align-middle">
                                 <thead>
                                     <tr>
                                         <th>Edificios</th>
+                                        <th>Carrera Asignada</th>
                                         <th>Nros. Niveles-Pisos</th>
                                         <th>Direccion</th>
                                         <th>Acciones</th>
@@ -97,11 +98,18 @@
                                 <tbody>
                                     @foreach($edificios as $edificio)
                                     <tr>
-                                        <td>{{ $edificio->nombre_edi }}</td>
+                                        <td class="fw-semibold">{{ $edificio->nombre_edi }}</td>
+                                        <td>
+                                            @if($edificio->carrera)
+                                                <span class="badge bg-primary text-white"><i class="bi bi-mortarboard me-1"></i>{{ $edificio->carrera->nombre_carrera }}</span>
+                                            @else
+                                                <span class="badge bg-secondary text-white"><i class="bi bi-diagram-3 me-1"></i>Compartido</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $edificio->pisos_count }}</td>
                                         <td>{{ $edificio->direccion }}</td>
                                         <td>
-                                            <button class="btn btn-sm btn-primary me-2" title="Editar" data-bs-toggle="modal" data-bs-target="#modalEditarEdificio" data-id="{{ $edificio->id_edificio }}" data-nombre="{{ $edificio->nombre_edi }}" data-direccion="{{ $edificio->direccion }}"><i class="bi bi-pencil"></i></button>
+                                            <button class="btn btn-sm btn-primary me-2" title="Editar" data-bs-toggle="modal" data-bs-target="#modalEditarEdificio" data-id="{{ $edificio->id_edificio }}" data-nombre="{{ $edificio->nombre_edi }}" data-direccion="{{ $edificio->direccion }}" data-carrera="{{ $edificio->CARRERA_id_carrera ?? '' }}"><i class="bi bi-pencil"></i></button>
                                             <button class="btn btn-sm btn-danger" title="Eliminar" onclick="eliminarEdificio('{{ $edificio->id_edificio }}')"><i class="bi bi-trash"></i></button>
                                         </td>
                                     </tr>
@@ -151,6 +159,16 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                <div class="mb-3">
+                                    <label for="carreraEdificio" class="form-label">Carrera Asignada:</label>
+                                    <select name="CARRERA_id_carrera" class="form-control" id="carreraEdificio">
+                                        <option value="">Compartido / Institucional (Ninguna)</option>
+                                        @foreach($carreras as $carrera)
+                                            <option value="{{ $carrera->id_carrera }}">{{ $carrera->nombre_carrera }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="form-text">Si el edificio es exclusivo de una carrera seleccionela; de lo contrario dejelo en Compartido.</div>
+                                </div>
                                 <button type="submit" class="btn btn-primary">Guardar</button>
                             </form>
                         </div>
@@ -178,6 +196,15 @@
                                 <div class="mb-3">
                                     <label for="editDireccion" class="form-label">Dirección</label>
                                     <input type="text" id="editDireccion" name="direccion" class="form-control" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="editCarreraEdificio" class="form-label">Carrera Asignada:</label>
+                                    <select name="CARRERA_id_carrera" class="form-control" id="editCarreraEdificio">
+                                        <option value="">Compartido / Institucional (Ninguna)</option>
+                                        @foreach($carreras as $carrera)
+                                            <option value="{{ $carrera->id_carrera }}">{{ $carrera->nombre_carrera }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                             </form>
@@ -290,6 +317,7 @@
                     var id = button.getAttribute('data-id');
                     var nombre = button.getAttribute('data-nombre');
                     var direccion = button.getAttribute('data-direccion');
+                    var carrera = button.getAttribute('data-carrera');
 
                     var form = document.getElementById('formEditarEdificio');
                     form.action = '{{ route('edificios.update', '') }}/' + id;
@@ -297,6 +325,7 @@
                     document.getElementById('editIdEdificio').value = id;
                     document.getElementById('editNombreEdificio').value = nombre;
                     document.getElementById('editDireccion').value = direccion;
+                    document.getElementById('editCarreraEdificio').value = carrera || '';
                 });
             }
 

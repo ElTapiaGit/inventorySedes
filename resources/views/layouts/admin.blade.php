@@ -30,6 +30,13 @@
 
                 <!--menu de navegacion -->
                 <ul class="sidebar-nav">
+                    <li class="sidebar-item {{ Request::is('administrator/carreras*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.carreras.index') }}" class="sidebar-link">
+                            <i class="bi bi-mortarboard pe-2"></i>
+                            Carreras
+                        </a>
+                    </li>
+
                     <li class="sidebar-item {{ Request::is('administrator/sedes*') ? 'active' : '' }}">
                         <a href="{{route('sedes.index')}}" class="sidebar-link">
                             <i class="fas fa-building pe-2"></i>

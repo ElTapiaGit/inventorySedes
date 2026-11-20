@@ -45,9 +45,37 @@
                                 @foreach($personal as $persona)
                                 <tr>
                                     <td>{{ $contador++ }}</td>
-                                    <td>{{ $persona->tipoPersonal->descripcion_per }}</td>
-                                    <td>{{ $persona->edificio->sede->nombre }}</td>
-                                    <td>{{ $persona->edificio->nombre_edi }}</td>
+                                    <td>
+                                        <span class="fw-semibold">{{ $persona->tipoPersonal->descripcion_per ?? 'Sin Rol' }}</span>
+                                        @if($persona->carrera)
+                                            <div class="mt-1">
+                                                <span class="badge bg-primary text-white"><i class="bi bi-mortarboard me-1"></i>{{ $persona->carrera->nombre_carrera }}</span>
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td>{{ $persona->edificio && $persona->edificio->sede ? $persona->edificio->sede->nombre : '-' }}</td>
+                                    <td>
+                                        @if($persona->tipoPersonal && strtolower($persona->tipoPersonal->descripcion_per) === 'encargado')
+                                            @php
+                                                $edificiosAsignados = $persona->edificiosAsignados;
+                                                if ($edificiosAsignados->isEmpty() && $persona->edificio) {
+                                                    $edificiosAsignados = collect([$persona->edificio]);
+                                                }
+                                            @endphp
+                                            @foreach($edificiosAsignados as $edi)
+                                                <span class="badge bg-light text-dark border me-1 mb-1 d-inline-block">
+                                                    <i class="bi bi-building me-1 text-primary"></i>{{ $edi->nombre_edi }}
+                                                    @if(isset($edi->pivot) && $edi->pivot->es_principal)
+                                                        <span class="badge bg-warning text-dark ms-1" style="font-size: 0.7em;">Principal</span>
+                                                    @endif
+                                                </span>
+                                            @endforeach
+                                        @else
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="bi bi-building me-1 text-secondary"></i>{{ $persona->edificio ? $persona->edificio->nombre_edi : 'Sin Edificio' }}
+                                            </span>
+                                        @endif
+                                    </td>
                                     <td>{{ $persona->nombre }}</td>
                                     <td>{{ $persona->ap_paterno }} {{ $persona->ap_materno }}</td>
                                     <td>{{ $persona->celular }}</td>
@@ -90,21 +118,57 @@
                                                         <label for="numero_celular{{ $persona->id_personal }}" class="form-label">Número de Celular</label>
                                                         <input type="text" class="form-control" id="numero_celular{{ $persona->id_personal }}" name="numero_celular" value="{{ $persona->celular }}" required>
                                                     </div>
+                                                    @php
+                                                        $rolActual = strtolower($persona->tipoPersonal->descripcion_per ?? '');
+                                                        $esCoord = str_starts_with($rolActual, 'coordinador');
+                                                        $esEnc = ($rolActual === 'encargado');
+                                                        $asignadosIds = $persona->edificiosAsignados->pluck('id_edificio')->toArray();
+                                                        if (empty($asignadosIds) && $persona->EDIFICIO_id_edificio) {
+                                                            $asignadosIds = [(int) $persona->EDIFICIO_id_edificio];
+                                                        }
+                                                    @endphp
                                                     <div class="mb-3">
-                                                        <label for="tipo_personal{{ $persona->id_personal }}" class="form-label">Tipo de Personal</label>
-                                                        <select class="form-select" id="tipo_personal{{ $persona->id_personal }}" name="tipo_personal" required>
+                                                        <label for="tipo_personal{{ $persona->id_personal }}" class="form-label fw-semibold">Tipo de Personal <span class="text-danger">*</span></label>
+                                                        <select class="form-select select-tipo-personal-edit" id="tipo_personal{{ $persona->id_personal }}" name="tipo_personal" data-id="{{ $persona->id_personal }}" required>
                                                             @foreach($tiposPersonal as $tipo)
-                                                                <option value="{{ $tipo->id_tipo_per }}" {{ $persona->TIPO_PERSONAL_id_tipo_per == $tipo->id_tipo_per ? 'selected' : '' }}>{{ $tipo->descripcion_per }}</option>
+                                                                <option value="{{ $tipo->id_tipo_per }}" data-desc="{{ strtolower($tipo->descripcion_per) }}" {{ $persona->TIPO_PERSONAL_id_tipo_per == $tipo->id_tipo_per ? 'selected' : '' }}>{{ $tipo->descripcion_per }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
-                                                    <div class="mb-3">
-                                                        <label for="edificio{{ $persona->id_personal }}" class="form-label">Edificio:</label>
-                                                        <select class="form-select" id="edificio{{ $persona->id_personal }}" name="edificio" required>
+                                                    <div class="mb-3" id="bloqueCarreraEdit{{ $persona->id_personal }}" style="{{ $esCoord ? '' : 'display: none;' }}">
+                                                        <label for="carreraedit{{ $persona->id_personal }}" class="form-label fw-semibold">Carrera Coordinada <span class="text-danger">*</span></label>
+                                                        <select class="form-select" id="carreraedit{{ $persona->id_personal }}" name="CARRERA_id_carrera">
+                                                            <option value="">Seleccionar Carrera</option>
+                                                            @foreach($carreras as $carrera)
+                                                                <option value="{{ $carrera->id_carrera }}" {{ $persona->CARRERA_id_carrera == $carrera->id_carrera ? 'selected' : '' }}>{{ $carrera->nombre_carrera }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                        <div class="form-text">Asigne la carrera que coordinara este usuario.</div>
+                                                    </div>
+                                                    <div class="mb-3" id="bloqueEdificioUnicoEdit{{ $persona->id_personal }}" style="{{ $esEnc ? 'display: none;' : '' }}">
+                                                        <label for="edificio{{ $persona->id_personal }}" class="form-label fw-semibold">Edificio Base: <span class="text-danger">*</span></label>
+                                                        <select class="form-select" id="edificio{{ $persona->id_personal }}" name="edificio">
                                                             @foreach($edificios as $edificio)
                                                                 <option value="{{ $edificio->id_edificio }}" {{ $persona->EDIFICIO_id_edificio == $edificio->id_edificio ? 'selected' : '' }}>{{$edificio->nombre_edi}}</option>
                                                             @endforeach
                                                         </select>
+                                                    </div>
+                                                    <div class="mb-3" id="bloqueEdificiosMultiplesEdit{{ $persona->id_personal }}" style="{{ $esEnc ? '' : 'display: none;' }}">
+                                                        <label class="form-label fw-semibold">Edificios Asignados al Encargado <span class="text-danger">*</span></label>
+                                                        <div class="border rounded p-3 bg-light" style="max-height: 180px; overflow-y: auto;">
+                                                            @foreach($edificios as $edificio)
+                                                                <div class="form-check mb-2">
+                                                                    <input class="form-check-input check-edificio-edit-{{ $persona->id_personal }}" type="checkbox" name="edificios[]" 
+                                                                           value="{{ $edificio->id_edificio }}" id="edificio_check_edit_{{ $persona->id_personal }}_{{ $edificio->id_edificio }}"
+                                                                           {{ in_array($edificio->id_edificio, $asignadosIds) ? 'checked' : '' }}>
+                                                                    <label class="form-check-label" for="edificio_check_edit_{{ $persona->id_personal }}_{{ $edificio->id_edificio }}">
+                                                                        <i class="bi bi-building me-1 text-primary"></i>{{ $edificio->nombre_edi }}
+                                                                        <small class="text-muted">({{ $edificio->sede->nombre ?? 'Sede' }})</small>
+                                                                    </label>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                        <div class="form-text">Marque los edificios donde el Encargado podra operar. El primero seleccionado sera el principal.</div>
                                                     </div>
                                                     <button type="submit" class="btn btn-primary">Guardar</button>
                                                 </form>
@@ -148,20 +212,47 @@
                                 <input type="text" class="form-control" id="numero_celularnew" name="numero_celular" required>
                             </div>
                             <div class="mb-3">
-                                <label for="tipo_personalnew" class="form-label">Tipo de Personal</label>
+                                <label for="tipo_personalnew" class="form-label fw-semibold">Tipo de Personal <span class="text-danger">*</span></label>
                                 <select class="form-select" id="tipo_personalnew" name="tipo_personal" required>
                                     @foreach($tiposPersonal as $tipo)
-                                        <option value="{{ $tipo->id_tipo_per }}">{{ $tipo->descripcion_per }}</option>
+                                        <option value="{{ $tipo->id_tipo_per }}" data-desc="{{ strtolower($tipo->descripcion_per) }}">{{ $tipo->descripcion_per }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label for="edificionew" class="form-label">Edificio:</label>
-                                <select class="form-select" id="edificionew" name="edificio" required>
+                            <div class="mb-3" id="bloqueCarreraNew" style="display: none;">
+                                <label for="carreranew" class="form-label fw-semibold">Carrera Coordinada <span class="text-danger">*</span></label>
+                                <select class="form-select" id="carreranew" name="CARRERA_id_carrera">
+                                    <option value="">Seleccionar Carrera</option>
+                                    @foreach($carreras as $carrera)
+                                        <option value="{{ $carrera->id_carrera }}">{{ $carrera->nombre_carrera }}</option>
+                                    @endforeach
+                                </select>
+                                <div class="form-text">Asigne la carrera que coordinara este usuario.</div>
+                            </div>
+                            <div class="mb-3" id="bloqueEdificioUnicoNew">
+                                <label for="edificionew" class="form-label fw-semibold">Edificio Base: <span class="text-danger">*</span></label>
+                                <select class="form-select" id="edificionew" name="edificio">
                                     @foreach($edificios as $edificio)
                                         <option value="{{ $edificio->id_edificio }}">{{ $edificio->nombre_edi }}</option>
                                     @endforeach
                                 </select>
+                            </div>
+                            <div class="mb-3" id="bloqueEdificiosMultiplesNew" style="display: none;">
+                                <label class="form-label fw-semibold">Edificios Asignados al Encargado <span class="text-danger">*</span></label>
+                                <div class="border rounded p-3 bg-light" style="max-height: 180px; overflow-y: auto;">
+                                    @foreach($edificios as $idx => $edificio)
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input check-edificio-new" type="checkbox" name="edificios[]" 
+                                                   value="{{ $edificio->id_edificio }}" id="edificio_check_new_{{ $edificio->id_edificio }}"
+                                                   {{ $idx === 0 ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="edificio_check_new_{{ $edificio->id_edificio }}">
+                                                <i class="bi bi-building me-1 text-primary"></i>{{ $edificio->nombre_edi }}
+                                                <small class="text-muted">({{ $edificio->sede->nombre ?? 'Sede' }})</small>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <div class="form-text">Marque los edificios donde el Encargado podra operar. El primero seleccionado sera el principal.</div>
                             </div>
                             <button type="submit" class="btn btn-primary">Guardar</button>
                         </form>
@@ -238,6 +329,98 @@
                 }
             });
         }
+    </script>
+
+    <!-- Script para alternar campos condicionales segun el rol del personal -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function toggleRoleFields(selectEl, carreraBlock, singleEdiBlock, multiEdiBlock) {
+                if (!selectEl || !carreraBlock || !singleEdiBlock || !multiEdiBlock) return;
+                
+                const selectedOpt = selectEl.options[selectEl.selectedIndex];
+                const desc = (selectedOpt ? (selectedOpt.getAttribute('data-desc') || selectedOpt.text) : '').toLowerCase().trim();
+                const isCoord = desc.startsWith('coordinador');
+                const isEnc = (desc === 'encargado');
+
+                if (isCoord) {
+                    carreraBlock.style.display = '';
+                    singleEdiBlock.style.display = '';
+                    multiEdiBlock.style.display = 'none';
+                    
+                    const carreraSelect = carreraBlock.querySelector('select');
+                    if (carreraSelect) carreraSelect.required = true;
+                    
+                    const singleSelect = singleEdiBlock.querySelector('select');
+                    if (singleSelect) {
+                        singleSelect.disabled = false;
+                        singleSelect.required = true;
+                    }
+                    multiEdiBlock.querySelectorAll('input[type="checkbox"]').forEach(c => c.disabled = true);
+                } else if (isEnc) {
+                    carreraBlock.style.display = 'none';
+                    singleEdiBlock.style.display = 'none';
+                    multiEdiBlock.style.display = '';
+
+                    const carreraSelect = carreraBlock.querySelector('select');
+                    if (carreraSelect) {
+                        carreraSelect.required = false;
+                        carreraSelect.value = '';
+                    }
+
+                    const singleSelect = singleEdiBlock.querySelector('select');
+                    if (singleSelect) {
+                        singleSelect.disabled = true;
+                        singleSelect.required = false;
+                    }
+                    multiEdiBlock.querySelectorAll('input[type="checkbox"]').forEach(c => c.disabled = false);
+                } else {
+                    carreraBlock.style.display = 'none';
+                    singleEdiBlock.style.display = '';
+                    multiEdiBlock.style.display = 'none';
+
+                    const carreraSelect = carreraBlock.querySelector('select');
+                    if (carreraSelect) {
+                        carreraSelect.required = false;
+                        carreraSelect.value = '';
+                    }
+
+                    const singleSelect = singleEdiBlock.querySelector('select');
+                    if (singleSelect) {
+                        singleSelect.disabled = false;
+                        singleSelect.required = true;
+                    }
+                    multiEdiBlock.querySelectorAll('input[type="checkbox"]').forEach(c => c.disabled = true);
+                }
+            }
+
+            // Modal Nuevo Personal
+            const tipoNew = document.getElementById('tipo_personalnew');
+            const carreraNew = document.getElementById('bloqueCarreraNew');
+            const singleEdiNew = document.getElementById('bloqueEdificioUnicoNew');
+            const multiEdiNew = document.getElementById('bloqueEdificiosMultiplesNew');
+
+            if (tipoNew && carreraNew && singleEdiNew && multiEdiNew) {
+                tipoNew.addEventListener('change', function () {
+                    toggleRoleFields(this, carreraNew, singleEdiNew, multiEdiNew);
+                });
+                toggleRoleFields(tipoNew, carreraNew, singleEdiNew, multiEdiNew);
+            }
+
+            // Modales Editar Personal
+            document.querySelectorAll('.select-tipo-personal-edit').forEach(function (select) {
+                const id = select.getAttribute('data-id');
+                const carreraEdit = document.getElementById('bloqueCarreraEdit' + id);
+                const singleEdiEdit = document.getElementById('bloqueEdificioUnicoEdit' + id);
+                const multiEdiEdit = document.getElementById('bloqueEdificiosMultiplesEdit' + id);
+
+                if (carreraEdit && singleEdiEdit && multiEdiEdit) {
+                    select.addEventListener('change', function () {
+                        toggleRoleFields(this, carreraEdit, singleEdiEdit, multiEdiEdit);
+                    });
+                    toggleRoleFields(select, carreraEdit, singleEdiEdit, multiEdiEdit);
+                }
+            });
+        });
     </script>
 
     <!-- Script para validar contraseñas al asignar acceso -->

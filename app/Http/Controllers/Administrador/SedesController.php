@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Sede;
 use App\Models\Edificio;
 use App\Models\Piso;
+use App\Models\Carrera;
 
 class SedesController extends Controller
 {
@@ -15,15 +16,16 @@ class SedesController extends Controller
         try {
             $sedes = Sede::all();
             $sedeSeleccionada = session('sedeSeleccionada', $sedes->first()?->id_sede);
-            $edificiosPorSede = $sedeSeleccionada ? Edificio::where('SEDE_id_sede', $sedeSeleccionada)->get() : collect();
+            $edificiosPorSede = $sedeSeleccionada ? Edificio::with('carrera')->where('SEDE_id_sede', $sedeSeleccionada)->get() : collect();
             $edificioSeleccionado = session('edificioSeleccionado', $edificiosPorSede->first()?->id_edificio);
 
-            // Obtener los edificios con el numero de pisos para cada sede
-            $edificios = Edificio::withCount('pisos')->get();
+            // Obtener los edificios con la carrera asociada y el numero de pisos
+            $edificios = Edificio::with('carrera')->withCount('pisos')->get();
+            $carreras = Carrera::orderBy('nombre_carrera')->get();
 
-            return view('administrator.sedes', compact('sedes', 'sedeSeleccionada', 'edificios', 'edificioSeleccionado'));
+            return view('administrator.sedes', compact('sedes', 'sedeSeleccionada', 'edificios', 'edificioSeleccionado', 'carreras'));
         } catch (\Exception $e) {
-            return redirect()->route('admin.index')->with('errordata', 'Error al cargar las sedes: ');
+            return redirect()->route('admin.index')->with('errordata', 'Error al cargar las sedes: ' . $e->getMessage());
         }
     }
 
@@ -99,43 +101,64 @@ class SedesController extends Controller
     // Metodo para guardar nuevos edificios
     public function storeEdificio(Request $request)
     {
-        try {
-            // Validar los datos
-            $request->validate([
-                'nombre_edi' => 'required|string|max:45',
-                'direccion' => 'required|string|max:80',
-                'SEDE_id_sede' => 'required|integer|exists:sede,id_sede',
-            ]);
+        // Validacion estricta fuera de try-catch
+        $request->validate([
+            'nombre_edi' => 'required|string|max:45',
+            'direccion' => 'required|string|max:80',
+            'SEDE_id_sede' => 'required|integer|exists:sede,id_sede',
+            'CARRERA_id_carrera' => 'nullable|integer|exists:carrera,id_carrera',
+        ], [
+            'nombre_edi.required' => 'El nombre del edificio es obligatorio.',
+            'nombre_edi.max' => 'El nombre del edificio no debe superar los 45 caracteres.',
+            'direccion.required' => 'La direccion es obligatoria.',
+            'direccion.max' => 'La direccion no debe superar los 80 caracteres.',
+            'SEDE_id_sede.required' => 'Debe seleccionar una sede valida.',
+            'SEDE_id_sede.exists' => 'La sede seleccionada no existe.',
+            'CARRERA_id_carrera.exists' => 'La carrera seleccionada no existe.',
+        ]);
 
+        try {
             // Crear un nuevo edificio
             $edificio = new Edificio();
-            $edificio->nombre_edi = $request->nombre_edi;
-            $edificio->direccion = $request->direccion;
+            $edificio->nombre_edi = trim($request->nombre_edi);
+            $edificio->direccion = trim($request->direccion);
             $edificio->SEDE_id_sede = $request->SEDE_id_sede;
+            $edificio->CARRERA_id_carrera = $request->filled('CARRERA_id_carrera') ? (int) $request->CARRERA_id_carrera : null;
             $edificio->save();
 
             return redirect()->route('sedes.index')->with('success', 'Edificio agregado exitosamente.');
-
         } catch (\Exception $e) {
-            return redirect()->route('sedes.index')->with('errordata', 'Error al guardar los datos para los edificios en la Base de Datos: ');
+            return redirect()->route('sedes.index')->with('errordata', 'Error al guardar los datos para los edificios en la Base de Datos.');
         }
     }
 
     // Metodo para editar edificio
     public function updateEdificio(Request $request, $id_edificio)
     {
+        // Validacion estricta fuera de try-catch
+        $request->validate([
+            'nombre_edi' => 'required|string|max:45',
+            'direccion' => 'required|string|max:80',
+            'CARRERA_id_carrera' => 'nullable|integer|exists:carrera,id_carrera',
+        ], [
+            'nombre_edi.required' => 'El nombre del edificio es obligatorio.',
+            'nombre_edi.max' => 'El nombre del edificio no debe superar los 45 caracteres.',
+            'direccion.required' => 'La direccion es obligatoria.',
+            'direccion.max' => 'La direccion no debe superar los 80 caracteres.',
+            'CARRERA_id_carrera.exists' => 'La carrera seleccionada no existe.',
+        ]);
+
         try {
-            $request->validate([
-                'nombre_edi' => 'required|string|max:255',
-                'direccion' => 'required|string|max:255',
-            ]);
-    
             $edificio = Edificio::findOrFail($id_edificio);
-            $edificio->update($request->all());
-    
+            $edificio->update([
+                'nombre_edi' => trim($request->input('nombre_edi')),
+                'direccion' => trim($request->input('direccion')),
+                'CARRERA_id_carrera' => $request->filled('CARRERA_id_carrera') ? (int) $request->input('CARRERA_id_carrera') : null,
+            ]);
+
             return redirect()->route('sedes.index')->with('success', 'Edificio actualizado correctamente.');
         } catch (\Exception $e) {
-            return redirect()->route('sedes.index')->with('errordata', 'Error al actualizar los datos del edificio en la Base de Datos :');
+            return redirect()->route('sedes.index')->with('errordata', 'Error al actualizar los datos del edificio en la Base de Datos.');
         }
     }
 

@@ -9,6 +9,7 @@ use App\Models\Edificio;
 use App\Models\Piso;
 use App\Models\Ambiente;
 use App\Models\TipoAmbiente;
+use App\Models\Carrera;
 use Illuminate\Support\Facades\Crypt;
 
 class AmbienteController extends Controller
@@ -42,8 +43,9 @@ class AmbienteController extends Controller
             // Obtener los pisos del edificio seleccionado
             $pisos = $edificioSeleccionado ? Piso::where('EDIFICIO_id_edificio', $edificioSeleccionado)->get() : collect();
 
-            // Obtener los ambientes del edificio seleccionado
-            $ambientes = $edificioSeleccionado ? Ambiente::join('tipo_ambiente', 'ambiente.TIPO_AMBIENTE_id_ambiente', '=', 'tipo_ambiente.id_tipoambiente')
+            // Obtener los ambientes del edificio seleccionado con su carrera
+            $ambientes = $edificioSeleccionado ? Ambiente::with('carrera')
+                ->join('tipo_ambiente', 'ambiente.TIPO_AMBIENTE_id_ambiente', '=', 'tipo_ambiente.id_tipoambiente')
                 ->join('piso', 'ambiente.PISO_id_piso', '=', 'piso.id_piso')
                 ->where('piso.EDIFICIO_id_edificio', $edificioSeleccionado)
                 ->select('ambiente.*', 'tipo_ambiente.nombre_amb as tipo_ambiente', 'piso.numero_piso')
@@ -52,14 +54,16 @@ class AmbienteController extends Controller
             // Verificar si no hay ambientes
             $noHayAmbientes = $ambientes->isEmpty();
 
-            // Obtener los tipos de ambiente 
+            // Obtener los tipos de ambiente y carreras
             $tiposAmbiente = TipoAmbiente::all();
+            $carreras = Carrera::orderBy('nombre_carrera')->get();
 
             return view('administrator.ambientes', [
                 'sedes' => $sedes,
                 'edificios' => $edificios,
                 'pisos' => $pisos,
                 'tiposAmbiente' => $tiposAmbiente,
+                'carreras' => $carreras,
                 'ambientes' => $ambientes,
                 'sedeSeleccionada' => $sedeSeleccionada,
                 'nombreSedeSeleccionada' => $nombreSedeSeleccionada,
@@ -68,56 +72,82 @@ class AmbienteController extends Controller
                 'noHayAmbientes' => $noHayAmbientes
             ]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.index')->with('errordata', 'Error al obtener los datos para la pagina ambiente: ');
+            return redirect()->route('admin.index')->with('errordata', 'Error al obtener los datos para la pagina ambiente: ' . $e->getMessage());
         }   
     }
 
     public function store(Request $request)
     {
-        try {
-            $request->validate([
-                'nombre' => 'required|string|max:45',
-                'descripcion' => 'required|string',
-                'tipo_ambiente' => 'required|integer|exists:tipo_ambiente,id_tipoambiente',
-                'piso' => 'required|integer|exists:piso,id_piso',
-            ]);
+        // Validacion estricta fuera de try-catch
+        $request->validate([
+            'nombre' => 'required|string|max:45',
+            'descripcion' => 'required|string',
+            'tipo_ambiente' => 'required|integer|exists:tipo_ambiente,id_tipoambiente',
+            'piso' => 'required|integer|exists:piso,id_piso',
+            'CARRERA_id_carrera' => 'nullable|integer|exists:carrera,id_carrera',
+        ], [
+            'nombre.required' => 'El nombre del ambiente es obligatorio.',
+            'nombre.max' => 'El nombre no debe superar los 45 caracteres.',
+            'descripcion.required' => 'La descripcion es obligatoria.',
+            'tipo_ambiente.required' => 'Debe seleccionar un tipo de ambiente.',
+            'tipo_ambiente.exists' => 'El tipo de ambiente seleccionado no existe.',
+            'piso.required' => 'Debe seleccionar un piso.',
+            'piso.exists' => 'El piso seleccionado no existe.',
+            'CARRERA_id_carrera.exists' => 'La carrera seleccionada no existe.',
+        ]);
 
+        try {
             // Crear un nuevo ambiente
             Ambiente::create([
-                'nombre' => $request->input('nombre'),
-                'descripcion_amb' => $request->input('descripcion'),
+                'nombre' => trim($request->input('nombre')),
+                'descripcion_amb' => trim($request->input('descripcion')),
                 'TIPO_AMBIENTE_id_ambiente' => $request->input('tipo_ambiente'),
                 'PISO_id_piso' => $request->input('piso'),
+                'CARRERA_id_carrera' => $request->filled('CARRERA_id_carrera') ? (int) $request->input('CARRERA_id_carrera') : null,
             ]);
 
             return redirect()->route('ambientes.index')->with('successregister', 'Ambiente agregado exitosamente en la BD.');
 
         } catch (\Exception $e) {
-            return redirect()->route('ambientes.index')->with('errorregister', 'Error al agregar Ambiente a la BD: ');
+            return redirect()->route('ambientes.index')->with('errorregister', 'Error al agregar Ambiente a la BD.');
         }   
     }
 
     // Para editar un registro
     public function update(Request $request)
     {
-        try {
-            $request->validate([
-                'id' => 'required|integer|exists:ambiente,id_ambiente',
-                'nombre' => 'required|string|max:45',
-                'descripcion' => 'required|string',
-                'tipo_ambiente' => 'required|integer|exists:tipo_ambiente,id_tipoambiente',
-                'piso' => 'required|integer|exists:piso,id_piso',
-            ]);
+        // Validacion estricta fuera de try-catch
+        $request->validate([
+            'id' => 'required|integer|exists:ambiente,id_ambiente',
+            'nombre' => 'required|string|max:45',
+            'descripcion' => 'required|string',
+            'tipo_ambiente' => 'required|integer|exists:tipo_ambiente,id_tipoambiente',
+            'piso' => 'required|integer|exists:piso,id_piso',
+            'CARRERA_id_carrera' => 'nullable|integer|exists:carrera,id_carrera',
+        ], [
+            'id.required' => 'El identificador del ambiente es obligatorio.',
+            'id.exists' => 'El ambiente especificado no existe.',
+            'nombre.required' => 'El nombre del ambiente es obligatorio.',
+            'nombre.max' => 'El nombre no debe superar los 45 caracteres.',
+            'descripcion.required' => 'La descripcion es obligatoria.',
+            'tipo_ambiente.required' => 'Debe seleccionar un tipo de ambiente.',
+            'tipo_ambiente.exists' => 'El tipo de ambiente seleccionado no existe.',
+            'piso.required' => 'Debe seleccionar un piso.',
+            'piso.exists' => 'El piso seleccionado no existe.',
+            'CARRERA_id_carrera.exists' => 'La carrera seleccionada no existe.',
+        ]);
 
+        try {
             // Encontrar el ambiente por id
-            $ambiente = Ambiente::find($request->input('id'));
+            $ambiente = Ambiente::findOrFail($request->input('id'));
 
             // Actualizar el ambiente
             $ambiente->update([
-                'nombre' => $request->input('nombre'),
-                'descripcion_amb' => $request->input('descripcion'),
+                'nombre' => trim($request->input('nombre')),
+                'descripcion_amb' => trim($request->input('descripcion')),
                 'TIPO_AMBIENTE_id_ambiente' => $request->input('tipo_ambiente'),
                 'PISO_id_piso' => $request->input('piso'),
+                'CARRERA_id_carrera' => $request->filled('CARRERA_id_carrera') ? (int) $request->input('CARRERA_id_carrera') : null,
             ]);
 
             return redirect()->route('ambientes.index')->with('success', 'Ambiente actualizado exitosamente.');

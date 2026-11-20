@@ -25,6 +25,7 @@ use App\Http\Controllers\Coordinator\ReporteClinicaController;
 
 /*CONTROLADORES DEL ADMINISTRADOR*/ 
 use App\Http\Controllers\Administrador\Inicioontroller;
+use App\Http\Controllers\Administrador\CarrerasController;
 use App\Http\Controllers\Administrador\SedesController;
 use App\Http\Controllers\Administrador\PisosController;
 use App\Http\Controllers\Administrador\AmbientesController;
@@ -104,6 +105,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::prefix('administrator')->middleware(['auth', 'role:Administrador'])->group(function () {
 
     Route::get('/inicio/admin', [Inicioontroller::class, 'inicioadmin'])->name('admin.index');
+
+    // Carreras
+    Route::get('/carreras', [CarrerasController::class, 'index'])->name('admin.carreras.index');
+    Route::post('/carreras', [CarrerasController::class, 'store'])->name('admin.carreras.store');
+    Route::put('/carreras/{id}', [CarrerasController::class, 'update'])->name('admin.carreras.update');
+    Route::delete('/carreras/{id}', [CarrerasController::class, 'destroy'])->name('admin.carreras.destroy');
 
     //pargina de sedes
     Route::get('/sedes', [SedesController::class, 'index'])->name('sedes.index');

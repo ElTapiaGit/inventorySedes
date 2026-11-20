@@ -7,6 +7,7 @@ use App\Models\Carrera;
 use App\Models\Edificio;
 use App\Services\CoordinatorScopeService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 
 class BaseController extends Controller
@@ -115,8 +116,14 @@ class BaseController extends Controller
                 $coordCarreraTitulo = 'Coordinacion Academica';
             }
 
-            if ($carreraModel && !empty($carreraModel->logo) && file_exists(public_path($carreraModel->logo))) {
-                $coordLogoUrl = asset($carreraModel->logo);
+            if ($carreraModel && !empty($carreraModel->logo)) {
+                if (file_exists(public_path($carreraModel->logo))) {
+                    $coordLogoUrl = asset($carreraModel->logo);
+                } elseif (Storage::disk('public')->exists($carreraModel->logo)) {
+                    $coordLogoUrl = asset('storage/' . $carreraModel->logo);
+                } else {
+                    $coordLogoUrl = asset('img/logo.webp');
+                }
             } else {
                 $coordLogoUrl = asset('img/logo.webp');
             }

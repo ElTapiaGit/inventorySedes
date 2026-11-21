@@ -25,12 +25,7 @@ class MantenimientopController extends Controller
         $edificioId = Auth::user()->edificio_activo_id;
 
         $mantenimientos = Mantenimiento::with(['tecnico', 'personal', 'finalMantenimiento'])
-            ->whereHas('personal', function ($q) use ($edificioId) {
-                $q->where('EDIFICIO_id_edificio', $edificioId)
-                  ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
-                      $sub->where('edificio.id_edificio', $edificioId);
-                  });
-            })
+            ->porEdificio($edificioId)
             ->latest('id_mantenimiento_ini')
             ->paginate(10);
 
@@ -109,12 +104,7 @@ class MantenimientopController extends Controller
             'detalleMantenimiento',
         ])
         ->where('id_mantenimiento_ini', $idDesencriptado)
-        ->whereHas('personal', function ($q) use ($edificioId) {
-            $q->where('EDIFICIO_id_edificio', $edificioId)
-              ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
-                  $sub->where('edificio.id_edificio', $edificioId);
-              });
-        })
+        ->porEdificio($edificioId)
         ->firstOrFail();
 
         return view('encargados.detalleMantenimiento', compact('mantenimiento'));
@@ -134,12 +124,7 @@ class MantenimientopController extends Controller
 
             // Verificar aislamiento territorial del mantenimiento antes de finalizar
             $mantenimiento = Mantenimiento::where('id_mantenimiento_ini', $id)
-                ->whereHas('personal', function ($q) use ($edificioId) {
-                    $q->where('EDIFICIO_id_edificio', $edificioId)
-                      ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
-                          $sub->where('edificio.id_edificio', $edificioId);
-                      });
-                })
+                ->porEdificio($edificioId)
                 ->firstOrFail();
 
             FinalMantenimiento::create([

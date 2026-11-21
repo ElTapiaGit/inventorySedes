@@ -34,7 +34,7 @@ class DetallePrestamo extends Model
     //metodos de relacion para ayudar a obtener los articulo equipo, material, mobiliario... segun cod_articulo
     public function equipo()
     {
-        return $this->belongsTo(Equipo::class, 'cod_articulo', 'Cod_equipo');
+        return $this->belongsTo(Equipo::class, 'cod_articulo', 'cod_equipo');
     }
     public function mobiliario()
     {

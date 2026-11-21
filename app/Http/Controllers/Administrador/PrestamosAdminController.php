@@ -50,9 +50,7 @@ class PrestamosAdminController extends Controller
             // Obtener las fechas de prestamo y de devolucion
             if ($edificioSeleccionado) {
                 $prestamos = Prestamo::with(['personal', 'devolucion'])
-                    ->whereHas('personal', function ($query) use ($edificioSeleccionado) {
-                        $query->where('EDIFICIO_id_edificio', $edificioSeleccionado);
-                    })
+                    ->porEdificio((int) $edificioSeleccionado)
                     ->orderBy('prestamo.fch_prestamo', 'desc')
                     ->paginate(10);
             } else {
@@ -103,9 +101,7 @@ class PrestamosAdminController extends Controller
             $query = Prestamo::with(['personal', 'devolucion']);
             
             if ($edificioSeleccionado) {
-                $query->whereHas('personal', function ($query) use ($edificioSeleccionado) {
-                    $query->where('EDIFICIO_id_edificio', $edificioSeleccionado);
-                });
+                $query->porEdificio((int) $edificioSeleccionado);
             }
 
             // Filtrar por nombre de usuario

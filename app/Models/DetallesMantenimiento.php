@@ -28,6 +28,21 @@ class DetallesMantenimiento extends Model
 
     public function equipo()
     {
-        return $this->belongsTo(Equipo::class, 'cod_articulo', 'Cod_equipo');
+        return $this->belongsTo(Equipo::class, 'cod_articulo', 'cod_equipo');
+    }
+
+    public function mobiliario()
+    {
+        return $this->belongsTo(Mobiliario::class, 'cod_articulo', 'cod_mueble');
+    }
+
+    public function material()
+    {
+        return $this->belongsTo(Material::class, 'cod_articulo', 'cod_mate');
+    }
+
+    public function accesorio()
+    {
+        return $this->belongsTo(Accesorio::class, 'cod_articulo', 'cod_accesorio');
     }
 }

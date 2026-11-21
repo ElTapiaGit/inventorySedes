@@ -28,12 +28,7 @@ class PrincipalController extends Controller
 
         try {
             $prestamosPendientes = Prestamo::whereDoesntHave('devolucion')
-                ->whereHas('personal', function ($q) use ($edificioId) {
-                    $q->where('EDIFICIO_id_edificio', $edificioId)
-                      ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
-                          $sub->where('edificio.id_edificio', $edificioId);
-                      });
-                })
+                ->porEdificio($edificioId)
                 ->count();
         } catch (\Exception $e) {
             $prestamosPendientes = 0;
@@ -41,12 +36,7 @@ class PrincipalController extends Controller
 
         try {
             $mantenimientosEnProceso = Mantenimiento::whereDoesntHave('finalMantenimiento')
-                ->whereHas('personal', function ($q) use ($edificioId) {
-                    $q->where('EDIFICIO_id_edificio', $edificioId)
-                      ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
-                          $sub->where('edificio.id_edificio', $edificioId);
-                      });
-                })
+                ->porEdificio($edificioId)
                 ->count();
         } catch (\Exception $e) {
             $mantenimientosEnProceso = 0;

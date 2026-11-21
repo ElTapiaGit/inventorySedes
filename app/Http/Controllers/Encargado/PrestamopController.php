@@ -25,12 +25,7 @@ class PrestamopController extends Controller
         $edificioId = Auth::user()->edificio_activo_id;
 
         $prestamos = Prestamo::with(['personal', 'devolucion'])
-            ->whereHas('personal', function ($q) use ($edificioId) {
-                $q->where('EDIFICIO_id_edificio', $edificioId)
-                  ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
-                      $sub->where('edificio.id_edificio', $edificioId);
-                  });
-            })
+            ->porEdificio($edificioId)
             ->latest('id_prestamo')
             ->paginate(10);
 
@@ -96,12 +91,7 @@ class PrestamopController extends Controller
 
         $prestamo = Prestamo::with(['detallePrestamos', 'personal', 'devolucion'])
             ->where('id_prestamo', $idDesencriptado)
-            ->whereHas('personal', function ($q) use ($edificioId) {
-                $q->where('EDIFICIO_id_edificio', $edificioId)
-                  ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
-                      $sub->where('edificio.id_edificio', $edificioId);
-                  });
-            })
+            ->porEdificio($edificioId)
             ->firstOrFail();
 
         return view('encargados.detallePrestamos', compact('prestamo'));
@@ -119,14 +109,9 @@ class PrestamopController extends Controller
         try {
             $edificioId = Auth::user()->edificio_activo_id;
 
-            // Validar que el prestamo pertenezca a un personal del mismo edificio
+            // Validar que el prestamo pertenezca al edificio activo
             $prestamo = Prestamo::where('id_prestamo', $id)
-                ->whereHas('personal', function ($q) use ($edificioId) {
-                    $q->where('EDIFICIO_id_edificio', $edificioId)
-                      ->orWhereHas('edificiosAsignados', function ($sub) use ($edificioId) {
-                          $sub->where('edificio.id_edificio', $edificioId);
-                      });
-                })
+                ->porEdificio($edificioId)
                 ->firstOrFail();
 
             Devolucion::create([

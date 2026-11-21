@@ -28,6 +28,16 @@ class Mantenimiento extends Model
         return $this->hasMany(DetallesMantenimiento::class, 'INICIO_MANTENIMIENTO_id_mantenimiento_ini');
     }
 
+    public function detallesMantenimiento()
+    {
+        return $this->detalleMantenimiento();
+    }
+
+    public function detallesMantenimientos()
+    {
+        return $this->detalleMantenimiento();
+    }
+
     // Definimos la relación con la tabla `tecnico`
     public function tecnico()
     {
@@ -44,5 +54,42 @@ class Mantenimiento extends Model
     public function finalMantenimiento()
     {
         return $this->hasOne(FinalMantenimiento::class, 'INICIO_MANTENIMIENTO_id_mantenimiento_ini');
+    }
+
+    /**
+     * Scope para filtrar mantenimientos segun la pertenencia territorial de sus articulos.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int|array $edificioId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePorEdificio($query, int|array $edificioId)
+    {
+        $ids = is_array($edificioId) ? array_map('intval', $edificioId) : [(int) $edificioId];
+
+        return $query->where(function ($mainQuery) use ($ids) {
+            $mainQuery->whereHas('detalleMantenimiento', function ($qDetalle) use ($ids) {
+                $qDetalle->where(function ($qArticulo) use ($ids) {
+                    $qArticulo->whereHas('equipo.ambiente.piso', function ($q) use ($ids) {
+                        $q->whereIn('EDIFICIO_id_edificio', $ids);
+                    })
+                    ->orWhereHas('mobiliario.ambiente.piso', function ($q) use ($ids) {
+                        $q->whereIn('EDIFICIO_id_edificio', $ids);
+                    })
+                    ->orWhereHas('material.ambiente.piso', function ($q) use ($ids) {
+                        $q->whereIn('EDIFICIO_id_edificio', $ids);
+                    })
+                    ->orWhereHas('accesorio.equipos.ambiente.piso', function ($q) use ($ids) {
+                        $q->whereIn('EDIFICIO_id_edificio', $ids);
+                    });
+                });
+            })
+            ->orWhere(function ($fallback) use ($ids) {
+                $fallback->doesntHave('detalleMantenimiento')
+                    ->whereHas('personal', function ($qPer) use ($ids) {
+                        $qPer->whereIn('EDIFICIO_id_edificio', $ids);
+                    });
+            });
+        });
     }
 }

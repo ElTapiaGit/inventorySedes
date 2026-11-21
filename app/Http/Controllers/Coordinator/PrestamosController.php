@@ -23,9 +23,58 @@ class PrestamosController extends Controller
     {
         return DB::table('prestamo as pr')
             ->join('personal as per', 'pr.PERSONAL_id_personal', '=', 'per.id_personal')
-            ->join('edificio as edi', 'per.EDIFICIO_id_edificio', '=', 'edi.id_edificio')
             ->leftJoin('devolucion as dev', 'pr.id_prestamo', '=', 'dev.PRESTAMO_id_prestamo')
-            ->whereIn('edi.id_edificio', $edificiosIds)
+            ->where(function ($mainQ) use ($edificiosIds) {
+                $mainQ->whereExists(function ($sub) use ($edificiosIds) {
+                    $sub->select(DB::raw(1))
+                        ->from('detalle_prestamo as dp')
+                        ->whereColumn('dp.PRESTAMO_id_prestamo', 'pr.id_prestamo')
+                        ->where(function ($artQ) use ($edificiosIds) {
+                            $artQ->whereExists(function ($eq) use ($edificiosIds) {
+                                $eq->select(DB::raw(1))
+                                    ->from('equipo as e')
+                                    ->join('ambiente as amb', 'e.AMBIENTE_id_ambiente', '=', 'amb.id_ambiente')
+                                    ->join('piso as p', 'amb.PISO_id_piso', '=', 'p.id_piso')
+                                    ->whereColumn('e.cod_equipo', 'dp.cod_articulo')
+                                    ->whereIn('p.EDIFICIO_id_edificio', $edificiosIds);
+                            })
+                            ->orWhereExists(function ($mob) use ($edificiosIds) {
+                                $mob->select(DB::raw(1))
+                                    ->from('mobiliario as m')
+                                    ->join('ambiente as amb', 'm.AMBIENTE_id_ambiente', '=', 'amb.id_ambiente')
+                                    ->join('piso as p', 'amb.PISO_id_piso', '=', 'p.id_piso')
+                                    ->whereColumn('m.cod_mueble', 'dp.cod_articulo')
+                                    ->whereIn('p.EDIFICIO_id_edificio', $edificiosIds);
+                            })
+                            ->orWhereExists(function ($mat) use ($edificiosIds) {
+                                $mat->select(DB::raw(1))
+                                    ->from('material as mat')
+                                    ->join('ambiente as amb', 'mat.AMBIENTE_id_ambiente', '=', 'amb.id_ambiente')
+                                    ->join('piso as p', 'amb.PISO_id_piso', '=', 'p.id_piso')
+                                    ->whereColumn('mat.cod_mate', 'dp.cod_articulo')
+                                    ->whereIn('p.EDIFICIO_id_edificio', $edificiosIds);
+                            })
+                            ->orWhereExists(function ($acc) use ($edificiosIds) {
+                                $acc->select(DB::raw(1))
+                                    ->from('accesorio as a')
+                                    ->join('equipo_has_accesorio as ea', 'a.cod_accesorio', '=', 'ea.ACCESORIO_cod_accesorio')
+                                    ->join('equipo as e', 'ea.EQUIPO_cod_equipo', '=', 'e.cod_equipo')
+                                    ->join('ambiente as amb', 'e.AMBIENTE_id_ambiente', '=', 'amb.id_ambiente')
+                                    ->join('piso as p', 'amb.PISO_id_piso', '=', 'p.id_piso')
+                                    ->whereColumn('a.cod_accesorio', 'dp.cod_articulo')
+                                    ->whereIn('p.EDIFICIO_id_edificio', $edificiosIds);
+                            });
+                        });
+                })
+                ->orWhere(function ($fallback) use ($edificiosIds) {
+                    $fallback->whereNotExists(function ($noDet) {
+                        $noDet->select(DB::raw(1))
+                            ->from('detalle_prestamo as dp2')
+                            ->whereColumn('dp2.PRESTAMO_id_prestamo', 'pr.id_prestamo');
+                    })
+                    ->whereIn('per.EDIFICIO_id_edificio', $edificiosIds);
+                });
+            })
             ->select(
                 'pr.id_prestamo',
                 'pr.nombre_solicitante',
@@ -115,8 +164,41 @@ class PrestamosController extends Controller
                 abort(404, 'Prestamo no encontrado');
             }
 
-            // Blindaje IDOR: verificar que el edificio del prestamo pertenezca a los permitidos
-            $this->scopeService->validarAccesoEdificio((int) $prestamo->EDIFICIO_id_edificio);
+            // Validar pertenencia territorial de los articulos al coordinador
+            $edificiosPrestamo = DB::table('detalle_prestamo as dp')
+                ->where('dp.PRESTAMO_id_prestamo', $id)
+                ->leftJoin('equipo as e', 'dp.cod_articulo', '=', 'e.cod_equipo')
+                ->leftJoin('mobiliario as m', 'dp.cod_articulo', '=', 'm.cod_mueble')
+                ->leftJoin('material as mat', 'dp.cod_articulo', '=', 'mat.cod_mate')
+                ->leftJoin('accesorio as a', 'dp.cod_articulo', '=', 'a.cod_accesorio')
+                ->leftJoin('equipo_has_accesorio as ea', 'a.cod_accesorio', '=', 'ea.ACCESORIO_cod_accesorio')
+                ->leftJoin('equipo as ea_eq', 'ea.EQUIPO_cod_equipo', '=', 'ea_eq.cod_equipo')
+                ->join('ambiente as amb', function ($join) {
+                    $join->on('e.AMBIENTE_id_ambiente', '=', 'amb.id_ambiente')
+                        ->orOn('m.AMBIENTE_id_ambiente', '=', 'amb.id_ambiente')
+                        ->orOn('mat.AMBIENTE_id_ambiente', '=', 'amb.id_ambiente')
+                        ->orOn('ea_eq.AMBIENTE_id_ambiente', '=', 'amb.id_ambiente');
+                })
+                ->join('piso as p', 'amb.PISO_id_piso', '=', 'p.id_piso')
+                ->pluck('p.EDIFICIO_id_edificio')
+                ->map(fn($edi) => (int) $edi)
+                ->unique()
+                ->toArray();
+
+            if (!empty($edificiosPrestamo)) {
+                $tieneAcceso = false;
+                foreach ($edificiosPrestamo as $ediId) {
+                    if ($this->scopeService->canAccessEdificio($ediId)) {
+                        $tieneAcceso = true;
+                        break;
+                    }
+                }
+                if (!$tieneAcceso) {
+                    abort(403, 'Acceso denegado a este prestamo.');
+                }
+            } else {
+                $this->scopeService->validarAccesoEdificio((int) $prestamo->EDIFICIO_id_edificio);
+            }
 
             $detalle_prestamos = DB::table('detalle_prestamo as dp')
                 ->select([
